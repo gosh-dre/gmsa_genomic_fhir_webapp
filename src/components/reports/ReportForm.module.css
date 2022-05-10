@@ -1,0 +1,39 @@
+.form {
+    width: 80%;
+    margin: 2rem auto;
+}
+
+.form label {
+    display: block;
+    font-weight: lighter;
+    margin-top: 0.5rem;
+    margin-bottom: 0.1rem;
+}
+
+.form textarea,
+.form input {
+    display: block;
+    width: 100%;
+    font: inherit;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    background-color: #ecedf3;
+    border: none;
+}
+
+.form button {
+    font: inherit;
+    background-color: #384e77;
+    border: 1px solid #384e77;
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form button:hover,
+.form button:active {
+    background-color: #aed1e6;
+    border-color: #aed1e6;
+}
