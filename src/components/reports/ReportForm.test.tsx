@@ -3,7 +3,7 @@ import {fireEvent, render, screen, within} from "@testing-library/react";
 
 
 describe("Report form", () => {
-  test('Values returned by submission', async () => {
+  test('Values returned by form submission', async () => {
     // Arrange
     render(<ReportForm/>);
 

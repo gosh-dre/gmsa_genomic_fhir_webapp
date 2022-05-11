@@ -1,70 +1,74 @@
 import React, {useState} from "react";
 import {Form, Field, Formik} from 'formik';
+import * as Yup from "yup"
+
 import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
-import {Address, Patient, ReportDetails, Sample, Variant} from "../../models/FormData";
+import {addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantSchema} from "./formDataValidation";
 
+const FormValidation = Yup.object().shape({
+  address: addressSchema,
+  patient: patientSchema,
+  sample: sampleSchema,
+  variant: variantSchema,
+  reportDetails: reportDetailSchema,
+}).required();
 
-interface FormValues {
-  patient: Patient,
-  address: Address,
-  sample: Sample,
-  variant: Variant,
-  reportDetails: ReportDetails,
-}
+type FormValues = Yup.InferType<typeof FormValidation>;
+
+const initialValues: FormValues = {
+  address: {
+    streetAddress: [
+      "London North Genomic Laboratory Hub",
+      "Great Ormond Street Hospital for Children NHS Foundation Trust",
+      "Levels 4-6 Barclay House",
+      "37 Queen Square"],
+    city: "London",
+    country: "UK",
+    postCode: "WC1N 3BH",
+  },
+  patient: {
+    mrn: "",
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    gender: "",
+    familyNumber: "",
+  },
+  sample: {
+    specimenCode: "",
+    specimenType: "",
+    collectionDateTime: "",
+    reasonForTestCode: "",
+    reasonForTestText: "",
+  },
+  variant: {
+    gene: "",
+    genomicHGVS: "",
+    inheritanceMethod: "",
+    classification: "",
+    proteinHGVS: "",
+    referenceNucleotide: "",
+    transcript: "",
+    variantNucleotide: "",
+    zygosity: "",
+    classificationEvidence: "",
+  },
+  reportDetails: {
+    resultSummary: "",
+    authorisingDate: "",
+    authorisingScientist: "",
+    authorisingScientistTitle: "",
+    furtherTesting: "",
+    reportingDate: "",
+    reportingScientist: "",
+    reportingScientistTitle: "",
+    testMethodology: "",
+  }
+};
 
 
 const ReportForm = () => {
-  const initialValues: FormValues = {
-    address: {
-      streetAddress: [
-        "London North Genomic Laboratory Hub",
-        "Great Ormond Street Hospital for Children NHS Foundation Trust",
-        "Levels 4-6 Barclay House",
-        "37 Queen Square"],
-      city: "London",
-      country: "UK",
-      postCode: "WC1N 3BH",
-    },
-    patient: {
-      mrn: "",
-      firstName: "",
-      lastName: "",
-      dateOfBirth: "",
-      gender: "",
-      familyNumber: "",
-    },
-    sample: {
-      specimenCode: "",
-      specimenType: "",
-      collectionDateTime: "",
-      reasonForTestCode: "",
-      reasonForTestText: "",
-    },
-    variant: {
-      gene: "",
-      genomicHGVS: "",
-      inheritanceMethod: "",
-      classification: "",
-      proteinHGVS: "",
-      referenceNucleotide: "",
-      transcript: "",
-      variantNucleotide: "",
-      zygosity: "",
-      classificationEvidence: "",
-    },
-    reportDetails: {
-      resultSummary: "",
-      authorisingDate: "",
-      authorisingScientist: "",
-      authorisingScientistTitle: "",
-      furtherTesting: "",
-      reportingDate: "",
-      reportingScientist: "",
-      reportingScientistTitle: "",
-      testMethodology: "",
-    }
-  };
 
   const [result, setResult] = useState('')
   return (
@@ -72,6 +76,7 @@ const ReportForm = () => {
       <h1>Add a new report</h1>
       <Formik
         initialValues={initialValues}
+        validationSchema={FormValidation}
         onSubmit={(values, actions) => {
           setResult(JSON.stringify(values, null, 2));
           actions.setSubmitting(false);
