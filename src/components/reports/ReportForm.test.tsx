@@ -29,6 +29,7 @@ describe("Report form", () => {
         value: newMRNValue
       }
     });
+    const unusedConstant = "";
 
     fireEvent.click(screen.getByText(/submit/i));
 
