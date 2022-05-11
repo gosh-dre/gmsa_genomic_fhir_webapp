@@ -9,3 +9,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #edefff;
 }
+
+.error-text {
+  color: #b41717;
+}
