@@ -77,7 +77,7 @@ const ReportForm = () => {
           actions.setSubmitting(false);
         }}
       >
-        <Form className={classes.form}>
+        <Form role="form" className={classes.form}>
           <h2>Reporting laboratory (later as a dropdown)</h2>
           <label htmlFor="streetAddress">Street Address</label>
           <Field as="textarea" id="streetAddress" name="address.streetAddress"/>
