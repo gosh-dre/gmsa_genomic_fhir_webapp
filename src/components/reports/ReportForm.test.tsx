@@ -39,27 +39,4 @@ describe("Report form", () => {
     expect(result).toBeInTheDocument();
     expect(result).toHaveTextContent(expectedValue);
   });
-
-  /**
-   * Given the report form
-   * When all inputs are touched and have no values
-   * Then the same number of warnings should exist for the fields being required
-   */
-  test('Touched fields are marked as required', async () => {
-    // Arrange
-    render(<ReportForm/>);
-
-    // Act
-    const form = screen.getByRole("form");
-    const inputs = within(form).getAllByLabelText(/^((?!resultOutput).)*$/i);
-    inputs.forEach(input => fireEvent.touchStart(input));
-    inputs.forEach(input => fireEvent.change(input, {
-      target: {value: ""}
-    }));
-    inputs.forEach(input => fireEvent.blur(input));
-
-    // Assert
-    const requiredFields = await screen.findAllByText(/required/i);
-    expect(requiredFields.length).toEqual(inputs.length)
-  });
 });
