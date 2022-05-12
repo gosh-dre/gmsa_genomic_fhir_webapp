@@ -3,9 +3,7 @@ import {FC} from "react";
 
 const NewReport: FC = () => {
   return (
-    <>
-      <ReportForm/>
-    </>
+    <ReportForm/>
   );
 }
 
