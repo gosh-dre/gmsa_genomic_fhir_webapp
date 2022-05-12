@@ -18,7 +18,7 @@ const NavBar = () => {
           </li>
           <li>
             <NavLink to='/reports' className={(navData) => navData.isActive ? classes.active : ''}>
-              Reports
+              Reports placeholder
             </NavLink>
           </li>
         </ul>

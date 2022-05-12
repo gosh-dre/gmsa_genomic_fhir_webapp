@@ -1,11 +1,9 @@
 import ReportForm from "../components/reports/ReportForm";
-import React from "react";
+import {FC} from "react";
 
-const NewReport: React.FC = () => {
+const NewReport: FC = () => {
   return (
-    <>
-      <ReportForm/>
-    </>
+    <ReportForm/>
   );
 }
 

@@ -2,14 +2,22 @@
   box-sizing: border-box;
 }
 
+:root {
+  --fairly-white: #ecedf3;
+  --pale-lilac: #edefff;
+  --light-blue: #aed1e6;
+  --mid-blue: #384e77;
+  --red: #b41717;
+}
+
 body {
   margin: 0;
   font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #edefff;
+  background-color: var(--pale-lilac);
 }
 
 .error-text {
-  color: #b41717;
+  color: var(--red);
 }

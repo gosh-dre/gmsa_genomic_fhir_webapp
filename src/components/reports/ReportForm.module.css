@@ -18,14 +18,14 @@
     font-size: 1rem;
     padding: 0.5rem;
     border-radius: 4px;
-    background-color: #ecedf3;
+    background-color: var(--fairly-white);
     border: none;
 }
 
 .form button {
     font: inherit;
-    background-color: #384e77;
-    border: 1px solid #384e77;
+    background-color: var(--mid-blue);
+    border: 1px solid var(--mid-blue);
     color: white;
     padding: 0.5rem 1.5rem;
     border-radius: 4px;
@@ -34,6 +34,6 @@
 
 .form button:hover,
 .form button:active {
-    background-color: #aed1e6;
-    border-color: #aed1e6;
+    background-color: var(--light-blue);
+    border-color: var(--light-blue);
 }

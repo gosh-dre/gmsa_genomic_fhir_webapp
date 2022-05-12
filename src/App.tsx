@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import Layout from "./components/layout/Layout";
 import {Navigate, Route, Routes} from "react-router-dom";
 import NewReport from "./pages/NewReport";
