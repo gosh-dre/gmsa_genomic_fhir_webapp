@@ -1,10 +1,11 @@
 import React, {useState} from "react";
-import {Form, Field, Formik, ErrorMessage} from 'formik';
+import {Form, Formik} from 'formik';
 import * as Yup from "yup"
 
 import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
 import {addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantSchema} from "./formDataValidation";
+import FieldSet from "./FieldSet";
 
 const FormValidation = Yup.object().shape({
   address: addressSchema,
@@ -84,117 +85,51 @@ const ReportForm = () => {
       >
         <Form role="form" className={classes.form}>
           <h2>Reporting laboratory (later as a dropdown)</h2>
-          <label htmlFor="streetAddress">Street Address</label>
-          <Field as="textarea" id="streetAddress" name="address.streetAddress"/>
-          <ErrorMessage component="p"  className="error-text" name="address.streetAddress"/>
-          <label htmlFor="city">City</label>
-          <Field id="city" name="address.city"/>
-          <ErrorMessage component="p"  className="error-text" name="address.city"/>
-          <label htmlFor="postCode">Post Code</label>
-          <Field id="postCode" name="address.postCode"/>
-          <ErrorMessage component="p"  className="error-text" name="address.postCode"/>
-          <label htmlFor="country">Country</label>
-          <Field id="country" name="address.country"/>
-          <ErrorMessage component="p"  className="error-text" name="address.country"/>
+
+          <FieldSet as="textarea" name="address.streetAddress" label="Street Address"/>
+          <FieldSet name="address.city" label="City"/>
+          <FieldSet name="address.postCode" label="Post Code"/>
+          <FieldSet name="address.country" label="Country"/>
 
           <h2>Patient information</h2>
-          <label htmlFor="mrn">MRN</label>
-          <Field id="mrn" name="patient.mrn"/>
-          <ErrorMessage component="p"  className="error-text" name="patient.mrn"/>
-          <label htmlFor="dateOfBirth">Date of Birth</label>
-          <Field id="dateOfBirth" type="date" name="patient.dateOfBirth"/>
-          <ErrorMessage component="p"  className="error-text" name="patient.dateOfBirth"/>
-          <label htmlFor="firstName">First Name</label>
-          <Field id="firstName" name="patient.firstName"/>
-          <ErrorMessage component="p"  className="error-text" name="patient.firstName"/>
-          <label htmlFor="lastName">Last Name</label>
-          <Field id="lastName" name="patient.lastName"/>
-          <ErrorMessage component="p"  className="error-text" name="patient.lastName"/>
-          <label htmlFor="gender">Gender</label>
-          <Field id="gender" name="patient.gender"/>
-          <ErrorMessage component="p"  className="error-text" name="patient.gender"/>
-          <label htmlFor="familyNumber">Family Number</label>
-          <Field id="familyNumber" name="patient.familyNumber"/>
-          <ErrorMessage component="p"  className="error-text" name="patient.familyNumber"/>
+          <FieldSet label="MRN" name="patient.mrn"/>
+          <FieldSet label="First Name" name="patient.lastName"/>
+          <FieldSet label="Last Name" name="patient.firstName"/>
+          <FieldSet label="Date of Birth" name="patient.dateOfBirth" type="date"/>
+          <FieldSet label="Gender" name="patient.gender"/>
+          <FieldSet label="Family Number" name="patient.familyNumber"/>
 
           <h2>Sample</h2>
-          <label htmlFor="specimenCode">Barcode</label>
-          <Field id="specimenCode" name="sample.specimenCode"/>
-          <ErrorMessage component="p"  className="error-text" name="sample.specimenCode"/>
-          <label htmlFor="specimenType">Specimen Type</label>
-          <Field id="specimenType" name="sample.specimenType"/>
-          <ErrorMessage component="p"  className="error-text" name="sample.specimenType"/>
-          <label htmlFor="collectionDate">Sample collection date</label>
-          <Field id="collectionDate" type="date" name="sample.collectionDate"/>
-          <ErrorMessage component="p"  className="error-text" name="sample.collectionDate"/>
-          <label htmlFor="reasonForTestText">Reason for test</label>
-          <Field id="reasonForTestText" name="sample.reasonForTestText"/>
-          <ErrorMessage component="p"  className="error-text" name="sample.reasonForTestText"/>
-          <label htmlFor="reasonForTestCode">Reason for test code</label>
-          <Field id="reasonForTestCode" name="sample.reasonForTestCode"/>
-          <ErrorMessage component="p"  className="error-text" name="sample.reasonForTestCode"/>
+
+          <FieldSet name="sample.specimenCode" label="Barcode"/>
+          <FieldSet name="sample.specimenType" label="Specimen Type"/>
+          <FieldSet type="date" name="sample.collectionDate" label="Sample collection date"/>
+          <FieldSet name="sample.reasonForTestText" label="Reason for test"/>
+          <FieldSet name="sample.reasonForTestCode" label="Test reason code"/>
 
           <h2>Variant</h2>
-          <label htmlFor="gene">Gene Symbol</label>
-          <Field id="gene" name="variant.gene"/>
-          <ErrorMessage component="p"  className="error-text" name="variant.gene"/>
-          <label htmlFor="transcript">Transcript</label>
-          <Field id="transcript" name="variant.transcript"/>
-          <ErrorMessage component="p"  className="error-text" name="variant.transcript"/>
-          <label htmlFor="referenceNucleotide">Reference Nucleotide</label>
-          <Field id="referenceNucleotide" name="variant.referenceNucleotide"/>
-          <ErrorMessage component="p"  className="error-text" name="variant.referenceNucleotide"/>
-          <label htmlFor="variantNucleotide">Variant Nucleotide</label>
-          <Field id="variantNucleotide" name="variant.variantNucleotide"/>
-          <ErrorMessage component="p"  className="error-text" name="variant.variantNucleotide"/>
-          <label htmlFor="genomicHGVS">Genomic HGVS</label>
-          <Field id="genomicHGVS" name="variant.genomicHGVS"/>
-          <ErrorMessage component="p"  className="error-text" name="variant.genomicHGVS"/>
-          <label htmlFor="proteinHGVS">Protein HGVS</label>
-          <Field id="proteinHGVS" name="variant.proteinHGVS"/>
-          <ErrorMessage component="p"  className="error-text" name="variant.proteinHGVS"/>
-          <label htmlFor="zygosity">Zygosity</label>
-          <Field id="zygosity" name="variant.zygosity"/>
-          <ErrorMessage component="p"  className="error-text" name="variant.zygosity"/>
-          <label htmlFor="inheritanceMethod">Inhertiance Method</label>
-          <Field id="inheritanceMethod" name="variant.inheritanceMethod"/>
-          <ErrorMessage component="p"  className="error-text" name="variant.inheritanceMethod"/>
-          <label htmlFor="classification">Classification</label>
-          <Field id="classification" name="variant.classification"/>
-          <ErrorMessage component="p"  className="error-text" name="variant.classification"/>
-          <label htmlFor="classificationEvidence">Classification Evidence</label>
-          <Field as="textarea" id="classificationEvidence" name="variant.classificationEvidence"/>
-          <ErrorMessage component="p"  className="error-text" name="variant.classificationEvidence"/>
+
+          <FieldSet name="variant.gene" label="Gene Symbol"/>
+          <FieldSet name="variant.transcript" label="Transcript"/>
+          <FieldSet name="variant.referenceNucleotide" label="Reference Nucleotide"/>
+          <FieldSet name="variant.variantNucleotide" label="Variant Nucleotide"/>
+          <FieldSet name="variant.genomicHGVS" label="Genomic HGVS"/>
+          <FieldSet name="variant.proteinHGVS" label="Protein HGVS"/>
+          <FieldSet name="variant.zygosity" label="Zygosity"/>
+          <FieldSet name="variant.inheritanceMethod" label="Inhertiance Method"/>
+          <FieldSet name="variant.classification" label="Classification"/>
+          <FieldSet as="textarea" name="variant.classificationEvidence" label="Classification Evidence"/>
 
           <h2>Report</h2>
-          <label htmlFor="resultSummary">Result summary</label>
-          <Field as="textarea" id="resultSummary" name="result.resultSummary"/>
-          <ErrorMessage component="p"  className="error-text" name="result.resultSummary"/>
-          <label htmlFor="furtherTesting">Further testing</label>
-          <Field as="textarea" id="furtherTesting" name="result.furtherTesting"/>
-          <ErrorMessage component="p"  className="error-text" name="result.furtherTesting"/>
-          <label htmlFor="testMethodology">Test Methodology</label>
-          <Field as="textarea" id="testMethodology" name="result.testMethodology"/>
-          <ErrorMessage component="p"  className="error-text" name="result.testMethodology"/>
-          <label htmlFor="authorisingDate">Authorised date</label>
-          <Field id="authorisingDate" type="date" name="result.authorisingDate"/>
-          <ErrorMessage component="p"  className="error-text" name="result.authorisingDate"/>
-          <label htmlFor="authorisingScientist">Authorising scientist</label>
-          <Field id="authorisingScientist" name="result.authorisingScientist"/>
-          <ErrorMessage component="p"  className="error-text" name="result.authorisingScientist"/>
-          <label htmlFor="authorisingScientistTitle">Authorising scientist title</label>
-          <Field id="authorisingScientistTitle" name="result.authorisingScientistTitle"/>
-          <ErrorMessage component="p"  className="error-text" name="result.authorisingScientistTitle"/>
-          <label htmlFor="reportingDate">Reporting date</label>
-          <Field id="reportingDate" type="date" name="result.reportingDate"/>
-          <ErrorMessage component="p"  className="error-text" name="result.reportingDate"/>
-          <label htmlFor="reportingScientist">Reporting scientist</label>
-          <Field id="reportingScientist" name="result.reportingScientist"/>
-          <ErrorMessage component="p"  className="error-text" name="result.reportingScientist"/>
-          <label htmlFor="reportingScientistTitle">Reporting scientist title</label>
-          <Field id="reportingScientistTitle" name="result.reportingScientistTitle"/>
-          <ErrorMessage component="p"  className="error-text" name="result.reportingScientistTitle"/>
-
+          <FieldSet as="textarea" name="result.resultSummary" label="Result summary"/>
+          <FieldSet as="textarea" name="result.furtherTesting" label="Further testing"/>
+          <FieldSet as="textarea" name="result.testMethodology" label="Test Methodology"/>
+          <FieldSet type="date" name="result.authorisingDate" label="Authorised date"/>
+          <FieldSet name="result.authorisingScientist" label="Authorising scientist"/>
+          <FieldSet name="result.authorisingScientistTitle" label="Authorising scientist title"/>
+          <FieldSet type="date" name="result.reportingDate" label="Reporting date"/>
+          <FieldSet name="result.reportingScientist" label="Reporting scientist"/>
+          <FieldSet name="result.reportingScientistTitle" label="Reporting scientist title"/>
           <br/>
           <button type="submit">Submit</button>
 
