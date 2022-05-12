@@ -1,13 +1,13 @@
 import classes from './Layout.module.css'
 import NavBar from "./NavBar";
-import React from "react";
+import {FC} from "react";
 
 /**
  * Generic layout component to ensure consistent styling of the app.
  * @param props any child component to be passed through
  * @constructor
  */
-const Layout: React.FC<any> = (props) => {
+const Layout: FC<any> = (props) => {
   return (
     <>
       <NavBar/>
