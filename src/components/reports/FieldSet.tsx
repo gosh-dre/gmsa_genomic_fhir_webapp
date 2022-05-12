@@ -1,5 +1,5 @@
-import React from 'react';
 import {Field, ErrorMessage} from 'formik';
+import {FC} from "react";
 
 type FieldSetConfig = {
   name: string;
@@ -9,7 +9,7 @@ type FieldSetConfig = {
 };
 
 
-const FieldSet: React.FC<FieldSetConfig> = ({name, label, ...rest}) => (
+const FieldSet: FC<FieldSetConfig> = ({name, label, ...rest}) => (
   <>
     <label htmlFor={name}>{label}</label>
     <Field id={name} name={name} {...rest} />
