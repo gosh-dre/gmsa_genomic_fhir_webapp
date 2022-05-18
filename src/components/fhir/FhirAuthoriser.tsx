@@ -1,4 +1,4 @@
-import {FC} from "react";
+import {FC, useEffect} from "react";
 import {oauth2 as SMART} from "fhirclient";
 
 const FHIR_URL = process.env.REACT_APP_FHIR_URL;
@@ -11,15 +11,13 @@ const FHIR_URL = process.env.REACT_APP_FHIR_URL;
  */
 const FhirAuthoriser: FC = () => {
 
-  const connect = async () => {
-    await SMART.authorize({
+  useEffect(() => {
+    SMART.authorize({
       // fhirServiceUrl bypasses authentication so can use this for an open api
       fhirServiceUrl: FHIR_URL,
       redirectUri: "./add_report"
     })
-  }
-
-  connect().then();
+  }, []);
 
   return <p>Connecting to FHIR back end...</p>;
 

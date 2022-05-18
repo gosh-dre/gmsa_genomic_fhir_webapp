@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {Form, Formik} from 'formik';
 import * as Yup from "yup"
 
@@ -6,6 +6,7 @@ import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
 import {addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantSchema} from "./formDataValidation";
 import FieldSet from "./FieldSet";
+import {FhirContext} from "../fhir/FhirContext";
 
 const FormValidation = Yup.object().shape({
   address: addressSchema,
@@ -70,8 +71,13 @@ const initialValues: FormValues = {
 
 
 const ReportForm = () => {
-
   const [result, setResult] = useState('')
+  const ctx = useContext(FhirContext);
+  ctx.client?.request("Patient?", {pageLimit: 0}).then(patient => {
+    console.log("patient")
+    console.log(patient)
+  });
+
   return (
     <Card>
       <h1>Add a new report</h1>
