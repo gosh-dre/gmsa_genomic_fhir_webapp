@@ -1,4 +1,5 @@
 import * as Yup from "yup";
+import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 
 const requiredString = Yup.string().required();
 const requiredDate = Yup.date().min("1900-01-01").required();
@@ -8,7 +9,7 @@ export const patientSchema = Yup.object().shape({
   firstName: requiredString,
   lastName: requiredString,
   dateOfBirth: requiredDate,
-  gender: requiredString,
+  gender: Yup.mixed<Patient.GenderEnum>().oneOf(Object.values(Patient.GenderEnum)),
   familyNumber: requiredString,
 }).required();
 
