@@ -1,13 +1,16 @@
 import {useContext, useState} from "react";
-import {Form, Formik} from 'formik';
+import {Form, Formik, FormikHelpers} from 'formik';
 import * as Yup from "yup"
+import {v4 as uuidv4} from "uuid";
+import {FhirContext} from "../fhir/FhirContext";
+import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+import GenderEnum = Patient.GenderEnum;
+
 
 import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
 import {addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantSchema} from "./formDataValidation";
 import FieldSet from "./FieldSet";
-import {FhirContext} from "../fhir/FhirContext";
-import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 
 const FormValidation = Yup.object().shape({
   address: addressSchema,
@@ -35,7 +38,7 @@ const initialValues: FormValues = {
     firstName: "Donald",
     lastName: "Duck",
     dateOfBirth: "2012-03-04",
-    gender: Patient.GenderEnum.Male,
+    gender: GenderEnum.Male,
     familyNumber: "Z409929",
   },
   sample: {
@@ -88,13 +91,49 @@ const initialValues: FormValues = {
 };
 
 
+const createPatientEntry = (form: typeof patientSchema) => {
+  const patient = new Patient();
+  patient.id = uuidv4();
+  patient.name = [{family: form.lastName, given: [form.firstName]}];
+  patient.identifier = [{value: form.mrn}];
+  patient.birthDate = form.dateOfBirth;
+  patient.text = {status: "generated", div: `${form.firstName} ${form.lastName}`};
+  patient.resourceType = "Patient";
+  return patient;
+};
+
+const createBundle = (patient: Patient) => {
+  const mrn = patient?.identifier?.at(0)?.value;
+  return {
+    url: "/",
+    method: "POST",
+    headers: {'Content-Type': 'application/fhir+json;charset=UTF-8'},
+    body: JSON.stringify({
+      resourceType: "Bundle",
+      type: "transaction",
+      entry: [{
+        resource: patient,
+        request: {method: "PUT", url: `Patient?identifier=${mrn}`}
+      }]
+    }),
+  };
+}
+
 const ReportForm = () => {
   const [result, setResult] = useState('')
   const ctx = useContext(FhirContext);
-  ctx.client?.request("Patient?", {pageLimit: 0}).then(patient => {
-    console.log("patient")
-    console.log(patient)
-  });
+
+  const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
+    const patient = createPatientEntry(values.patient);
+    const bundle = createBundle(patient);
+
+    setResult(JSON.stringify(bundle, null, 2));
+
+    ctx.client?.request(bundle)
+      .then((response) => console.debug("Created patient", patient, response))
+      .catch((error) => console.error(error));
+    actions.setSubmitting(false);
+  };
 
   return (
     <Card>
@@ -102,10 +141,7 @@ const ReportForm = () => {
       <Formik
         initialValues={initialValues}
         validationSchema={FormValidation}
-        onSubmit={(values, actions) => {
-          setResult(JSON.stringify(values, null, 2));
-          actions.setSubmitting(false);
-        }}
+        onSubmit={onSuccessfulSubmitHandler}
       >
         <Form role="form" className={classes.form}>
           <h2>Reporting laboratory (later as a dropdown)</h2>
