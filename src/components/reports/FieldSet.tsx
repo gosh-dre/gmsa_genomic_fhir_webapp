@@ -1,7 +1,7 @@
 import {Field, ErrorMessage} from 'formik';
 import {FC} from "react";
 
-type FieldSetConfig = {
+type Props = {
   name: string;
   label: string;
   type?: string;
@@ -9,7 +9,7 @@ type FieldSetConfig = {
 };
 
 
-const FieldSet: FC<FieldSetConfig> = ({name, label, ...rest}) => (
+const FieldSet: FC<Props> = ({name, label, ...rest}) => (
   <>
     <label htmlFor={name}>{label}</label>
     <Field id={name} name={name} {...rest} />

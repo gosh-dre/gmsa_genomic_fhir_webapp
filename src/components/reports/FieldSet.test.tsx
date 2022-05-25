@@ -1,9 +1,10 @@
-import {fireEvent, render, screen} from "@testing-library/react";
+import {render, screen} from "@testing-library/react";
 import {Form, Formik} from "formik";
 import * as Yup from "yup";
 
 import FieldSet from "./FieldSet";
 import React, {useState} from "react";
+import userEvent from "@testing-library/user-event";
 
 
 const testSchema = Yup.object().shape({
@@ -53,12 +54,8 @@ describe("Field Set", () => {
 
       // Act
       const expected = "testValue";
-      fireEvent.change(screen.getByLabelText(/test/i), {
-        target: {
-          value: expected
-        }
-      });
-      fireEvent.click(screen.getByText(/submit/i));
+      userEvent.type(screen.getByLabelText(/test/i), expected);
+      userEvent.click(screen.getByText(/submit/i));
 
       // Assert
       const output = await screen.findByTitle(/output/i)
@@ -67,7 +64,7 @@ describe("Field Set", () => {
 
     /**
      * Given a formik form that uses a single FieldSet Wrapper that is a required form field
-     * When the form field is touched and then blurred
+     * When the form field has been moved onto, then moved away from without entering any data
      * Then there should be a validation error
      */
     test('Form validation is preserved', async () => {
@@ -76,8 +73,8 @@ describe("Field Set", () => {
 
       // Act
       const testField = screen.getByLabelText(/test/i);
-      fireEvent.touchStart(testField)
-      fireEvent.blur(testField);
+      userEvent.click(testField)
+      userEvent.tab();
 
       // Assert
       const requiredText = await screen.findByText(/test is a required field/i);
