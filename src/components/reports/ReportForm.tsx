@@ -163,10 +163,9 @@ const ReportForm = () => {
           <FieldSet name="result.reportingScientistTitle" label="Reporting scientist title"/>
           <br/>
           <button type="submit">Submit</button>
-
-          {result !== "" && <textarea id="resultOutput" role="alert" rows={20} defaultValue={result}/>}
         </Form>
       </Formik>
+      {result !== "" && <textarea id="resultOutput" role="alert" rows={20} defaultValue={result}/>}
     </Card>
   );
 }
