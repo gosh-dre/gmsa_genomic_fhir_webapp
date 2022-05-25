@@ -9,8 +9,7 @@ import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
 import {addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantSchema} from "./formDataValidation";
 import FieldSet from "./FieldSet";
-import {createPatientEntry} from "../../fhir/resources";
-import { bundleRequest } from "../../fhir/api";
+import {bundleRequest} from "../../fhir/api";
 
 const FormValidation = Yup.object().shape({
   address: addressSchema,
@@ -95,13 +94,12 @@ const ReportForm = () => {
   const ctx = useContext(FhirContext);
 
   const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
-    const patient = createPatientEntry(values.patient);
-    const bundle = bundleRequest(patient);
+    const bundle = bundleRequest(values.patient);
 
     setResult(JSON.stringify(bundle, null, 2));
 
     ctx.client?.request(bundle)
-      .then((response) => console.debug("Created patient", patient, response))
+      .then((response) => console.debug("Bundle submitted", bundle, response))
       .catch((error) => console.error(error));
     actions.setSubmitting(false);
   };

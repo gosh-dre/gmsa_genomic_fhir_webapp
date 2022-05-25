@@ -1,10 +1,11 @@
-import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+import {patientSchema} from "../components/reports/formDataValidation";
+import {createPatientEntry} from "./resources";
 
 /**
  * Create a report bundle
  * @param patient FHIR patient entity
  */
-export const bundleRequest = (patient: Patient) => {
+export const bundleRequest = (patient: typeof patientSchema) => {
   return {
     url: "/",
     method: "POST",
@@ -13,14 +14,15 @@ export const bundleRequest = (patient: Patient) => {
   };
 }
 
-export const createBundle = (patient: Patient) => {
+export const createBundle = (patient: typeof patientSchema) => {
   const mrn = patient?.identifier?.at(0)?.value;
+  const patientEntry = createPatientEntry(patient);
 
   return {
     resourceType: "Bundle",
     type: "transaction",
     entry: [{
-      resource: patient,
+      resource: patientEntry,
       resourceType: "Patient",
       request: {method: "PUT", url: `Patient?identifier=${mrn}`}
     }]

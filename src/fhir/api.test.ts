@@ -1,4 +1,3 @@
-import {createPatientEntry} from "./resources";
 import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -15,7 +14,7 @@ describe("FHIR resources", () => {
    * Then the fhir library should pass validation of the bundle
    */
   test('Bundle is valid', () => {
-    const formData = {
+    const patientForm = {
       mrn: "969977",
       firstName: "Donald",
       lastName: "Duck",
@@ -24,8 +23,7 @@ describe("FHIR resources", () => {
       familyNumber: "Z409929",
     };
 
-    const patient = createPatientEntry(formData);
-    const bundle = createBundle(patient);
+    const bundle = createBundle(patientForm);
 
     const output = fhir.validate(bundle);
     console.info("Validation output")
