@@ -10,14 +10,14 @@ export const patientSchema = Yup.object().shape({
   dateOfBirth: requiredDate,
   gender: requiredString,
   familyNumber: requiredString,
-});
+}).required();
 
 export const addressSchema = Yup.object().shape({
   streetAddress: Yup.array().of(Yup.string()).required(),
   city: requiredString,
   postCode: requiredString,
   country: requiredString,
-});
+}).required();
 
 export const sampleSchema = Yup.object().shape({
   specimenCode: requiredString,
@@ -25,7 +25,7 @@ export const sampleSchema = Yup.object().shape({
   specimenType: requiredString,
   reasonForTestCode: requiredString,
   reasonForTestText: requiredString,
-});
+}).required();
 
 export const variantSchema = Yup.object().shape({
   gene: requiredString,
@@ -38,7 +38,7 @@ export const variantSchema = Yup.object().shape({
   referenceNucleotide: requiredString,
   variantNucleotide: requiredString,
   classificationEvidence: requiredString,
-});
+}).required();
 
 export const reportDetailSchema = Yup.object().shape({
   resultSummary: requiredString,
@@ -50,4 +50,4 @@ export const reportDetailSchema = Yup.object().shape({
   authorisingDate: requiredDate,
   furtherTesting: requiredString,
   testMethodology: requiredString,
-});
+}).required();

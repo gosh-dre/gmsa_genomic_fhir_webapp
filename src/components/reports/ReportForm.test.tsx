@@ -1,5 +1,6 @@
 import ReportForm from "./ReportForm";
-import {fireEvent, render, screen, within} from "@testing-library/react";
+import {render, screen, within} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 
 describe("Report form", () => {
@@ -17,20 +18,17 @@ describe("Report form", () => {
     const dummyValue = "Always the same";
     const form = screen.getByRole("form");
     const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|mrn|date|address).)*$/i);
-    textInputs.forEach(input => fireEvent.change(input, {target: {value: dummyValue}}));
+    textInputs.forEach(input => userEvent.type(input, dummyValue));
+
     within(form).getAllByLabelText(/date/i).forEach(input => {
-      fireEvent.change(input, {target: {value: "2019-01-01"}})
+      userEvent.type(input, "2019-01-01")
     })
 
     // set MRN value
     const newMRNValue = "10293879";
-    fireEvent.change(screen.getByLabelText(/mrn/i), {
-      target: {
-        value: newMRNValue
-      }
-    });
+    userEvent.type(screen.getByLabelText(/mrn/i), newMRNValue);
 
-    fireEvent.click(screen.getByText(/submit/i));
+    userEvent.click(screen.getByText(/submit/i));
 
 
     // Assert
@@ -38,28 +36,5 @@ describe("Report form", () => {
     const result = await screen.findByRole('alert')
     expect(result).toBeInTheDocument();
     expect(result).toHaveTextContent(expectedValue);
-  });
-
-  /**
-   * Given the report form
-   * When all inputs are touched and have no values
-   * Then the same number of warnings should exist for the fields being required
-   */
-  test('Touched fields are marked as required', async () => {
-    // Arrange
-    render(<ReportForm/>);
-
-    // Act
-    const form = screen.getByRole("form");
-    const inputs = within(form).getAllByLabelText(/^((?!resultOutput).)*$/i);
-    inputs.forEach(input => fireEvent.touchStart(input));
-    inputs.forEach(input => fireEvent.change(input, {
-      target: {value: ""}
-    }));
-    inputs.forEach(input => fireEvent.blur(input));
-
-    // Assert
-    const requiredFields = await screen.findAllByText(/required/i);
-    expect(requiredFields.length).toEqual(inputs.length)
   });
 });
