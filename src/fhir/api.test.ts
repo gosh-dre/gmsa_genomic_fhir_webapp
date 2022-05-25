@@ -9,6 +9,11 @@ const fhir = new Fhir();
 
 
 describe("FHIR resources", () => {
+  /**
+   * Given that form data has been correctly populated
+   * When a FHIR bundle is created
+   * Then the fhir library should pass validation of the bundle
+   */
   test('Bundle is valid', () => {
     const formData = {
       mrn: "969977",

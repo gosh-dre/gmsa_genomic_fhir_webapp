@@ -3,6 +3,11 @@ import {FC, useState} from "react";
 import {FhirContext} from "./FhirContext";
 import Client from "fhirclient/lib/Client";
 
+/**
+ * Context provider to allow FHIR client to be passed through to child components.
+ * @param children children components to render
+ * @constructor
+ */
 const FhirProvider: FC<any> = ({children}) => {
   const [client, setClient] = useState<Client | null>(null);
   const [error, setError] = useState<Error | null>(null);
