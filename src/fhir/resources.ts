@@ -1,8 +1,9 @@
-import {addressSchema, patientSchema, sampleSchema} from "../components/reports/formDataValidation";
+import {addressSchema, patientSchema, reportDetailSchema, sampleSchema} from "../components/reports/formDataValidation";
 import {v4 as uuidv4} from "uuid";
 import {
   Organization,
   Patient,
+  Practitioner,
   ServiceRequest,
   Specimen,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
@@ -65,6 +66,31 @@ export const organisationEntry = (form: typeof addressSchema) => {
   org.text = generatedNarrative(form.name);
 
   return org;
+}
+export const practitionerEntries = (result: typeof reportDetailSchema) => {
+  return {
+    authoriser: createPractitioner(result.authorisingScientist, result.authorisingScientistTitle),
+    reporter: createPractitioner(result.reportingScientist, result.reportingScientistTitle),
+  }
+}
+
+/**
+ * Create a practitioner from limited data.
+ * @param fullName the first word will be the firstName, remaining words will be lastName
+ * @param title role or job title within the laboratory
+ */
+const createPractitioner = (fullName: string, title: string) => {
+  const nameSplit = fullName.split(/\s/g);
+  const firstName = nameSplit[0];
+  const lastName = nameSplit.slice(1).join(" ");
+
+  const practitioner = new Practitioner();
+  practitioner.id = uuidv4();
+  practitioner.resourceType = "Practitioner";
+  practitioner.active = true;
+  practitioner.name = [{given: [firstName], family: lastName, prefix: [title]}]
+
+  return practitioner;
 }
 
 /**

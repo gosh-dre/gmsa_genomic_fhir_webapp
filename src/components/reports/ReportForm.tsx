@@ -19,7 +19,7 @@ const FormValidation = Yup.object().shape({
   result: reportDetailSchema,
 }).required();
 
-type FormValues = Yup.InferType<typeof FormValidation>;
+export type FormValues = Yup.InferType<typeof FormValidation>;
 
 const initialValues: FormValues = {
   address: {
@@ -94,7 +94,7 @@ const ReportForm = () => {
   const ctx = useContext(FhirContext);
 
   const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
-    const bundle = bundleRequest(values.patient, values.address, values.sample);
+    const bundle = bundleRequest(values);
 
     setResult(JSON.stringify(bundle, null, 2));
 
