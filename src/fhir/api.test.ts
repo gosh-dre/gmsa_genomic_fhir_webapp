@@ -2,6 +2,7 @@ import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import {Fhir} from "fhir";
+import {sampleSchema} from "../components/reports/formDataValidation";
 import {createBundle} from "./api";
 
 const fhir = new Fhir();
@@ -34,7 +35,17 @@ describe("FHIR resources", () => {
       postCode: "WC1N 3BH",
     }
 
-    const bundle = createBundle(patientForm, orgForm);
+    const sampleForm: typeof sampleSchema = {
+      specimenCode: "19RG-183G0127",
+      // will need codes here too - but probably best to load all possible codes and then query
+      specimenType: "Venus blood specimen",
+      collectionDate: "2019-06-04",
+      reasonForTestCode: "230387008",
+      reasonForTestText: "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +
+        "An SLC2A1 variant is suspected.",
+    }
+
+    const bundle = createBundle(patientForm, orgForm, sampleForm);
 
     const output = fhir.validate(bundle);
     console.info("Validation output")

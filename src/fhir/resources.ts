@@ -4,6 +4,7 @@ import {
   Organization,
   Patient,
   ServiceRequest,
+  Specimen,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import {generatedNarrative, makeGoshAssigner, reference} from "./resource_helpers";
 
@@ -64,6 +65,29 @@ export const organisationEntry = (form: typeof addressSchema) => {
   org.text = generatedNarrative(form.name);
 
   return org;
+}
+
+/**
+ * Create specimen resource from form data and link it to the patient.
+ * @param sample form data
+ * @param patientId to link the specimen with
+ */
+export const specimenEntry = (sample: typeof sampleSchema, patientId: string) => {
+  const specimen = new Specimen();
+  specimen.id = uuidv4();
+  specimen.resourceType = "Specimen";
+  specimen.collection = {collectedDateTime: sample.collectionDate};
+  specimen.identifier = [{value: sample.specimenCode, id: "specimenId"}];
+  specimen.type = {
+    coding: [{
+      system: "http://snomed.info/sct",
+      code: "122555007",
+      display: "Venus blood specimen",
+    }]
+  };
+  specimen.subject = reference("Patient", patientId);
+
+  return specimen;
 }
 
 /**
