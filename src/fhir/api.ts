@@ -56,7 +56,7 @@ export const createBundle = (form: FormValues) => {
 const createEntry = (resource: Resource, identifier?: string) => {
   let requestInfo = {method: "POST", url: resource.resourceType}
   if (identifier !== undefined) {
-    requestInfo = {method: "PUT", url: `resourceType?identifier=${identifier}`}
+    requestInfo = {method: "PUT", url: `${resource.resourceType}?identifier=${identifier}`}
   }
 
   return {
