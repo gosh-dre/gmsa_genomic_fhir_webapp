@@ -9,7 +9,7 @@ import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
 import {addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantSchema} from "./formDataValidation";
 import FieldSet from "./FieldSet";
-import {bundleRequest} from "../../fhir/api";
+import { bundleRequest } from "../../fhir/api";
 
 const FormValidation = Yup.object().shape({
   address: addressSchema,
@@ -23,8 +23,8 @@ type FormValues = Yup.InferType<typeof FormValidation>;
 
 const initialValues: FormValues = {
   address: {
+    name: "London North Genomic Laboratory Hub",
     streetAddress: [
-      "London North Genomic Laboratory Hub",
       "Great Ormond Street Hospital for Children NHS Foundation Trust",
       "Levels 4-6 Barclay House",
       "37 Queen Square"],
@@ -94,7 +94,7 @@ const ReportForm = () => {
   const ctx = useContext(FhirContext);
 
   const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
-    const bundle = bundleRequest(values.patient);
+    const bundle = bundleRequest(values.patient, values.address);
 
     setResult(JSON.stringify(bundle, null, 2));
 

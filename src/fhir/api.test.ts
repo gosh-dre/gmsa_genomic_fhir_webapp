@@ -23,7 +23,18 @@ describe("FHIR resources", () => {
       familyNumber: "Z409929",
     };
 
-    const bundle = createBundle(patientForm);
+    const orgForm = {
+      name: "London North Genomic Laboratory Hub",
+      streetAddress: [
+        "Great Ormond Street Hospital for Children NHS Foundation Trust",
+        "Levels 4-6 Barclay House",
+        "37 Queen Square"],
+      city: "London",
+      country: "UK",
+      postCode: "WC1N 3BH",
+    }
+
+    const bundle = createBundle(patientForm, orgForm);
 
     const output = fhir.validate(bundle);
     console.info("Validation output")

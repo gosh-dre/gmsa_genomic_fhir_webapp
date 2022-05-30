@@ -14,6 +14,7 @@ export const patientSchema = Yup.object().shape({
 }).required();
 
 export const addressSchema = Yup.object().shape({
+  name: requiredString,
   streetAddress: Yup.array().of(Yup.string()).required(),
   city: requiredString,
   postCode: requiredString,
