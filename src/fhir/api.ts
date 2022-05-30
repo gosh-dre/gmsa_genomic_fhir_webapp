@@ -1,5 +1,5 @@
 import {addressSchema, patientSchema} from "../components/reports/formDataValidation";
-import {createOrganisationEntry, createPatientEntry, GOSH_GENETICS_IDENTIFIER} from "./resources";
+import {GOSH_GENETICS_IDENTIFIER, organisationEntry, patientEntry} from "./resources";
 
 /**
  * Create a report bundle
@@ -16,8 +16,8 @@ export const bundleRequest = (patient: typeof patientSchema, org: typeof address
 }
 
 export const createBundle = (patient: typeof patientSchema, orgForm: typeof addressSchema) => {
-  const orgEntry = createOrganisationEntry(orgForm);
-  const patientEntry = createPatientEntry(patient, orgEntry.id as string);
+  const orgResource = organisationEntry(orgForm);
+  const patientResource = patientEntry(patient, orgResource.id as string);
 
 
   return {
@@ -25,12 +25,12 @@ export const createBundle = (patient: typeof patientSchema, orgForm: typeof addr
     type: "transaction",
     entry: [
       {
-        resource: patientEntry,
+        resource: patientResource,
         resourceType: "Patient",
         request: {method: "PUT", url: `Patient?identifier=${patient.mrn}`}
       },
       {
-        resource: orgEntry,
+        resource: orgResource,
         resourceType: "Organization",
         request: {method: "PUT", url: `Organization?identifier=${GOSH_GENETICS_IDENTIFIER}`}
       }

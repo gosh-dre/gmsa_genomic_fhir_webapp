@@ -1,17 +1,11 @@
-import {addressSchema, patientSchema} from "../components/reports/formDataValidation";
-import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+import {addressSchema, patientSchema, sampleSchema} from "../components/reports/formDataValidation";
 import {v4 as uuidv4} from "uuid";
-import {Identifier} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/identifier";
-import {Organization} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/organization";
-import {Narrative} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/narrative";
-
-const makeGoshAssigner = (valueType: string) => {
-  return {use: Identifier.UseEnum.Official, assigner: {display: `GOSH ${valueType}`}}
-}
-
-function generatedNarrative(...parts: string[]) {
-  return {status: Narrative.StatusEnum.Generated, div: `${parts.join(" ")} from FHIR genomics app`};
-}
+import {
+  Organization,
+  Patient,
+  ServiceRequest,
+} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import {generatedNarrative, makeGoshAssigner, reference} from "./resource_helpers";
 
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
@@ -20,7 +14,7 @@ export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-4
  * @param form patient data
  * @param organisationId uuid for the organisation
  */
-export const createPatientEntry = (form: typeof patientSchema, organisationId: string) => {
+export const patientEntry = (form: typeof patientSchema, organisationId: string) => {
   const patient = new Patient();
   patient.id = uuidv4();
   patient.name = [{family: form.lastName, given: [form.firstName]}];
@@ -42,14 +36,11 @@ export const createPatientEntry = (form: typeof patientSchema, organisationId: s
   patient.birthDate = form.dateOfBirth;
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
-  patient.managingOrganization = {
-    type: "Organization",
-    reference: `Organization/${organisationId}`
-  }
+  patient.managingOrganization = reference("Organization", organisationId);
   return patient;
 };
 
-export const createOrganisationEntry = (form: typeof addressSchema) => {
+export const organisationEntry = (form: typeof addressSchema) => {
   const org = new Organization();
   org.id = uuidv4();
   org.identifier = [{value: GOSH_GENETICS_IDENTIFIER}];
@@ -73,4 +64,53 @@ export const createOrganisationEntry = (form: typeof addressSchema) => {
   org.text = generatedNarrative(form.name);
 
   return org;
+}
+
+/**
+ * Create a service request resource from form data and dependent references.
+ * @param sample form data for sample
+ * @param patientId id for Patient
+ * @param planId id for PlanDefinition
+ * @param practitionerId Practitioner Id for the reporting scientist
+ * @param specimenId
+ */
+export const serviceRequestEntry = (
+  sample: typeof sampleSchema, patientId: string, planId: string, practitionerId: string, specimenId: string
+) => {
+  const request = new ServiceRequest();
+  request.resourceType = "ServiceRequest";
+  request.id = uuidv4();
+  request.meta = {profile: ["http://hl7.org/fhir/StructureDefinition/servicerequest"]};
+  request.text = generatedNarrative("Lab Procedure");
+  request.instantiatesCanonical = [`PlanDefinition/${planId}`];
+  request.status = "active";
+  request.intent = "order";
+  request.category = [{
+    coding: [{
+      system: "http://snomed.info/sct",
+      code: "108252007",
+      display: "Laboratory procedure",
+    }]
+  }];
+  request.subject = reference("Patient", patientId);
+  request.performerType = {
+    coding: [{
+      system: "http://snomed.info/sct",
+      code: "310049001",
+      display: "Clinical genetics service",
+    }]
+  }
+  request.performer = [reference("Practitioner", practitionerId)];
+  request.reasonCode = [{
+    coding: [{
+      // hardcoded for now, but have issue to pull this through from clinial APIs
+      system: "http://snomed.info/sct",
+      code: sample.reasonForTestCode,
+      display: "Reason for recommending early-onset benign childhood occipita epilepsy",
+    }],
+    text: sample.reasonForTestText
+  }];
+  request.specimen = [reference("Specimen", specimenId)];
+
+  return request;
 }
