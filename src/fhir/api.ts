@@ -1,3 +1,4 @@
+import {BundleEntry, Resource} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import {addressSchema, patientSchema} from "../components/reports/formDataValidation";
 import {GOSH_GENETICS_IDENTIFIER, organisationEntry, patientEntry} from "./resources";
 
@@ -24,17 +25,20 @@ export const createBundle = (patient: typeof patientSchema, orgForm: typeof addr
     resourceType: "Bundle",
     type: "transaction",
     entry: [
-      {
-        resource: patientResource,
-        resourceType: "Patient",
-        request: {method: "PUT", url: `Patient?identifier=${patient.mrn}`}
-      },
-      {
-        resource: orgResource,
-        resourceType: "Organization",
-        request: {method: "PUT", url: `Organization?identifier=${GOSH_GENETICS_IDENTIFIER}`}
-      }
+      createEntry(patientResource, patient.mrn),
+      createEntry(orgResource, GOSH_GENETICS_IDENTIFIER),
     ]
   };
 }
 
+/**
+ * Create individual entry for a bundle.
+ * @param resource resource to send
+ * @param identifier identifier used to query on (update if exists or create if not)
+ */
+const createEntry = (resource: Resource, identifier: string) => {
+  return {
+    resource: resource, resourceType: resource.resourceType,
+    request: {method: "PUT", url: `resourceType?identifier=${identifier}`}
+  }
+}
