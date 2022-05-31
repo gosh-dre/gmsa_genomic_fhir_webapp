@@ -44,6 +44,7 @@ export const variantSchema = Yup.object().shape({
 
 export const reportDetailSchema = Yup.object().shape({
   resultSummary: requiredString,
+  geneInformation: requiredString,
   reportingScientist: requiredString,
   reportingScientistTitle: requiredString,
   reportingDate: requiredDate,

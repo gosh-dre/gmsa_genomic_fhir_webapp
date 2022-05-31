@@ -68,7 +68,10 @@ const initialValues: FormValues = {
       "have been previously reported in the literature (1-2) (PM5_Moderate) reported on ClinVar as likely pathogenic.",
   },
   result: {
-    resultSummary: "NAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
+    resultSummary: "Next generation sequence analysis indicates that Duck Donald is heterozygous for the GNAO1 " +
+      "c.119G>T p.(Gly40Val) likely pathogenic variant that has been confirmed by Sanger sequence analysis " +
+      "(see technical information below).",
+    geneInformation: "NAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
       "or neurodevelopmental disorder with involuntary movements without epilepsy (MIM 617493). " +
       "Clinical features range from severe motor and cognitive impairment with marked choreoathetosis, " +
       "self-injurious behaviour and epileptic encephalopathy, to a milder course with moderate developmental delay, " +

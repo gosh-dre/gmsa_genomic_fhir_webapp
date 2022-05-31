@@ -24,7 +24,7 @@ describe("FHIR resource for develment", () => {
 
     const resource = serviceRequestEntry(form,  "patientId", "planId", "practitionerId", "specimenId");
 
-    const output = fhir.validate(resource);
+    const output = fhir.validate(resource.resource);
     console.info("Validation output")
     console.info(JSON.stringify(output.messages))
     expect(output.valid).toBeTruthy();

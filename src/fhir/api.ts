@@ -1,8 +1,9 @@
 import {Resource} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import {FormValues} from "../components/reports/ReportForm";
 import {
+  furtherTestingAndId,
   organisationAndId,
-  patientAndId,
+  patientAndId, planDefinitionAndId,
   practitionersAndIds,
   specimenAndId,
   variantAndId,
@@ -28,6 +29,8 @@ export const createBundle = (form: FormValues) => {
 
   const {authoriser, reporter} = practitionersAndIds(form.result);
   const variant = variantAndId(form.variant, specimen.id, specimen.identifier, reporter.id, authoriser.id);
+  const furtherTesting = furtherTestingAndId(form.result, patient.id);
+  const plan = planDefinitionAndId(form.sample, form.result, patient.id);
 
   return {
     resourceType: "Bundle",
@@ -39,6 +42,8 @@ export const createBundle = (form: FormValues) => {
       createEntry(authoriser.resource),
       createEntry(reporter.resource),
       createEntry(variant.resource, variant.identifier),
+      createEntry(furtherTesting.resource),
+      createEntry(plan.resource),
     ]
   };
 }

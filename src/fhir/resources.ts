@@ -9,10 +9,10 @@ import {v4 as uuidv4} from "uuid";
 import {
   Observation,
   Organization,
-  Patient,
+  Patient, PlanDefinition,
   Practitioner, Resource,
   ServiceRequest,
-  Specimen,
+  Specimen, Task,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import {generatedNarrative, makeGoshAssigner, observationComponent, reference} from "./resource_helpers";
 
@@ -250,6 +250,63 @@ export const variantAndId = (
   obs.identifier = [{value: identifier, id: "specimenBarcode transcript:genomicHGVS"}]
 
   return {identifier: identifier, id: obs.id, resource: obs};
+}
+
+export const planDefinitionAndId = (sample: typeof sampleSchema, report: typeof reportDetailSchema, patientId: string): ResourceAndId => {
+  const plan = new PlanDefinition();
+  plan.id = uuidv4();
+  plan.resourceType = "PlanDefinition";
+  plan.status = PlanDefinition.StatusEnum.Active;
+  // harcoded for now,
+  plan.title = "Early onset or syndromic epilepsy";
+  plan.type = {
+    "coding": [{
+      system: "http://terminology.hl7.org/CodeSystem/plan-definition-type",
+      code: "protocol",
+      display: "Protocol"
+    }]
+  };
+  plan.description = sample.reasonForTestText;
+  plan.action = [
+    {
+      prefix: "1",
+      description: report.testMethodology,
+      title: "Test Method"
+    },
+    {
+      prefix: "2",
+      description: report.geneInformation,
+      title: "Gene information"
+    },
+    {
+      prefix: "3",
+      description: report.testMethodology,
+      title: "Gene Interpretation"
+    },
+  ];
+  plan.subjectReference = reference("Patient", patientId);
+
+  return {id: plan.id, resource: plan};
+}
+
+export const furtherTestingAndId = (report: typeof reportDetailSchema, patientId: string): ResourceAndId => {
+  const task = new Task();
+  task.id = uuidv4();
+  task.resourceType = "Task";
+  task.status = Task.StatusEnum.Requested;
+  task.intent = Task.IntentEnum.Plan;
+  task.code = {
+    // harcoded for now but should be set from form, allowing multiple selections from the coding system
+    // coding system: LL1037-2
+    coding: [{
+      system: "http://loinc.org",
+      code: "LA14020-4",
+      display: "Genetic counseling recommended",
+    }],
+  };
+  task.description = report.furtherTesting;
+  task.for = reference("Patient", patientId);
+  return {id: task.id, resource: task};
 }
 
 /**
