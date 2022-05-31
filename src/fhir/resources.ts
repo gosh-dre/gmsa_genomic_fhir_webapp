@@ -10,7 +10,7 @@ import {
   Observation,
   Organization,
   Patient,
-  Practitioner,
+  Practitioner, Resource,
   ServiceRequest,
   Specimen,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
@@ -19,11 +19,25 @@ import {generatedNarrative, makeGoshAssigner, observationComponent, reference} f
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
 /**
+ * Resource and reference ID for referring to the resource within a bundle.
+ */
+type ResourceAndId = {
+  resource: Resource,
+  id: string
+}
+
+/**
+ * {@link ResourceAndId} with an identifier used as a search term in PUT request of bundle.
+ */
+type ResourceAndIds = ResourceAndId & {
+  identifier: string
+}
+/**
  * Create a FHIR patient object from form data
  * @param form patient data
  * @param organisationId uuid for the organisation
  */
-export const patientEntry = (form: typeof patientSchema, organisationId: string) => {
+export const patientAndId = (form: typeof patientSchema, organisationId: string): ResourceAndIds => {
   const patient = new Patient();
   patient.id = uuidv4();
   patient.name = [{family: form.lastName, given: [form.firstName]}];
@@ -46,10 +60,10 @@ export const patientEntry = (form: typeof patientSchema, organisationId: string)
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
   patient.managingOrganization = reference("Organization", organisationId);
-  return patient;
+  return {identifier: form.mrn, id: patient.id, resource: patient};
 };
 
-export const organisationEntry = (form: typeof addressSchema) => {
+export const organisationAndId = (form: typeof addressSchema): ResourceAndIds => {
   const org = new Organization();
   org.id = uuidv4();
   org.identifier = [{value: GOSH_GENETICS_IDENTIFIER}];
@@ -72,12 +86,12 @@ export const organisationEntry = (form: typeof addressSchema) => {
   }];
   org.text = generatedNarrative(form.name);
 
-  return org;
+  return {identifier: GOSH_GENETICS_IDENTIFIER, id: org.id, resource: org};
 }
-export const practitionerEntries = (result: typeof reportDetailSchema) => {
+export const practitionersAndIds = (result: typeof reportDetailSchema) => {
   return {
-    authoriser: createPractitioner(result.authorisingScientist, result.authorisingScientistTitle),
-    reporter: createPractitioner(result.reportingScientist, result.reportingScientistTitle),
+    authoriser: practitionerAndId(result.authorisingScientist, result.authorisingScientistTitle),
+    reporter: practitionerAndId(result.reportingScientist, result.reportingScientistTitle),
   }
 }
 
@@ -86,7 +100,7 @@ export const practitionerEntries = (result: typeof reportDetailSchema) => {
  * @param fullName the first word will be the firstName, remaining words will be lastName
  * @param title role or job title within the laboratory
  */
-const createPractitioner = (fullName: string, title: string) => {
+const practitionerAndId = (fullName: string, title: string): ResourceAndIds => {
   const nameSplit = fullName.split(/\s/g);
   const firstName = nameSplit[0];
   const lastName = nameSplit.slice(1).join(" ");
@@ -94,10 +108,11 @@ const createPractitioner = (fullName: string, title: string) => {
   const practitioner = new Practitioner();
   practitioner.id = uuidv4();
   practitioner.resourceType = "Practitioner";
+  practitioner.identifier = [{value: fullName}]
   practitioner.active = true;
   practitioner.name = [{given: [firstName], family: lastName, prefix: [title]}]
 
-  return practitioner;
+  return {identifier: `${fullName} ${title}`, id: practitioner.id, resource: practitioner};
 }
 
 /**
@@ -105,7 +120,7 @@ const createPractitioner = (fullName: string, title: string) => {
  * @param sample form data
  * @param patientId to link the specimen with
  */
-export const specimenEntry = (sample: typeof sampleSchema, patientId: string) => {
+export const specimenAndId = (sample: typeof sampleSchema, patientId: string): ResourceAndIds => {
   const specimen = new Specimen();
   specimen.id = uuidv4();
   specimen.resourceType = "Specimen";
@@ -120,10 +135,12 @@ export const specimenEntry = (sample: typeof sampleSchema, patientId: string) =>
   };
   specimen.subject = reference("Patient", patientId);
 
-  return specimen;
+  return {identifier: sample.specimenCode, id: specimen.id, resource: specimen};
 }
 
-export const variantAndId = (variant: typeof variantSchema, specimenId: string, specimenBarcode: string, reporterId: string, authoriserId: string) => {
+export const variantAndId = (
+  variant: typeof variantSchema, specimenId: string, specimenBarcode: string, reporterId: string, authoriserId: string
+): ResourceAndIds => {
   const obs = new Observation();
   obs.id = uuidv4();
   obs.resourceType = "Observation";
@@ -232,7 +249,7 @@ export const variantAndId = (variant: typeof variantSchema, specimenId: string, 
   const identifier = `${specimenBarcode} ${variant.transcript}:${variant.genomicHGVS}`;
   obs.identifier = [{value: identifier, id: "specimenBarcode transcript:genomicHGVS"}]
 
-  return {identifier: identifier, obs: obs};
+  return {identifier: identifier, id: obs.id, resource: obs};
 }
 
 /**
@@ -245,7 +262,7 @@ export const variantAndId = (variant: typeof variantSchema, specimenId: string, 
  */
 export const serviceRequestEntry = (
   sample: typeof sampleSchema, patientId: string, planId: string, practitionerId: string, specimenId: string
-) => {
+): ResourceAndId => {
   const request = new ServiceRequest();
   request.resourceType = "ServiceRequest";
   request.id = uuidv4();
@@ -281,5 +298,5 @@ export const serviceRequestEntry = (
   }];
   request.specimen = [reference("Specimen", specimenId)];
 
-  return request;
+  return {id: request.id, resource: request};
 }

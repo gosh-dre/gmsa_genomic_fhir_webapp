@@ -1,11 +1,10 @@
 import {Resource} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import {FormValues} from "../components/reports/ReportForm";
 import {
-  GOSH_GENETICS_IDENTIFIER,
-  organisationEntry,
-  patientEntry,
-  practitionerEntries,
-  specimenEntry,
+  organisationAndId,
+  patientAndId,
+  practitionersAndIds,
+  specimenAndId,
   variantAndId,
 } from "./resources";
 
@@ -23,29 +22,23 @@ export const bundleRequest = (form: FormValues) => {
 }
 
 export const createBundle = (form: FormValues) => {
-  // TODO: change to orgAndId
-  const orgResource = organisationEntry(form.address);
-  const patientResource = patientEntry(form.patient, orgResource.id as string);
-  const specimenResource = specimenEntry(form.sample, patientResource.id as string);
+  const org = organisationAndId(form.address);
+  const patient = patientAndId(form.patient, org.identifier);
+  const specimen = specimenAndId(form.sample, patient.identifier);
 
-  const specimenIdentifier = specimenResource?.identifier?.find(id => id.value)?.value;
-  if (specimenIdentifier === undefined) {
-    throw new TypeError("Specimen has no identifier");
-  }
-
-  const {authoriser, reporter} = practitionerEntries(form.result);
-  const variant = variantAndId(form.variant, specimenResource.id as string, specimenIdentifier, reporter.id as string, authoriser.id as string);
+  const {authoriser, reporter} = practitionersAndIds(form.result);
+  const variant = variantAndId(form.variant, specimen.id, specimen.identifier, reporter.id, authoriser.id);
 
   return {
     resourceType: "Bundle",
     type: "transaction",
     entry: [
-      createEntry(patientResource, form.patient.mrn),
-      createEntry(orgResource, GOSH_GENETICS_IDENTIFIER),
-      createEntry(specimenResource, specimenIdentifier),
-      createEntry(authoriser),
-      createEntry(reporter),
-      createEntry(variant.obs, variant.identifier),
+      createEntry(patient.resource, form.patient.mrn),
+      createEntry(org.resource, org.identifier),
+      createEntry(specimen.resource, specimen.identifier),
+      createEntry(authoriser.resource),
+      createEntry(reporter.resource),
+      createEntry(variant.resource, variant.identifier),
     ]
   };
 }
