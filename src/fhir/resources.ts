@@ -7,6 +7,7 @@ import {
 } from "../components/reports/formDataValidation";
 import {v4 as uuidv4} from "uuid";
 import {
+  DiagnosticReport,
   Observation,
   Organization,
   Patient, PlanDefinition,
@@ -32,6 +33,7 @@ type ResourceAndId = {
 type ResourceAndIds = ResourceAndId & {
   identifier: string
 }
+
 /**
  * Create a FHIR patient object from form data
  * @param form patient data
@@ -88,6 +90,7 @@ export const organisationAndId = (form: typeof addressSchema): ResourceAndIds =>
 
   return {identifier: GOSH_GENETICS_IDENTIFIER, id: org.id, resource: org};
 }
+
 export const practitionersAndIds = (result: typeof reportDetailSchema) => {
   return {
     authoriser: practitionerAndId(result.authorisingScientist, result.authorisingScientistTitle),
@@ -346,7 +349,7 @@ export const serviceRequestAndId = (
   request.performer = [reference("Practitioner", practitionerId)];
   request.reasonCode = [{
     coding: [{
-      // hardcoded for now, but have issue to pull this through from clinial APIs
+      // hardcoded for now, but have issue to pull this through from clinical APIs
       system: "http://snomed.info/sct",
       code: sample.reasonForTestCode,
       display: "Reason for recommending early-onset benign childhood occipita epilepsy",
@@ -356,4 +359,31 @@ export const serviceRequestAndId = (
   request.specimen = [reference("Specimen", specimenId)];
 
   return {id: request.id, resource: request};
+}
+
+export const reportAndId = (
+  patientId: string, reporterId: string, authoriserId: string, organisationId: string, specimenId: string, resultIds: string[]
+): ResourceAndId => {
+  const report = new DiagnosticReport();
+  report.id = uuidv4();
+  report.resourceType = "DiagnosticReport";
+  report.status = DiagnosticReport.StatusEnum.Final;
+  report.subject = reference("Patient", patientId);
+  report.specimen = [reference("Specimen", specimenId)];
+  report.performer = [reference("Organization", organisationId)];
+  report.result = resultIds.map(resultId => reference("Observation", resultId));
+  report.resultsInterpreter = [
+    reference("Practitioner", reporterId),
+    reference("Practitioner", authoriserId),
+  ]
+  report.code = {
+    coding: [{
+      // harcoded for now, but will pull this through
+      system: "http://loinc.org",
+      code: "81247-9",
+      display: "Early onset or syndromic epilepsy",
+    }]
+  };
+
+  return {id: report.id, resource: report};
 }

@@ -4,7 +4,7 @@ import {
   furtherTestingAndId,
   organisationAndId,
   patientAndId, planDefinitionAndId,
-  practitionersAndIds, serviceRequestAndId,
+  practitionersAndIds, reportAndId, serviceRequestAndId,
   specimenAndId,
   variantAndId,
 } from "./resources";
@@ -32,7 +32,7 @@ export const createBundle = (form: FormValues) => {
   const furtherTesting = furtherTestingAndId(form.result, patient.id);
   const plan = planDefinitionAndId(form.sample, form.result, patient.id);
   const serviceRequest = serviceRequestAndId(form.sample, patient.id, plan.id, reporter.id, specimen.id);
-
+  const report = reportAndId(patient.id, reporter.id, authoriser.id, org.id, specimen.id, [variant.id]);
   return {
     resourceType: "Bundle",
     type: "transaction",
@@ -46,6 +46,7 @@ export const createBundle = (form: FormValues) => {
       createEntry(furtherTesting.resource),
       createEntry(plan.resource),
       createEntry(serviceRequest.resource),
+      createEntry(report.resource),
     ]
   };
 }
