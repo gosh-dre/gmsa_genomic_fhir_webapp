@@ -2,7 +2,7 @@
 // @ts-ignore
 import {Fhir} from "fhir";
 import {sampleSchema} from "../components/reports/formDataValidation";
-import {serviceRequestEntry} from "./resources";
+import {serviceRequestAndId} from "./resources";
 
 const fhir = new Fhir();
 
@@ -22,7 +22,7 @@ describe("FHIR resource for develment", () => {
         "An SLC2A1 variant is suspected.",
     }
 
-    const resource = serviceRequestEntry(form,  "patientId", "planId", "practitionerId", "specimenId");
+    const resource = serviceRequestAndId(form,  "patientId", "planId", "practitionerId", "specimenId");
 
     const output = fhir.validate(resource.resource);
     console.info("Validation output")

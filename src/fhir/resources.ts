@@ -317,7 +317,7 @@ export const furtherTestingAndId = (report: typeof reportDetailSchema, patientId
  * @param practitionerId Practitioner Id for the reporting scientist
  * @param specimenId
  */
-export const serviceRequestEntry = (
+export const serviceRequestAndId = (
   sample: typeof sampleSchema, patientId: string, planId: string, practitionerId: string, specimenId: string
 ): ResourceAndId => {
   const request = new ServiceRequest();

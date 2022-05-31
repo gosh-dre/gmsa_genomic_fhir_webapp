@@ -4,7 +4,7 @@ import {
   furtherTestingAndId,
   organisationAndId,
   patientAndId, planDefinitionAndId,
-  practitionersAndIds,
+  practitionersAndIds, serviceRequestAndId,
   specimenAndId,
   variantAndId,
 } from "./resources";
@@ -31,6 +31,7 @@ export const createBundle = (form: FormValues) => {
   const variant = variantAndId(form.variant, specimen.id, specimen.identifier, reporter.id, authoriser.id);
   const furtherTesting = furtherTestingAndId(form.result, patient.id);
   const plan = planDefinitionAndId(form.sample, form.result, patient.id);
+  const serviceRequest = serviceRequestAndId(form.sample, patient.id, plan.id, reporter.id, specimen.id);
 
   return {
     resourceType: "Bundle",
@@ -44,6 +45,7 @@ export const createBundle = (form: FormValues) => {
       createEntry(variant.resource, variant.identifier),
       createEntry(furtherTesting.resource),
       createEntry(plan.resource),
+      createEntry(serviceRequest.resource),
     ]
   };
 }
