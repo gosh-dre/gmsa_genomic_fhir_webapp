@@ -5,7 +5,8 @@ import {
   organisationEntry,
   patientEntry,
   practitionerEntries,
-  specimenEntry
+  specimenEntry,
+  variantAndId,
 } from "./resources";
 
 /**
@@ -22,6 +23,7 @@ export const bundleRequest = (form: FormValues) => {
 }
 
 export const createBundle = (form: FormValues) => {
+  // TODO: change to orgAndId
   const orgResource = organisationEntry(form.address);
   const patientResource = patientEntry(form.patient, orgResource.id as string);
   const specimenResource = specimenEntry(form.sample, patientResource.id as string);
@@ -31,7 +33,8 @@ export const createBundle = (form: FormValues) => {
     throw new TypeError("Specimen has no identifier");
   }
 
-  const scientists = practitionerEntries(form.result);
+  const {authoriser, reporter} = practitionerEntries(form.result);
+  const variant = variantAndId(form.variant, specimenResource.id as string, specimenIdentifier, reporter.id as string, authoriser.id as string);
 
   return {
     resourceType: "Bundle",
@@ -40,8 +43,9 @@ export const createBundle = (form: FormValues) => {
       createEntry(patientResource, form.patient.mrn),
       createEntry(orgResource, GOSH_GENETICS_IDENTIFIER),
       createEntry(specimenResource, specimenIdentifier),
-      createEntry(scientists.authoriser),
-      createEntry(scientists.reporter),
+      createEntry(authoriser),
+      createEntry(reporter),
+      createEntry(variant.obs, variant.identifier),
     ]
   };
 }

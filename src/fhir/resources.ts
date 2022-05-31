@@ -1,13 +1,20 @@
-import {addressSchema, patientSchema, reportDetailSchema, sampleSchema} from "../components/reports/formDataValidation";
+import {
+  addressSchema,
+  patientSchema,
+  reportDetailSchema,
+  sampleSchema,
+  variantSchema
+} from "../components/reports/formDataValidation";
 import {v4 as uuidv4} from "uuid";
 import {
+  Observation,
   Organization,
   Patient,
   Practitioner,
   ServiceRequest,
   Specimen,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import {generatedNarrative, makeGoshAssigner, reference} from "./resource_helpers";
+import {generatedNarrative, makeGoshAssigner, observationComponent, reference} from "./resource_helpers";
 
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
@@ -114,6 +121,118 @@ export const specimenEntry = (sample: typeof sampleSchema, patientId: string) =>
   specimen.subject = reference("Patient", patientId);
 
   return specimen;
+}
+
+export const variantAndId = (variant: typeof variantSchema, specimenId: string, specimenBarcode: string, reporterId: string, authoriserId: string) => {
+  const obs = new Observation();
+  obs.id = uuidv4();
+  obs.resourceType = "Observation";
+  obs.status = Observation.StatusEnum.Final;
+  obs.meta = {profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/Variant"]};
+  obs.code = {
+    coding: [{
+      system: "http://loinc.org",
+      code: "69548-6",
+      display: "Genetic variant assessment",
+    }]
+  };
+  obs.specimen = reference("Specimen", specimenId);
+  obs.performer = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
+  obs.component = [
+    observationComponent({
+        system: "http://loinc.org",
+        code: "48013-7",
+        display: "Genomic reference sequence ID"
+      },
+      {
+        system: "http://www.ncbi.nlm.nih.gov/refseq",
+        code: variant.transcript,
+      }),
+    observationComponent({
+        system: "http://loinc.org",
+        code: "53034-5",
+        display: "Allelic state"
+      },
+      {
+        system: "http://loinc.org",
+        // code hard-coded for now but this will be addressed when linking in with clinical coding
+        code: "LA6705-3",
+        display: variant.zygosity,
+      }),
+    observationComponent({
+        // code hard-coded for now but this will be addressed when linking in with clinical coding
+        system: "http://loinc.org",
+        code: "LL4034-6",
+        display: "ACMG_Clinical significance of genetic variation"
+      },
+      {
+        system: "http://loinc.org",
+        code: "LA26332-9",
+        display: variant.classification,
+      }),
+    observationComponent({
+        // code hard-coded for now but this will be addressed when linking in with clinical coding
+        system: "http://loinc.org",
+        code: "79742-3",
+        display: "Inheritance pattern based on family history"
+      },
+      {
+        system: "http://loinc.org",
+        code: "LA24640-7",
+        display: variant.inheritanceMethod,
+      }),
+    observationComponent({
+        // code hard-coded for now but this will be addressed when linking in with clinical coding
+        system: "http://loinc.org",
+        code: "69547-8",
+        display: "Genomic Ref allele [ID]"
+      },
+      variant.referenceNucleotide
+    ),
+    observationComponent({
+        // code hard-coded for now but this will be addressed when linking in with clinical coding
+        system: "http://loinc.org",
+        code: "69551-0",
+        display: "Genomic Alt allele [ID]"
+      },
+      variant.variantNucleotide
+    ),
+    observationComponent({
+        // code hard-coded for now but this will be addressed when linking in with clinical coding
+        system: "http://loinc.org",
+        code: "48005-3",
+        display: "Amino acid change (pHGVS)"
+      },
+      {
+        system: "http://varnomen.hgvs.org/",
+        code: variant.proteinHGVS,
+      }),
+    observationComponent({
+        // code hard-coded for now but this will be addressed when linking in with clinical coding
+        system: "http://loinc.org",
+        code: "48004-6",
+        display: "DNA change (c.HGVS)"
+      },
+      {
+        system: "http://varnomen.hgvs.org/",
+        code: variant.genomicHGVS,
+      }),
+    observationComponent({
+        // code hard-coded for now but this will be addressed when linking in with clinical coding
+        system: "http://www.genenames.org/geneId",
+        code: "HGNC:4389",
+        display: "Approved symbol"
+      },
+      variant.gene
+    )];
+  obs.note = [{
+    authorString: "Evidence for classification of variant",
+    text: variant.classificationEvidence
+  }];
+  const identifier = `${specimenBarcode} ${variant.transcript}:${variant.genomicHGVS}`;
+  obs.identifier = [{value: identifier, id: "specimenBarcode transcript:genomicHGVS"}]
+
+  return {identifier: identifier, obs: obs};
 }
 
 /**
