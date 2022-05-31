@@ -51,8 +51,8 @@ const initialValues: FormValues = {
   },
   variant: {
     gene: "GNAO1",
-    genomicHGVS: "NM_020988.2:c.119G>T",
-    inheritanceMethod: "AD",
+    genomicHGVS: "c.119G>T",
+    inheritanceMethod: "Autosomal dominant",
     // will also need a code
     classification: "Likely Pathogenic",
     proteinHGVS: "p.(Gly40Val)",
@@ -96,7 +96,7 @@ const ReportForm = () => {
   const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     const bundle = bundleRequest(values);
 
-    setResult(JSON.stringify(bundle, null, 2));
+    setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
 
     ctx.client?.request(bundle)
       .then((response) => console.debug("Bundle submitted", bundle, response))
@@ -163,7 +163,7 @@ const ReportForm = () => {
           <button type="submit">Submit</button>
         </Form>
       </Formik>
-      {result !== "" && <textarea id="resultOutput" role="alert" rows={20} defaultValue={result}/>}
+      {result !== "" && <textarea id="resultOutput" role="alert" rows={80} cols={100} defaultValue={result}/>}
     </Card>
   );
 }
