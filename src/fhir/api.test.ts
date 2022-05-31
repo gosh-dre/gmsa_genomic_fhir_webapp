@@ -2,7 +2,7 @@ import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import {Fhir} from "fhir";
-import { FormValues } from "../components/reports/ReportForm";
+import {FormValues} from "../components/reports/ReportForm";
 import {createBundle} from "./api";
 
 const fhir = new Fhir();
@@ -79,7 +79,6 @@ const testValues: FormValues = {
 };
 
 
-
 describe("FHIR resources", () => {
   /**
    * Given that form data has been correctly populated
@@ -91,8 +90,8 @@ describe("FHIR resources", () => {
     const bundle = createBundle(testValues);
 
     const output = fhir.validate(bundle);
-    console.info("Validation output")
-    console.info(JSON.stringify(output.messages))
+    console.info("Validation output");
+    console.info(JSON.stringify(output.messages, null, 2));
     expect(output.valid).toBeTruthy();
   });
 });

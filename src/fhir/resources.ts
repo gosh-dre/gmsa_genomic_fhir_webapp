@@ -249,8 +249,8 @@ export const variantAndId = (
     authorString: "Evidence for classification of variant",
     text: variant.classificationEvidence
   }];
-  const identifier = `${specimenBarcode} ${variant.transcript}:${variant.genomicHGVS}`;
-  obs.identifier = [{value: identifier, id: "specimenBarcode transcript:genomicHGVS"}]
+  const identifier = `${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`;
+  obs.identifier = [{value: identifier, id: "specimenBarcode$transcript:genomicHGVS"}]
 
   return {identifier: identifier, id: obs.id, resource: obs};
 }

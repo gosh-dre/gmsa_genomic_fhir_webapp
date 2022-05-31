@@ -24,13 +24,12 @@ export const bundleRequest = (form: FormValues) => {
 
 export const createBundle = (form: FormValues) => {
   const org = organisationAndId(form.address);
-  const patient = patientAndId(form.patient, org.identifier);
-  const specimen = specimenAndId(form.sample, patient.identifier);
-
-  const {authoriser, reporter} = practitionersAndIds(form.result);
-  const variant = variantAndId(form.variant, specimen.id, specimen.identifier, reporter.id, authoriser.id);
+  const patient = patientAndId(form.patient, org.id);
+  const specimen = specimenAndId(form.sample, patient.id);
   const furtherTesting = furtherTestingAndId(form.result, patient.id);
   const plan = planDefinitionAndId(form.sample, form.result, patient.id);
+  const {authoriser, reporter} = practitionersAndIds(form.result);
+  const variant = variantAndId(form.variant, specimen.id, specimen.identifier, reporter.id, authoriser.id);
   const serviceRequest = serviceRequestAndId(form.sample, patient.id, plan.id, reporter.id, specimen.id);
   const report = reportAndId(patient.id, reporter.id, authoriser.id, org.id, specimen.id, [variant.id]);
   return {
