@@ -53,4 +53,5 @@ export const reportDetailSchema = Yup.object().shape({
   authorisingDate: requiredDate,
   furtherTesting: requiredString,
   testMethodology: requiredString,
+  clinicalConclusion: requiredString,
 }).required();

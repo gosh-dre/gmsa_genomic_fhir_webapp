@@ -361,6 +361,7 @@ export const serviceRequestAndId = (
 }
 
 export const reportAndId = (
+  result: typeof reportDetailSchema,
   patientId: string, reporterId: string, authoriserId: string, organisationId: string, specimenId: string, resultIds: string[]
 ): ResourceAndId => {
   const report = new DiagnosticReport();
@@ -383,6 +384,7 @@ export const reportAndId = (
       display: "Early onset or syndromic epilepsy",
     }]
   };
+  report.conclusion = result.clinicalConclusion;
 
   return {id: report.id, resource: report};
 }

@@ -31,7 +31,7 @@ export const createBundle = (form: FormValues) => {
   const {authoriser, reporter} = practitionersAndIds(form.result);
   const variant = variantAndId(form.variant, specimen.id, specimen.identifier, reporter.id, authoriser.id);
   const serviceRequest = serviceRequestAndId(form.sample, patient.id, plan.id, reporter.id, specimen.id);
-  const report = reportAndId(patient.id, reporter.id, authoriser.id, org.id, specimen.id, [variant.id]);
+  const report = reportAndId(form.result, patient.id, reporter.id, authoriser.id, org.id, specimen.id, [variant.id]);
   return {
     resourceType: "Bundle",
     type: "transaction",
