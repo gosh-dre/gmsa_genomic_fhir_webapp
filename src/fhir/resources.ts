@@ -234,8 +234,9 @@ export const variantAndId = (
         display: "DNA change (c.HGVS)"
       },
       {
-        system: "http://varnomen.hgvs.org/",
-        code: variant.genomicHGVS,
+        system: "http://loinc.org",
+        code: "48004-6",
+        display: `${variant.transcript}: ${variant.genomicHGVS}`,
       }),
     observationComponent({
         // code hard-coded for now but this will be addressed when linking in with clinical coding
