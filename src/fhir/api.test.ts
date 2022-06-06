@@ -52,6 +52,7 @@ const testValues: FormValues = {
       "similar variants affecting the same amino acid c.118G>A p.(Gly40Arg), " +
       "c.118G>C p.(Gly40Arg), c.118G>T p.(Gly40Trp) & c.119G>A p.(Gly40Glu) " +
       "have been previously reported in the literature (1-2) (PM5_Moderate) reported on ClinVar as likely pathogenic.",
+    comment: "This variant occurs in a recessive gene that has been 100% sequenced and no second variant identified."
   },
   result: {
     resultSummary: "Next generation sequence analysis indicates that Duck Donald is heterozygous for the GNAO1 " +

@@ -258,8 +258,8 @@ export const variantAndId = (
     ),
   ];
   obs.note = [{
-    authorString: "Evidence for classification of variant",
-    text: variant.classificationEvidence
+    authorString: "comments",
+    text: variant.comment,
   }];
   const identifier = `${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`;
   obs.identifier = [{value: identifier, id: "specimenBarcode$transcript:genomicHGVS"}]

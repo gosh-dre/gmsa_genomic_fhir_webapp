@@ -66,6 +66,7 @@ const initialValues: FormValues = {
       "similar variants affecting the same amino acid c.118G>A p.(Gly40Arg), " +
       "c.118G>C p.(Gly40Arg), c.118G>T p.(Gly40Trp) & c.119G>A p.(Gly40Glu) " +
       "have been previously reported in the literature (1-2) (PM5_Moderate) reported on ClinVar as likely pathogenic.",
+    comment: "This variant occurs in a recessive gene that has been 100% sequenced and no second variant identified."
   },
   result: {
     resultSummary: "Next generation sequence analysis indicates that Duck Donald is heterozygous for the GNAO1 " +
@@ -153,6 +154,7 @@ const ReportForm = () => {
           <FieldSet name="variant.classification" label="Classification"/>
           <FieldSet as="textarea" name="variant.classificationEvidence" label="Classification Evidence"/>
           <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed"/>
+          <FieldSet as="textarea" name="variant.comment" label="Comment"/>
 
           <h2>Report</h2>
           <FieldSet as="textarea" name="result.resultSummary" label="Result summary"/>

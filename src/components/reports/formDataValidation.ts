@@ -3,7 +3,7 @@ import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 
 const requiredString = Yup.string().required();
 const requiredDate = Yup.date().min("1900-01-01").required();
-const boolField = Yup.boolean().default(false);
+const boolField = Yup.boolean().default(false).nullable(false);
 
 export const patientSchema = Yup.object().shape({
   mrn: requiredString,
@@ -42,6 +42,7 @@ export const variantSchema = Yup.object().shape({
   variantNucleotide: requiredString,
   classificationEvidence: requiredString,
   confirmedVariant: boolField,
+  comment: requiredString,
 }).required();
 
 export const reportDetailSchema = Yup.object().shape({
