@@ -261,8 +261,6 @@ export const planDefinitionAndId = (sample: typeof sampleSchema, report: typeof 
   plan.id = uuidv4();
   plan.resourceType = "PlanDefinition";
   plan.status = PlanDefinition.StatusEnum.Active;
-  // harcoded for now,
-  plan.title = "Early onset or syndromic epilepsy";
   plan.type = {
     "coding": [{
       system: "http://terminology.hl7.org/CodeSystem/plan-definition-type",
