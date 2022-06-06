@@ -142,7 +142,8 @@ export const specimenAndId = (sample: typeof sampleSchema, patientId: string): R
 }
 
 export const variantAndId = (
-  variant: typeof variantSchema, specimenId: string, specimenBarcode: string, reporterId: string, authoriserId: string
+  variant: typeof variantSchema,
+  patientId: string, specimenId: string, specimenBarcode: string, reporterId: string, authoriserId: string
 ): ResourceAndIds => {
   const obs = new Observation();
   obs.id = uuidv4();
@@ -156,6 +157,7 @@ export const variantAndId = (
       display: "Genetic variant assessment",
     }]
   };
+  obs.subject = reference("Patient", patientId)
   obs.specimen = reference("Specimen", specimenId);
   obs.performer = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
   obs.component = [
