@@ -23,7 +23,7 @@ const FhirProvider: FC<any> = ({children}) => {
 
   if (error) {
     console.error(error.stack);
-    return <pre>{error.message}</pre>;
+    return <pre>Error from FHIR server: {error.message}</pre>;
   }
 
   return (
