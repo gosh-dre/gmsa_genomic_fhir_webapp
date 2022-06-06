@@ -19,11 +19,13 @@ export function generatedNarrative(...parts: string[]) {
 }
 
 
-export const observationComponent = (coding: Coding, value: Coding | string): ObservationComponent => {
+export const observationComponent = (coding: Coding, value: Coding | string | boolean): ObservationComponent => {
   const component = new ObservationComponent();
   component.code = {coding: [coding]};
-  if (  value instanceof Coding) {
+  if (value instanceof Coding) {
     component.valueCodeableConcept = {coding: [value]}
+  } else if (typeof value == "boolean") {
+    component.valueBoolean = value;
   } else {
     component.valueString = value;
   }

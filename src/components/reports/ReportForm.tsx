@@ -152,6 +152,7 @@ const ReportForm = () => {
           <FieldSet name="variant.inheritanceMethod" label="Inhertiance Method"/>
           <FieldSet name="variant.classification" label="Classification"/>
           <FieldSet as="textarea" name="variant.classificationEvidence" label="Classification Evidence"/>
+          <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed"/>
 
           <h2>Report</h2>
           <FieldSet as="textarea" name="result.resultSummary" label="Result summary"/>

@@ -247,7 +247,16 @@ export const variantAndId = (
         display: "Approved symbol"
       },
       variant.gene
-    )];
+    ),
+    observationComponent({
+        // code hard-coded for now but this will be addressed when linking in with clinical coding
+        system: "http://hl7.org/mutation",
+        code: "confirmed-variant",
+        display: "confirmed-variant"
+      },
+      variant.confirmedVariant,
+    ),
+  ];
   obs.note = [{
     authorString: "Evidence for classification of variant",
     text: variant.classificationEvidence
