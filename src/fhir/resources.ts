@@ -206,22 +206,6 @@ export const variantAndId = (
     observationComponent({
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
-        code: "69547-8",
-        display: "Genomic Ref allele [ID]"
-      },
-      variant.referenceNucleotide
-    ),
-    observationComponent({
-        // code hard-coded for now but this will be addressed when linking in with clinical coding
-        system: "http://loinc.org",
-        code: "69551-0",
-        display: "Genomic Alt allele [ID]"
-      },
-      variant.variantNucleotide
-    ),
-    observationComponent({
-        // code hard-coded for now but this will be addressed when linking in with clinical coding
-        system: "http://loinc.org",
         code: "48005-3",
         display: "Amino acid change (pHGVS)"
       },
