@@ -38,8 +38,6 @@ export const variantSchema = Yup.object().shape({
   zygosity: requiredString,
   classification: requiredString,
   inheritanceMethod: requiredString,
-  referenceNucleotide: requiredString,
-  variantNucleotide: requiredString,
   classificationEvidence: requiredString,
   confirmedVariant: boolField,
   comment: requiredString,

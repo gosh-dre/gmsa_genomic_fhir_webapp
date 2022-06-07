@@ -42,9 +42,7 @@ const testValues: FormValues = {
     // will also need a code
     classification: "Likely Pathogenic",
     proteinHGVS: "p.(Gly40Val)",
-    referenceNucleotide: "G",
     transcript: "NM_006516.2",
-    variantNucleotide: "T",
     zygosity: "hetezygote",
     classificationEvidence: "absent from the gnomAD population database (PM2_Moderate)." +
       "affects a gene with a low tolerance for missense variation (PP2_Supporting). " +
