@@ -1,0 +1,31 @@
+import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+import {Fhir} from 'fhir/fhir';
+import {createBundle} from "./api";
+
+const fhir = new Fhir();
+
+
+describe("FHIR resources", () => {
+  /**
+   * Given that form data has been correctly populated
+   * When a FHIR bundle is created
+   * Then the fhir library should pass validation of the bundle
+   */
+  test('Bundle is valid', () => {
+    const patientForm = {
+      mrn: "969977",
+      firstName: "Donald",
+      lastName: "Duck",
+      dateOfBirth: "2012-03-04",
+      gender: Patient.GenderEnum.Male,
+      familyNumber: "Z409929",
+    };
+
+    const bundle = createBundle(patientForm);
+
+    const output = fhir.validate(bundle);
+    console.info("Validation output")
+    console.info(JSON.stringify(output.messages))
+    expect(output.valid).toBeTruthy();
+  });
+});

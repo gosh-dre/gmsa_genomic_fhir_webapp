@@ -1,15 +1,18 @@
-import React from 'react';
 import Layout from "./components/layout/Layout";
-import {Navigate, Route, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import NewReport from "./pages/NewReport";
+import FhirAuthoriser from "./components/fhir/FhirAuthoriser";
+import FhirProvider from "./components/fhir/FhirProvider";
 
 function App() {
   return (
     <Layout>
-      <Routes>
-        <Route path="/" element={<Navigate to="/add_report" replace/>}/>
-        <Route path="/add_report" element={<NewReport/>}/>
-      </Routes>
+      <FhirProvider>
+        <Routes>
+          <Route path="/" element={<FhirAuthoriser/>}/>
+          <Route path="/add_report" element={<NewReport/>}/>
+        </Routes>
+      </FhirProvider>
     </Layout>
   );
 }

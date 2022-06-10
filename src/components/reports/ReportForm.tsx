@@ -1,11 +1,15 @@
-import {useState} from "react";
-import {Form, Formik} from 'formik';
+import {useContext, useState} from "react";
+import {Form, Formik, FormikHelpers} from 'formik';
 import * as Yup from "yup"
+import {FhirContext} from "../fhir/FhirContext";
+import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+
 
 import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
 import {addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantSchema} from "./formDataValidation";
 import FieldSet from "./FieldSet";
+import {bundleRequest} from "../../fhir/api";
 
 const FormValidation = Yup.object().shape({
   address: addressSchema,
@@ -29,59 +33,84 @@ const initialValues: FormValues = {
     postCode: "WC1N 3BH",
   },
   patient: {
-    mrn: "",
-    firstName: "",
-    lastName: "",
-    dateOfBirth: "",
-    gender: "",
-    familyNumber: "",
+    mrn: "969977",
+    firstName: "Donald",
+    lastName: "Duck",
+    dateOfBirth: "2012-03-04",
+    gender: Patient.GenderEnum.Male,
+    familyNumber: "Z409929",
   },
   sample: {
-    specimenCode: "",
-    specimenType: "",
-    collectionDate: "",
-    reasonForTestCode: "",
-    reasonForTestText: "",
+    specimenCode: "19RG-183G0127",
+    // will need codes here too - but probably best to load all possible codes and then query
+    specimenType: "Venus blood specimen",
+    collectionDate: "2019-06-04",
+    reasonForTestCode: "230387008",
+    reasonForTestText: "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +
+      "An SLC2A1 variant is suspected.",
   },
   variant: {
-    gene: "",
-    genomicHGVS: "",
-    inheritanceMethod: "",
-    classification: "",
-    proteinHGVS: "",
-    referenceNucleotide: "",
-    transcript: "",
-    variantNucleotide: "",
-    zygosity: "",
-    classificationEvidence: "",
+    gene: "GNAO1",
+    genomicHGVS: "NM_020988.2:c.119G>T",
+    inheritanceMethod: "AD",
+    // will also need a code
+    classification: "Likely Pathogenic",
+    proteinHGVS: "p.(Gly40Val)",
+    referenceNucleotide: "G",
+    transcript: "NM_006516.2",
+    variantNucleotide: "T",
+    zygosity: "hetezygote",
+    classificationEvidence: "absent from the gnomAD population database (PM2_Moderate)." +
+      "affects a gene with a low tolerance for missense variation (PP2_Supporting). " +
+      "predicted to be deleterious by in silico prediction tools (PP3_Supporting). " +
+      "similar variants affecting the same amino acid c.118G>A p.(Gly40Arg), " +
+      "c.118G>C p.(Gly40Arg), c.118G>T p.(Gly40Trp) & c.119G>A p.(Gly40Glu) " +
+      "have been previously reported in the literature (1-2) (PM5_Moderate) reported on ClinVar as likely pathogenic.",
   },
   result: {
-    resultSummary: "",
-    authorisingDate: "",
-    authorisingScientist: "",
-    authorisingScientistTitle: "",
-    furtherTesting: "",
-    reportingDate: "",
-    reportingScientist: "",
-    reportingScientistTitle: "",
-    testMethodology: "",
+    resultSummary: "NAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
+      "or neurodevelopmental disorder with involuntary movements without epilepsy (MIM 617493). " +
+      "Clinical features range from severe motor and cognitive impairment with marked choreoathetosis, " +
+      "self-injurious behaviour and epileptic encephalopathy, to a milder course with moderate developmental delay, " +
+      "complex stereotypies (facial dyskinesia) and mild epilepsy.",
+    authorisingDate: "2021-04-25",
+    authorisingScientist: "Lucy Jones",
+    authorisingScientistTitle: "Consultant Clinical Scientist",
+    furtherTesting: "Testing of Donald Duck's parents is recommended to determine whether the GNAO1 " +
+      "c.119G>T p.(Gly40Val) likely pathogenic variant has arisen de novo and to assess the recurrence risk. " +
+      "Please include clinical information for the parents. " +
+      "A referral to their local clinical genetics service may be appropriate for this family.",
+    reportingDate: "2021-04-25",
+    reportingScientist: "Ana Pietra",
+    reportingScientistTitle: "Clinical Scientist",
+    testMethodology: "Screening of 82 genes associated with severe delay and seizures " +
+      "... Variants are classified using the ACMG/AMP guidelines (Richards et al 2015 Genet Med) " +
+      "/ACGS Best Practice guidelines (2019).",
   }
 };
 
-
 const ReportForm = () => {
-
   const [result, setResult] = useState('')
+  const ctx = useContext(FhirContext);
+
+  const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
+    const bundle = bundleRequest(values.patient);
+
+    setResult(JSON.stringify(bundle, null, 2));
+
+    ctx.client?.request(bundle)
+      .then((response) => console.debug("Bundle submitted", bundle, response))
+      .catch((error) => console.error(error));
+    actions.setSubmitting(false);
+  };
+
   return (
     <Card>
       <h1>Add a new report</h1>
       <Formik
         initialValues={initialValues}
         validationSchema={FormValidation}
-        onSubmit={(values, actions) => {
-          setResult(JSON.stringify(values, null, 2));
-          actions.setSubmitting(false);
-        }}
+        onSubmit={onSuccessfulSubmitHandler}
       >
         <Form role="form" className={classes.form}>
           <h2>Reporting laboratory (later as a dropdown)</h2>
@@ -132,10 +161,9 @@ const ReportForm = () => {
           <FieldSet name="result.reportingScientistTitle" label="Reporting scientist title"/>
           <br/>
           <button type="submit">Submit</button>
-
-          {result !== "" && <textarea id="resultOutput" role="alert" rows={20} defaultValue={result}/>}
         </Form>
       </Formik>
+      {result !== "" && <textarea id="resultOutput" role="alert" rows={20} defaultValue={result}/>}
     </Card>
   );
 }
