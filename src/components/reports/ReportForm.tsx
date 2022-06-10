@@ -19,12 +19,12 @@ const FormValidation = Yup.object().shape({
   result: reportDetailSchema,
 }).required();
 
-type FormValues = Yup.InferType<typeof FormValidation>;
+export type FormValues = Yup.InferType<typeof FormValidation>;
 
 const initialValues: FormValues = {
   address: {
+    name: "London North Genomic Laboratory Hub",
     streetAddress: [
-      "London North Genomic Laboratory Hub",
       "Great Ormond Street Hospital for Children NHS Foundation Trust",
       "Levels 4-6 Barclay House",
       "37 Queen Square"],
@@ -51,14 +51,12 @@ const initialValues: FormValues = {
   },
   variant: {
     gene: "GNAO1",
-    genomicHGVS: "NM_020988.2:c.119G>T",
-    inheritanceMethod: "AD",
+    genomicHGVS: "c.119G>T",
+    inheritanceMethod: "Autosomal dominant",
     // will also need a code
     classification: "Likely Pathogenic",
     proteinHGVS: "p.(Gly40Val)",
-    referenceNucleotide: "G",
     transcript: "NM_006516.2",
-    variantNucleotide: "T",
     zygosity: "hetezygote",
     classificationEvidence: "absent from the gnomAD population database (PM2_Moderate)." +
       "affects a gene with a low tolerance for missense variation (PP2_Supporting). " +
@@ -66,9 +64,14 @@ const initialValues: FormValues = {
       "similar variants affecting the same amino acid c.118G>A p.(Gly40Arg), " +
       "c.118G>C p.(Gly40Arg), c.118G>T p.(Gly40Trp) & c.119G>A p.(Gly40Glu) " +
       "have been previously reported in the literature (1-2) (PM5_Moderate) reported on ClinVar as likely pathogenic.",
+    confirmedVariant: false,
+    comment: "This variant occurs in a recessive gene that has been 100% sequenced and no second variant identified."
   },
   result: {
-    resultSummary: "NAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
+    resultSummary: "Next generation sequence analysis indicates that Duck Donald is heterozygous for the GNAO1 " +
+      "c.119G>T p.(Gly40Val) likely pathogenic variant that has been confirmed by Sanger sequence analysis " +
+      "(see technical information below).",
+    geneInformation: "NAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
       "or neurodevelopmental disorder with involuntary movements without epilepsy (MIM 617493). " +
       "Clinical features range from severe motor and cognitive impairment with marked choreoathetosis, " +
       "self-injurious behaviour and epileptic encephalopathy, to a milder course with moderate developmental delay, " +
@@ -86,6 +89,7 @@ const initialValues: FormValues = {
     testMethodology: "Screening of 82 genes associated with severe delay and seizures " +
       "... Variants are classified using the ACMG/AMP guidelines (Richards et al 2015 Genet Med) " +
       "/ACGS Best Practice guidelines (2019).",
+    clinicalConclusion: "Confirms the diagnosis of Childhood-nset epileptic encephalopathy (EEOC).",
   }
 };
 
@@ -94,9 +98,9 @@ const ReportForm = () => {
   const ctx = useContext(FhirContext);
 
   const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
-    const bundle = bundleRequest(values.patient);
+    const bundle = bundleRequest(values);
 
-    setResult(JSON.stringify(bundle, null, 2));
+    setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
 
     ctx.client?.request(bundle)
       .then((response) => console.debug("Bundle submitted", bundle, response))
@@ -140,14 +144,14 @@ const ReportForm = () => {
 
           <FieldSet name="variant.gene" label="Gene Symbol"/>
           <FieldSet name="variant.transcript" label="Transcript"/>
-          <FieldSet name="variant.referenceNucleotide" label="Reference Nucleotide"/>
-          <FieldSet name="variant.variantNucleotide" label="Variant Nucleotide"/>
           <FieldSet name="variant.genomicHGVS" label="Genomic HGVS"/>
           <FieldSet name="variant.proteinHGVS" label="Protein HGVS"/>
           <FieldSet name="variant.zygosity" label="Zygosity"/>
           <FieldSet name="variant.inheritanceMethod" label="Inhertiance Method"/>
           <FieldSet name="variant.classification" label="Classification"/>
           <FieldSet as="textarea" name="variant.classificationEvidence" label="Classification Evidence"/>
+          <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed"/>
+          <FieldSet as="textarea" name="variant.comment" label="Comment"/>
 
           <h2>Report</h2>
           <FieldSet as="textarea" name="result.resultSummary" label="Result summary"/>
@@ -163,7 +167,7 @@ const ReportForm = () => {
           <button type="submit">Submit</button>
         </Form>
       </Formik>
-      {result !== "" && <textarea id="resultOutput" role="alert" rows={20} defaultValue={result}/>}
+      {result !== "" && <textarea id="resultOutput" role="alert" rows={80} cols={100} defaultValue={result}/>}
     </Card>
   );
 }

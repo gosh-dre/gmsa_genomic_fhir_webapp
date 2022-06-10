@@ -3,6 +3,7 @@ import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 
 const requiredString = Yup.string().required();
 const requiredDate = Yup.date().min("1900-01-01").required();
+const boolField = Yup.boolean().default(false).nullable(false);
 
 export const patientSchema = Yup.object().shape({
   mrn: requiredString,
@@ -14,6 +15,7 @@ export const patientSchema = Yup.object().shape({
 }).required();
 
 export const addressSchema = Yup.object().shape({
+  name: requiredString,
   streetAddress: Yup.array().of(Yup.string()).required(),
   city: requiredString,
   postCode: requiredString,
@@ -36,13 +38,14 @@ export const variantSchema = Yup.object().shape({
   zygosity: requiredString,
   classification: requiredString,
   inheritanceMethod: requiredString,
-  referenceNucleotide: requiredString,
-  variantNucleotide: requiredString,
   classificationEvidence: requiredString,
+  confirmedVariant: boolField,
+  comment: requiredString,
 }).required();
 
 export const reportDetailSchema = Yup.object().shape({
   resultSummary: requiredString,
+  geneInformation: requiredString,
   reportingScientist: requiredString,
   reportingScientistTitle: requiredString,
   reportingDate: requiredDate,
@@ -51,4 +54,5 @@ export const reportDetailSchema = Yup.object().shape({
   authorisingDate: requiredDate,
   furtherTesting: requiredString,
   testMethodology: requiredString,
+  clinicalConclusion: requiredString,
 }).required();
