@@ -101,7 +101,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "53034-5",
-                  "display": "zygosity"
+                  "display": "Allelic state"
                 }
               ]
             },
@@ -110,7 +110,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "LA6706-1",
-                  "display": "Heterozygote"
+                  "display": "Heterozygous"
                 }
               ]
             }
@@ -121,7 +121,7 @@
                 {
                   "system": "http://loinc.org",
                   "code": "LL4034-6",
-                  "display": "Clinical significance"
+                  "display": "ACMG_Clinical significance of genetic variation"
                 }
               ]
             },
