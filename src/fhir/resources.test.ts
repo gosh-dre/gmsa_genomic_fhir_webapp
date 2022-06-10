@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import {Fhir} from "fhir";
+import {Fhir} from 'fhir/fhir';
 import {sampleSchema} from "../components/reports/formDataValidation";
 import {serviceRequestAndId} from "./resources";
 

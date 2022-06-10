@@ -1,7 +1,5 @@
 import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import {Fhir} from "fhir";
+import {Fhir} from 'fhir/fhir';
 import {FormValues} from "../components/reports/ReportForm";
 import {createBundle} from "./api";
 
