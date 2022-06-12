@@ -1,6 +1,6 @@
-import {oauth2 as SMART} from "fhirclient";
-import {FC, useState} from "react";
-import {FhirContext} from "./FhirContext";
+import { oauth2 as SMART } from "fhirclient";
+import { FC, useState } from "react";
+import { FhirContext } from "./FhirContext";
 import Client from "fhirclient/lib/Client";
 
 /**
@@ -8,7 +8,7 @@ import Client from "fhirclient/lib/Client";
  * @param children children components to render
  * @constructor
  */
-const FhirProvider: FC<any> = ({children}) => {
+const FhirProvider: FC<any> = ({ children }) => {
   const [client, setClient] = useState<Client | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
@@ -17,7 +17,7 @@ const FhirProvider: FC<any> = ({children}) => {
       SMART.ready()
         .then((client) => setClient(client))
         .catch((error) => setError(error))
-        .finally(() => console.debug("FHIR client ready"))
+        .finally(() => console.debug("FHIR client ready"));
     }
   };
 
@@ -27,16 +27,16 @@ const FhirProvider: FC<any> = ({children}) => {
   }
 
   return (
-    <FhirContext.Provider value={{client: client, setClient: setClient}}>
+    <FhirContext.Provider value={{ client: client, setClient: setClient }}>
       <FhirContext.Consumer>
-        {({client}) => {
-          setClientOrError(client)
+        {({ client }) => {
+          setClientOrError(client);
           return children;
         }}
       </FhirContext.Consumer>
     </FhirContext.Provider>
   );
-}
+};
 
 
 export default FhirProvider;

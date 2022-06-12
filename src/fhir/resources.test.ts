@@ -1,6 +1,6 @@
-import {Fhir} from 'fhir/fhir';
-import {sampleSchema} from "../components/reports/formDataValidation";
-import {serviceRequestAndId} from "./resources";
+import { Fhir } from "fhir/fhir";
+import { sampleSchema } from "../components/reports/formDataValidation";
+import { serviceRequestAndId } from "./resources";
 
 const fhir = new Fhir();
 
@@ -9,7 +9,7 @@ const fhir = new Fhir();
  * Using this to test resources which have a lot of dependent references that aren't yet created
  */
 describe("FHIR resource for develment", () => {
-  test('ServiceRequest', () => {
+  test("ServiceRequest", () => {
     const form: typeof sampleSchema = {
       specimenCode: "19RG-183G0127",
       // will need codes here too - but probably best to load all possible codes and then query
@@ -18,13 +18,13 @@ describe("FHIR resource for develment", () => {
       reasonForTestCode: "230387008",
       reasonForTestText: "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +
         "An SLC2A1 variant is suspected.",
-    }
+    };
 
-    const resource = serviceRequestAndId(form,  "patientId", "planId", "practitionerId", "specimenId");
+    const resource = serviceRequestAndId(form, "patientId", "planId", "practitionerId", "specimenId");
 
     const output = fhir.validate(resource.resource);
-    console.info("Validation output")
-    console.info(JSON.stringify(output.messages))
+    console.info("Validation output");
+    console.info(JSON.stringify(output.messages));
     expect(output.valid).toBeTruthy();
   });
 });

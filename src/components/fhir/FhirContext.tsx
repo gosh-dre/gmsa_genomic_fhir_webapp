@@ -1,4 +1,4 @@
-import {createContext} from "react";
+import { createContext } from "react";
 import Client from "fhirclient/lib/Client";
 
 
@@ -10,8 +10,8 @@ type clientContext = {
 const context: clientContext = {
   client: null,
   setClient: (client: Client) => {
-    context.client = client
-  }
+    context.client = client;
+  },
 };
 
 export const FhirContext = createContext(context);

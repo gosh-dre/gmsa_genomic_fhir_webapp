@@ -1,5 +1,5 @@
-import {Resource} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import {FormValues} from "../components/reports/ReportForm";
+import { Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { FormValues } from "../components/reports/ReportForm";
 import {
   furtherTestingAndId,
   organisationAndId,
@@ -17,10 +17,10 @@ export const bundleRequest = (form: FormValues) => {
   return {
     url: "/",
     method: "POST",
-    headers: {'Content-Type': 'application/fhir+json;charset=UTF-8'},
+    headers: { "Content-Type": "application/fhir+json;charset=UTF-8" },
     body: JSON.stringify(createBundle(form)),
   };
-}
+};
 
 export const createBundle = (form: FormValues) => {
   const org = organisationAndId(form.address);
@@ -28,7 +28,7 @@ export const createBundle = (form: FormValues) => {
   const specimen = specimenAndId(form.sample, patient.id);
   const furtherTesting = furtherTestingAndId(form.result, patient.id);
   const plan = planDefinitionAndId(form.sample, form.result, patient.id);
-  const {authoriser, reporter} = practitionersAndIds(form.result);
+  const { authoriser, reporter } = practitionersAndIds(form.result);
   const variant = variantAndId(form.variant, patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id);
   const serviceRequest = serviceRequestAndId(form.sample, patient.id, plan.id, reporter.id, specimen.id);
   const report = reportAndId(form.result, patient.id, reporter.id, authoriser.id, org.id, specimen.id, [variant.id]);
@@ -46,9 +46,9 @@ export const createBundle = (form: FormValues) => {
       createEntry(plan.resource),
       createEntry(serviceRequest.resource),
       createEntry(report.resource),
-    ]
+    ],
   };
-}
+};
 
 /**
  * Create individual entry for a bundle.
@@ -58,13 +58,13 @@ export const createBundle = (form: FormValues) => {
  * @param identifier identifier used to query on (update if exists or create if not)
  */
 const createEntry = (resource: Resource, identifier?: string) => {
-  let requestInfo = {method: "POST", url: resource.resourceType}
+  let requestInfo = { method: "POST", url: resource.resourceType };
   if (identifier !== undefined) {
-    requestInfo = {method: "PUT", url: `${resource.resourceType}?identifier=${identifier}`}
+    requestInfo = { method: "PUT", url: `${resource.resourceType}?identifier=${identifier}` };
   }
 
   return {
     resource: resource, resourceType: resource.resourceType,
     request: requestInfo,
-  }
-}
+  };
+};
