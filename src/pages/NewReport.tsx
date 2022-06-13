@@ -1,10 +1,10 @@
 import ReportForm from "../components/reports/ReportForm";
-import {FC} from "react";
+import { FC } from "react";
 
 const NewReport: FC = () => {
   return (
-    <ReportForm/>
+    <ReportForm />
   );
-}
+};
 
 export default NewReport;

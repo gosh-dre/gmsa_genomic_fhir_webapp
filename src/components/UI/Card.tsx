@@ -1,5 +1,5 @@
-import classes from './Card.module.css';
-import {FC} from "react";
+import classes from "./Card.module.css";
+import { FC } from "react";
 
 /**
  * Generic card.
@@ -12,6 +12,6 @@ const Card: FC<any> = (props) => {
       {props.children}
     </div>
   );
-}
+};
 
 export default Card;

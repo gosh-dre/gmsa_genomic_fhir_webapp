@@ -1,7 +1,7 @@
-import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
-import {Fhir} from 'fhir/fhir';
-import {FormValues} from "../components/reports/ReportForm";
-import {createBundle} from "./api";
+import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+import { Fhir } from "fhir/fhir";
+import { FormValues } from "../components/reports/ReportForm";
+import { createBundle } from "./api";
 
 const fhir = new Fhir();
 
@@ -48,7 +48,7 @@ const testValues: FormValues = {
       "similar variants affecting the same amino acid c.118G>A p.(Gly40Arg), " +
       "c.118G>C p.(Gly40Arg), c.118G>T p.(Gly40Trp) & c.119G>A p.(Gly40Glu) " +
       "have been previously reported in the literature (1-2) (PM5_Moderate) reported on ClinVar as likely pathogenic.",
-    comment: "This variant occurs in a recessive gene that has been 100% sequenced and no second variant identified."
+    comment: "This variant occurs in a recessive gene that has been 100% sequenced and no second variant identified.",
   },
   result: {
     resultSummary: "Next generation sequence analysis indicates that Duck Donald is heterozygous for the GNAO1 " +
@@ -74,7 +74,7 @@ const testValues: FormValues = {
       "/ACGS Best Practice guidelines (2019).",
     confirmedVariant: false,
     clinicalConclusion: "Confirms the diagnosis of Childhood-nset epileptic encephalopathy (EEOC).",
-  }
+  },
 };
 
 
@@ -84,7 +84,7 @@ describe("FHIR resources", () => {
    * When a FHIR bundle is created
    * Then the fhir library should pass validation of the bundle
    */
-  test('Bundle is valid', () => {
+  test("Bundle is valid", () => {
 
     const bundle = createBundle(testValues);
 

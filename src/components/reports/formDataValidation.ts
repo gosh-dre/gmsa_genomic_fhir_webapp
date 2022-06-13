@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import {Patient} from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
+import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 
 const requiredString = Yup.string().required();
 const requiredDate = Yup.date().min("1900-01-01").required();
