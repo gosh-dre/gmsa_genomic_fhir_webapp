@@ -4,20 +4,24 @@ import * as Yup from "yup";
 import { FhirContext } from "../fhir/FhirContext";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 
-
 import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
 import { addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantSchema } from "./formDataValidation";
-import FieldSet from "./FieldSet";
 import { bundleRequest } from "../../fhir/api";
+import PatientDetails from "./formSteps/PatientDetails";
+import SampleDetails from "./formSteps/SampleDetails";
+import VariantDetails from "./formSteps/VariantDetails";
+import ReportDetails from "./formSteps/ReportDetails";
 
-const FormValidation = Yup.object().shape({
-  address: addressSchema,
-  patient: patientSchema,
-  sample: sampleSchema,
-  variant: variantSchema,
-  result: reportDetailSchema,
-}).required();
+const FormValidation = Yup.object()
+  .shape({
+    address: addressSchema,
+    patient: patientSchema,
+    sample: sampleSchema,
+    variant: variantSchema,
+    result: reportDetailSchema,
+  })
+  .required();
 
 export type FormValues = Yup.InferType<typeof FormValidation>;
 
@@ -27,7 +31,8 @@ const initialValues: FormValues = {
     streetAddress: [
       "Great Ormond Street Hospital for Children NHS Foundation Trust",
       "Levels 4-6 Barclay House",
-      "37 Queen Square"],
+      "37 Queen Square",
+    ],
     city: "London",
     country: "UK",
     postCode: "WC1N 3BH",
@@ -46,7 +51,8 @@ const initialValues: FormValues = {
     specimenType: "Venus blood specimen",
     collectionDate: "2019-06-04",
     reasonForTestCode: "230387008",
-    reasonForTestText: "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +
+    reasonForTestText:
+      "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +
       "An SLC2A1 variant is suspected.",
   },
   variant: {
@@ -58,7 +64,8 @@ const initialValues: FormValues = {
     proteinHGVS: "p.(Gly40Val)",
     transcript: "NM_006516.2",
     zygosity: "hetezygote",
-    classificationEvidence: "absent from the gnomAD population database (PM2_Moderate)." +
+    classificationEvidence:
+      "absent from the gnomAD population database (PM2_Moderate)." +
       "affects a gene with a low tolerance for missense variation (PP2_Supporting). " +
       "predicted to be deleterious by in silico prediction tools (PP3_Supporting). " +
       "similar variants affecting the same amino acid c.118G>A p.(Gly40Arg), " +
@@ -68,10 +75,12 @@ const initialValues: FormValues = {
     comment: "This variant occurs in a recessive gene that has been 100% sequenced and no second variant identified.",
   },
   result: {
-    resultSummary: "Next generation sequence analysis indicates that Duck Donald is heterozygous for the GNAO1 " +
+    resultSummary:
+      "Next generation sequence analysis indicates that Duck Donald is heterozygous for the GNAO1 " +
       "c.119G>T p.(Gly40Val) likely pathogenic variant that has been confirmed by Sanger sequence analysis " +
       "(see technical information below).",
-    geneInformation: "NAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
+    geneInformation:
+      "NAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
       "or neurodevelopmental disorder with involuntary movements without epilepsy (MIM 617493). " +
       "Clinical features range from severe motor and cognitive impairment with marked choreoathetosis, " +
       "self-injurious behaviour and epileptic encephalopathy, to a milder course with moderate developmental delay, " +
@@ -79,14 +88,16 @@ const initialValues: FormValues = {
     authorisingDate: "2021-04-25",
     authorisingScientist: "Lucy Jones",
     authorisingScientistTitle: "Consultant Clinical Scientist",
-    furtherTesting: "Testing of Donald Duck's parents is recommended to determine whether the GNAO1 " +
+    furtherTesting:
+      "Testing of Donald Duck's parents is recommended to determine whether the GNAO1 " +
       "c.119G>T p.(Gly40Val) likely pathogenic variant has arisen de novo and to assess the recurrence risk. " +
       "Please include clinical information for the parents. " +
       "A referral to their local clinical genetics service may be appropriate for this family.",
     reportingDate: "2021-04-25",
     reportingScientist: "Ana Pietra",
     reportingScientistTitle: "Clinical Scientist",
-    testMethodology: "Screening of 82 genes associated with severe delay and seizures " +
+    testMethodology:
+      "Screening of 82 genes associated with severe delay and seizures " +
       "... Variants are classified using the ACMG/AMP guidelines (Richards et al 2015 Genet Med) " +
       "/ACGS Best Practice guidelines (2019).",
     clinicalConclusion: "Confirms the diagnosis of Childhood-nset epileptic encephalopathy (EEOC).",
@@ -102,7 +113,8 @@ const ReportForm = () => {
 
     setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
 
-    ctx.client?.request(bundle)
+    ctx.client
+      ?.request(bundle)
       .then((response) => console.debug("Bundle submitted", bundle, response))
       .catch((error) => console.error(error));
     actions.setSubmitting(false);
@@ -111,58 +123,13 @@ const ReportForm = () => {
   return (
     <Card>
       <h1>Add a new report</h1>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={FormValidation}
-        onSubmit={onSuccessfulSubmitHandler}
-      >
+      <Formik initialValues={initialValues} validationSchema={FormValidation} onSubmit={onSuccessfulSubmitHandler}>
         <Form role="form" className={classes.form}>
-          <h2>Reporting laboratory (later as a dropdown)</h2>
+          <PatientDetails />
+          <SampleDetails />
+          <VariantDetails />
+          <ReportDetails />
 
-          <FieldSet as="textarea" name="address.streetAddress" label="Street Address" />
-          <FieldSet name="address.city" label="City" />
-          <FieldSet name="address.postCode" label="Post Code" />
-          <FieldSet name="address.country" label="Country" />
-
-          <h2>Patient information</h2>
-          <FieldSet label="MRN" name="patient.mrn" />
-          <FieldSet label="First Name" name="patient.lastName" />
-          <FieldSet label="Last Name" name="patient.firstName" />
-          <FieldSet label="Date of Birth" name="patient.dateOfBirth" type="date" />
-          <FieldSet label="Gender" name="patient.gender" />
-          <FieldSet label="Family Number" name="patient.familyNumber" />
-
-          <h2>Sample</h2>
-
-          <FieldSet name="sample.specimenCode" label="Barcode" />
-          <FieldSet name="sample.specimenType" label="Specimen Type" />
-          <FieldSet type="date" name="sample.collectionDate" label="Sample collection date" />
-          <FieldSet name="sample.reasonForTestText" label="Reason for test" />
-          <FieldSet name="sample.reasonForTestCode" label="Test reason code" />
-
-          <h2>Variant</h2>
-
-          <FieldSet name="variant.gene" label="Gene Symbol" />
-          <FieldSet name="variant.transcript" label="Transcript" />
-          <FieldSet name="variant.genomicHGVS" label="Genomic HGVS" />
-          <FieldSet name="variant.proteinHGVS" label="Protein HGVS" />
-          <FieldSet name="variant.zygosity" label="Zygosity" />
-          <FieldSet name="variant.inheritanceMethod" label="Inhertiance Method" />
-          <FieldSet name="variant.classification" label="Classification" />
-          <FieldSet as="textarea" name="variant.classificationEvidence" label="Classification Evidence" />
-          <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed" />
-          <FieldSet as="textarea" name="variant.comment" label="Comment" />
-
-          <h2>Report</h2>
-          <FieldSet as="textarea" name="result.resultSummary" label="Result summary" />
-          <FieldSet as="textarea" name="result.furtherTesting" label="Further testing" />
-          <FieldSet as="textarea" name="result.testMethodology" label="Test Methodology" />
-          <FieldSet type="date" name="result.authorisingDate" label="Authorised date" />
-          <FieldSet name="result.authorisingScientist" label="Authorising scientist" />
-          <FieldSet name="result.authorisingScientistTitle" label="Authorising scientist title" />
-          <FieldSet type="date" name="result.reportingDate" label="Reporting date" />
-          <FieldSet name="result.reportingScientist" label="Reporting scientist" />
-          <FieldSet name="result.reportingScientistTitle" label="Reporting scientist title" />
           <br />
           <button type="submit">Submit</button>
         </Form>
