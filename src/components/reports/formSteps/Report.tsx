@@ -2,7 +2,14 @@ import { FC } from "react";
 
 import FieldSet from "../FieldSet";
 
-const ReportDetails: FC = () => {
+interface Props {
+  nextStep: () => void;
+  prevStep: () => void;
+}
+
+const Report: FC<Props> = (props) => {
+  const { nextStep, prevStep } = props;
+
   return (
     <>
       <h2>Report</h2>
@@ -15,8 +22,11 @@ const ReportDetails: FC = () => {
       <FieldSet type="date" name="result.reportingDate" label="Reporting date" />
       <FieldSet name="result.reportingScientist" label="Reporting scientist" />
       <FieldSet name="result.reportingScientistTitle" label="Reporting scientist title" />
+
+      <button onClick={prevStep}>Prev</button>
+      <button onClick={nextStep}>Next</button>
     </>
   );
 };
 
-export default ReportDetails;
+export default Report;

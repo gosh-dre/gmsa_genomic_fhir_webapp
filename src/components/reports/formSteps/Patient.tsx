@@ -2,7 +2,13 @@ import { FC } from "react";
 
 import FieldSet from "../FieldSet";
 
-const PatientDetails: FC = () => {
+interface Props {
+  nextStep: () => void;
+}
+
+const Patient: FC<Props> = (props) => {
+  const { nextStep } = props;
+
   return (
     <>
       <h2>Reporting laboratory (later as a dropdown)</h2>
@@ -18,8 +24,10 @@ const PatientDetails: FC = () => {
       <FieldSet label="Date of Birth" name="patient.dateOfBirth" type="date" />
       <FieldSet label="Gender" name="patient.gender" />
       <FieldSet label="Family Number" name="patient.familyNumber" />
+
+      <button onClick={nextStep}>Next</button>
     </>
   );
 };
 
-export default PatientDetails;
+export default Patient;

@@ -2,16 +2,17 @@ import { useContext, useState } from "react";
 import { Form, Formik, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { FhirContext } from "../fhir/FhirContext";
-import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+import { Patient as PatientClass } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 
 import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
 import { addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantSchema } from "./formDataValidation";
 import { bundleRequest } from "../../fhir/api";
-import PatientDetails from "./formSteps/PatientDetails";
-import SampleDetails from "./formSteps/SampleDetails";
-import VariantDetails from "./formSteps/VariantDetails";
-import ReportDetails from "./formSteps/ReportDetails";
+import Patient from "./formSteps/Patient";
+import Sample from "./formSteps/Sample";
+import Variant from "./formSteps/Variant";
+import Report from "./formSteps/Report";
+import Confirmation from "./formSteps/Confirmation";
 
 const FormValidation = Yup.object()
   .shape({
@@ -42,7 +43,7 @@ const initialValues: FormValues = {
     firstName: "Donald",
     lastName: "Duck",
     dateOfBirth: "2012-03-04",
-    gender: Patient.GenderEnum.Male,
+    gender: PatientClass.GenderEnum.Male,
     familyNumber: "Z409929",
   },
   sample: {
@@ -106,6 +107,7 @@ const initialValues: FormValues = {
 
 const ReportForm = () => {
   const [result, setResult] = useState("");
+  const [formStep, setFormStep] = useState(1);
   const ctx = useContext(FhirContext);
 
   const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
@@ -120,18 +122,47 @@ const ReportForm = () => {
     actions.setSubmitting(false);
   };
 
+  const nextStep = () => {
+    if (formStep === 5) return;
+    setFormStep(formStep + 1);
+  };
+
+  const prevStep = () => {
+    if (formStep === 1) return;
+    setFormStep(formStep - 1);
+  };
+
+  let stepContent;
+  switch (formStep) {
+    case 1:
+      stepContent = <Patient nextStep={nextStep} />;
+      break;
+    case 2:
+      stepContent = <Sample nextStep={nextStep} prevStep={prevStep} />;
+      break;
+    case 3:
+      stepContent = <Variant nextStep={nextStep} prevStep={prevStep} />;
+      break;
+    case 4:
+      stepContent = <Report nextStep={nextStep} prevStep={prevStep} />;
+      break;
+    case 5:
+      stepContent = <Confirmation prevStep={prevStep} />;
+      break;
+    default:
+      console.log("multi step form");
+  }
+
   return (
     <Card>
       <h1>Add a new report</h1>
       <Formik initialValues={initialValues} validationSchema={FormValidation} onSubmit={onSuccessfulSubmitHandler}>
         <Form role="form" className={classes.form}>
-          <PatientDetails />
-          <SampleDetails />
-          <VariantDetails />
-          <ReportDetails />
+          {stepContent}
 
           <br />
-          <button type="submit">Submit</button>
+
+          {formStep === 5 && <button type="submit">Submit</button>}
         </Form>
       </Formik>
       {result !== "" && <textarea id="resultOutput" role="alert" rows={80} cols={100} defaultValue={result} />}

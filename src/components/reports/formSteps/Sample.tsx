@@ -2,7 +2,14 @@ import { FC } from "react";
 
 import FieldSet from "../FieldSet";
 
-const SampleDetails: FC = () => {
+interface Props {
+  nextStep: () => void;
+  prevStep: () => void;
+}
+
+const Sample: FC<Props> = (props) => {
+  const { nextStep, prevStep } = props;
+
   return (
     <>
       <h2>Sample</h2>
@@ -11,8 +18,11 @@ const SampleDetails: FC = () => {
       <FieldSet type="date" name="sample.collectionDate" label="Sample collection date" />
       <FieldSet name="sample.reasonForTestText" label="Reason for test" />
       <FieldSet name="sample.reasonForTestCode" label="Test reason code" />
+
+      <button onClick={prevStep}>Prev</button>
+      <button onClick={nextStep}>Next</button>
     </>
   );
 };
 
-export default SampleDetails;
+export default Sample;
