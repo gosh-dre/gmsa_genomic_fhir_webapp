@@ -158,10 +158,11 @@ const ReportForm = () => {
       <h1>Add a new report</h1>
       <Formik initialValues={initialValues} validationSchema={FormValidation} onSubmit={onSuccessfulSubmitHandler}>
         <Form role="form" className={classes.form}>
+          <h2 className={classes["step-header"]}>Form step {formStep} of 5</h2>
+
           {stepContent}
 
           <br />
-
           {formStep === 5 && <button type="submit">Submit</button>}
         </Form>
       </Formik>

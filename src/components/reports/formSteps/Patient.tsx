@@ -13,6 +13,7 @@ const Patient: FC<Props> = (props) => {
   return (
     <>
       <h2>Reporting laboratory (later as a dropdown)</h2>
+
       <FieldSet as="textarea" name="address.streetAddress" label="Street Address" />
       <FieldSet name="address.city" label="City" />
       <FieldSet name="address.postCode" label="Post Code" />
