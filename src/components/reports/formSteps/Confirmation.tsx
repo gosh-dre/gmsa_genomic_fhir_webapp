@@ -1,5 +1,7 @@
 import { FC } from "react";
 
+import FormStepBtn from "../../UI/FormStepBtn";
+
 interface Props {
   prevStep: () => void;
 }
@@ -10,7 +12,7 @@ const Confirmation: FC<Props> = (props) => {
   return (
     <>
       <div>form confirmation</div>
-      <button onClick={prevStep}>prev</button>
+      <FormStepBtn prevStep={prevStep} showNext={false} showPrev={true} />
     </>
   );
 };

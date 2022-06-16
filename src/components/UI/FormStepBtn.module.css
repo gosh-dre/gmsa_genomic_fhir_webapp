@@ -1,0 +1,21 @@
+.form-step-btn-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.form-step-btn {
+  color: white;
+  text-align: center;
+  padding: 0.8rem;
+  margin: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  background-color: rgb(110, 44, 186);
+  width: 100px;
+  cursor: pointer;
+}
+
+.form-step-btn:hover {
+  background-color: rgb(142, 98, 192);
+}

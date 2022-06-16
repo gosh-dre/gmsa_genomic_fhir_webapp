@@ -1,6 +1,7 @@
 import { FC } from "react";
 
 import FieldSet from "../FieldSet";
+import FormStepBtn from "../../UI/FormStepBtn";
 
 interface Props {
   nextStep: () => void;
@@ -24,8 +25,7 @@ const Variant: FC<Props> = (props) => {
       <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed" />
       <FieldSet as="textarea" name="variant.comment" label="Comment" />
 
-      <button onClick={prevStep}>Prev</button>
-      <button onClick={nextStep}>Next</button>
+      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={true} />
     </>
   );
 };

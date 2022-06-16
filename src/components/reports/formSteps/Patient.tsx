@@ -1,6 +1,7 @@
 import { FC } from "react";
 
 import FieldSet from "../FieldSet";
+import FormStepBtn from "../../UI/FormStepBtn";
 
 interface Props {
   nextStep: () => void;
@@ -25,7 +26,7 @@ const Patient: FC<Props> = (props) => {
       <FieldSet label="Gender" name="patient.gender" />
       <FieldSet label="Family Number" name="patient.familyNumber" />
 
-      <button onClick={nextStep}>Next</button>
+      <FormStepBtn nextStep={nextStep} showNext={true} showPrev={false} />
     </>
   );
 };
