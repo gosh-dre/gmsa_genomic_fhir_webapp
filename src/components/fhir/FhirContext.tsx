@@ -15,7 +15,11 @@ const context: clientContext = {
   },
 };
 
-export const FhirProvider: FC<any> = (props) => {
+interface Props {
+  children: React.ReactNode;
+}
+
+export const FhirProvider: FC<Props> = (props) => {
   const [client, setClient] = useState<Client | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
