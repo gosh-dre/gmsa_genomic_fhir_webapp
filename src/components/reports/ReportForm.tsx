@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import { Form, Formik, FormikHelpers } from "formik";
+import { useContext, useState, useRef } from "react";
+import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import * as Yup from "yup";
 import { FhirContext } from "../fhir/FhirContext";
 import { Patient as PatientClass } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
@@ -109,6 +109,7 @@ const ReportForm = () => {
   const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(1);
   const ctx = useContext(FhirContext);
+  const formRef = useRef<FormikProps<FormValues>>(null);
 
   const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     const bundle = bundleRequest(values);
@@ -147,7 +148,7 @@ const ReportForm = () => {
       stepContent = <Report nextStep={nextStep} prevStep={prevStep} />;
       break;
     case 5:
-      stepContent = <Confirmation nextStep={nextStep} prevStep={prevStep} />;
+      stepContent = <Confirmation nextStep={nextStep} prevStep={prevStep} formRef={formRef} />;
       break;
     default:
       console.log("multi step form");
@@ -156,10 +157,14 @@ const ReportForm = () => {
   return (
     <Card>
       <h1>Add a new report</h1>
-      <Formik initialValues={initialValues} validationSchema={FormValidation} onSubmit={onSuccessfulSubmitHandler}>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={FormValidation}
+        onSubmit={onSuccessfulSubmitHandler}
+        innerRef={formRef}
+      >
         <Form role="form" className={classes.form}>
           <h2 className={classes["step-header"]}>Form step {formStep} of 5</h2>
-
           {stepContent}
         </Form>
       </Formik>
