@@ -104,6 +104,7 @@ const initialValues: FormValues = {
 const ReportForm = () => {
   const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(1);
+  const [variantExists, setVariantExists] = useState(true);
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);
 
@@ -136,7 +137,15 @@ const ReportForm = () => {
       case 2:
         return <Sample nextStep={nextStep} prevStep={prevStep} />;
       case 3:
-        return <Variant nextStep={nextStep} prevStep={prevStep} />;
+        return (
+          <Variant
+            nextStep={nextStep}
+            prevStep={prevStep}
+            variantExists={variantExists}
+            setVariantExists={setVariantExists}
+            setFieldValue={setFieldValue}
+          />
+        );
       case 4:
         return <Report nextStep={nextStep} prevStep={prevStep} />;
       case 5:
