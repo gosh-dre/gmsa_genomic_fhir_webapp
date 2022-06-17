@@ -5,10 +5,11 @@ import FormStepBtn from "../../UI/FormStepBtn";
 
 interface Props {
   nextStep: () => void;
+  prevStep: () => void;
 }
 
 const Patient: FC<Props> = (props) => {
-  const { nextStep } = props;
+  const { nextStep, prevStep } = props;
 
   return (
     <>
@@ -27,7 +28,7 @@ const Patient: FC<Props> = (props) => {
       <FieldSet label="Gender" name="patient.gender" />
       <FieldSet label="Family Number" name="patient.familyNumber" />
 
-      <FormStepBtn nextStep={nextStep} showNext={true} showPrev={false} />
+      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={false} showSubmit={false} />
     </>
   );
 };

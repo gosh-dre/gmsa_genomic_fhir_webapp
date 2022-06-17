@@ -1,7 +1,7 @@
 .form-step-btn-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: stretch;
 }
 
 .form-step-btn {
@@ -10,12 +10,27 @@
   padding: 0.8rem;
   margin: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 0.5rem;
+  border-radius: 0.3rem;
   background-color: rgb(110, 44, 186);
   width: 100px;
   cursor: pointer;
 }
 
+.form-step-btn.next {
+  justify-self: flex-end;
+  grid-column-start: 2;
+}
+
+.form-step-btn.prev {
+  justify-self: flex-start;
+  grid-column-start: 1;
+}
+
 .form-step-btn:hover {
   background-color: rgb(142, 98, 192);
+}
+
+.form-step-btn.submit {
+  justify-self: flex-end;
+  grid-column-start: 2;
 }

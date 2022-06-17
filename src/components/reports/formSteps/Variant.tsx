@@ -25,7 +25,7 @@ const Variant: FC<Props> = (props) => {
       <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed" />
       <FieldSet as="textarea" name="variant.comment" label="Comment" />
 
-      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={true} />
+      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={true} showSubmit={false} />
     </>
   );
 };

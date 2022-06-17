@@ -24,7 +24,7 @@ const Report: FC<Props> = (props) => {
       <FieldSet name="result.reportingScientist" label="Reporting scientist" />
       <FieldSet name="result.reportingScientistTitle" label="Reporting scientist title" />
 
-      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={true} />
+      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={true} showSubmit={false} />
     </>
   );
 };

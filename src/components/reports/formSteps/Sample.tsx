@@ -20,7 +20,7 @@ const Sample: FC<Props> = (props) => {
       <FieldSet name="sample.reasonForTestText" label="Reason for test" />
       <FieldSet name="sample.reasonForTestCode" label="Test reason code" />
 
-      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={true} />
+      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={true} showSubmit={false} />
     </>
   );
 };

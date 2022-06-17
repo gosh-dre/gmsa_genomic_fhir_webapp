@@ -135,7 +135,7 @@ const ReportForm = () => {
   let stepContent;
   switch (formStep) {
     case 1:
-      stepContent = <Patient nextStep={nextStep} />;
+      stepContent = <Patient nextStep={nextStep} prevStep={prevStep} />;
       break;
     case 2:
       stepContent = <Sample nextStep={nextStep} prevStep={prevStep} />;
@@ -147,7 +147,7 @@ const ReportForm = () => {
       stepContent = <Report nextStep={nextStep} prevStep={prevStep} />;
       break;
     case 5:
-      stepContent = <Confirmation prevStep={prevStep} />;
+      stepContent = <Confirmation nextStep={nextStep} prevStep={prevStep} />;
       break;
     default:
       console.log("multi step form");
@@ -161,9 +161,6 @@ const ReportForm = () => {
           <h2 className={classes["step-header"]}>Form step {formStep} of 5</h2>
 
           {stepContent}
-
-          <br />
-          {formStep === 5 && <button type="submit">Submit</button>}
         </Form>
       </Formik>
       {result !== "" && <textarea id="resultOutput" role="alert" rows={80} cols={100} defaultValue={result} />}
