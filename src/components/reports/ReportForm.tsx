@@ -1,5 +1,5 @@
 import { useContext, useState, useRef } from "react";
-import { Form, Formik, FormikHelpers, FormikProps } from "formik";
+import { Form, Formik, FormikHelpers, FormikProps, useFormik } from "formik";
 import * as Yup from "yup";
 import { FhirContext } from "../fhir/FhirContext";
 import { Patient as PatientClass } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
@@ -29,14 +29,10 @@ export type FormValues = Yup.InferType<typeof FormValidation>;
 const initialValues: FormValues = {
   address: {
     name: "London North Genomic Laboratory Hub",
-    streetAddress: [
-      "Great Ormond Street Hospital for Children NHS Foundation Trust",
-      "Levels 4-6 Barclay House",
-      "37 Queen Square",
-    ],
-    city: "London",
-    country: "UK",
-    postCode: "WC1N 3BH",
+    streetAddress: "",
+    city: "",
+    country: "",
+    postCode: "",
   },
   patient: {
     mrn: "969977",
@@ -133,40 +129,39 @@ const ReportForm = () => {
     setFormStep(formStep - 1);
   };
 
-  let stepContent;
-  switch (formStep) {
-    case 1:
-      stepContent = <Patient nextStep={nextStep} prevStep={prevStep} />;
-      break;
-    case 2:
-      stepContent = <Sample nextStep={nextStep} prevStep={prevStep} />;
-      break;
-    case 3:
-      stepContent = <Variant nextStep={nextStep} prevStep={prevStep} />;
-      break;
-    case 4:
-      stepContent = <Report nextStep={nextStep} prevStep={prevStep} />;
-      break;
-    case 5:
-      stepContent = <Confirmation nextStep={nextStep} prevStep={prevStep} formRef={formRef} />;
-      break;
-    default:
-      console.log("multi step form");
-  }
+  const returnStepContent = (setFieldValue: any) => {
+    switch (formStep) {
+      case 1:
+        return <Patient nextStep={nextStep} prevStep={prevStep} setFieldValue={setFieldValue} />;
+      case 2:
+        return <Sample nextStep={nextStep} prevStep={prevStep} />;
+      case 3:
+        return <Variant nextStep={nextStep} prevStep={prevStep} />;
+      case 4:
+        return <Report nextStep={nextStep} prevStep={prevStep} />;
+      case 5:
+        return <Confirmation nextStep={nextStep} prevStep={prevStep} formRef={formRef} />;
+      default:
+        console.log("multi step form");
+    }
+  };
 
   return (
     <Card>
       <h1>Add a new report</h1>
       <Formik
+        enableReinitialize={true}
         initialValues={initialValues}
         validationSchema={FormValidation}
         onSubmit={onSuccessfulSubmitHandler}
         innerRef={formRef}
       >
-        <Form role="form" className={classes.form}>
-          <h2 className={classes["step-header"]}>Form step {formStep} of 5</h2>
-          {stepContent}
-        </Form>
+        {({ setFieldValue }) => (
+          <Form role="form" className={classes.form}>
+            <h2 className={classes["step-header"]}>Form step {formStep} of 5</h2>
+            {returnStepContent(setFieldValue)}
+          </Form>
+        )}
       </Formik>
       {result !== "" && <textarea id="resultOutput" role="alert" rows={80} cols={100} defaultValue={result} />}
     </Card>

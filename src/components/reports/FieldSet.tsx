@@ -8,7 +8,6 @@ type Props = {
   as?: string;
 };
 
-
 const FieldSet: FC<Props> = ({ name, label, ...rest }) => (
   <>
     <label htmlFor={name}>{label}</label>
