@@ -19,7 +19,7 @@ const Confirmation: FC<Props> = (props) => {
   const formObjAsArray: { [key: string]: string }[] = Object.keys(formObj).map((key: any) => {
     return formObj[key];
   });
-  const formKeysArray: string[][] = formObjAsArray.map((key: any, index: any) => {
+  const formKeysArray: string[][] = formObjAsArray.map((key: any) => {
     return Object.keys(key);
   });
 

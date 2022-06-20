@@ -1,5 +1,5 @@
 import { useContext, useState, useRef } from "react";
-import { Form, Formik, FormikHelpers, FormikProps, useFormik } from "formik";
+import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import * as Yup from "yup";
 import { FhirContext } from "../fhir/FhirContext";
 import { Patient as PatientClass } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
