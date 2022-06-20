@@ -8,6 +8,34 @@ const clearAndType = (element: Element, value: string) => {
   userEvent.type(element, value);
 };
 
+const setDummyValues = (withDates: boolean) => {
+  const dummyValue = "Always the same";
+  const form = screen.getByRole("form");
+  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|mrn|date|address).)*$/i);
+  textInputs.forEach(input => clearAndType(input, dummyValue));
+  if (withDates) {
+    within(form).getAllByLabelText(/date/i).forEach(input => {
+      clearAndType(input, "2019-01-01");
+    });
+  }
+};
+
+function setLabAndPatient() {
+  userEvent.selectOptions(screen.getByDisplayValue(/select a lab/i), ["gosh"]);
+  setDummyValues(true);
+  clearAndType(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
+
+  // set MRN value
+  const newMRNValue = "10293879";
+  userEvent.type(screen.getByLabelText(/mrn/i), newMRNValue);
+  userEvent.click(screen.getByText(/next/i));
+}
+
+function setDummyAndNext(withDates: boolean) {
+  setDummyValues(withDates);
+  userEvent.click(screen.getByText(/next/i));
+}
+
 describe("Report form", () => {
   /**
    * Given the report form
@@ -18,21 +46,11 @@ describe("Report form", () => {
     // Arrange
     render(<ReportForm />);
 
-    // Act
-    // add dummy value to all fields that are not of interest
-    const dummyValue = "Always the same";
-    const form = screen.getByRole("form");
-    const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|mrn|date|address).)*$/i);
-    textInputs.forEach(input => clearAndType(input, dummyValue));
-    within(form).getAllByLabelText(/date/i).forEach(input => {
-      clearAndType(input, "2019-01-01");
-    });
-    clearAndType(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
-
-    // set MRN value
-    const newMRNValue = "10293879";
-    userEvent.type(screen.getByLabelText(/mrn/i), newMRNValue);
-
+    // Act    // set
+    setLabAndPatient();
+    setDummyAndNext(true);
+    setDummyAndNext(false);
+    setDummyAndNext(true);
     userEvent.click(screen.getByText(/submit/i));
 
 

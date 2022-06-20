@@ -1,39 +1,58 @@
 .form {
-    width: 80%;
-    margin: 2rem auto;
+  width: 80%;
+  margin: 2rem auto;
 }
 
 .form label {
-    display: block;
-    font-weight: lighter;
-    margin-top: 0.5rem;
-    margin-bottom: 0.1rem;
+  display: block;
+  font-weight: lighter;
+  margin-top: 0.5rem;
+  margin-bottom: 0.1rem;
 }
 
 .form textarea,
 .form input {
-    display: block;
-    width: 100%;
-    font: inherit;
-    font-size: 1rem;
-    padding: 0.5rem;
-    border-radius: 4px;
-    background-color: var(--fairly-white);
-    border: none;
+  display: block;
+  width: 100%;
+  font: inherit;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: var(--fairly-white);
+  border: none;
 }
 
 .form button {
-    font: inherit;
-    background-color: var(--mid-blue);
-    border: 1px solid var(--mid-blue);
-    color: white;
-    padding: 0.5rem 1.5rem;
-    border-radius: 4px;
-    cursor: pointer;
+  font: inherit;
+  background-color: var(--mid-blue);
+  border: 1px solid var(--mid-blue);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .form button:hover,
 .form button:active {
-    background-color: var(--light-blue);
-    border-color: var(--light-blue);
+  background-color: var(--light-blue);
+  border-color: var(--light-blue);
+}
+
+.step-header {
+  text-align: center;
+  text-decoration: underline;
+}
+
+.confirmation-element-container {
+  margin-bottom: 1rem;
+}
+
+.confirmation-key {
+  color: rgb(58, 47, 73);
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.confirmation-value {
+  color: rgb(78, 73, 139);
 }
