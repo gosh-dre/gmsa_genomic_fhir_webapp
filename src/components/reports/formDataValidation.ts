@@ -1,8 +1,10 @@
 import * as Yup from "yup";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 
+const today = new Date();
+
 const requiredString = Yup.string().required();
-const requiredDate = Yup.date().min("1900-01-01").required();
+const requiredDate = Yup.date().min("1900-01-01").max(today).required();
 const boolField = Yup.boolean().default(false).nullable(false);
 
 export const patientSchema = Yup.object()
@@ -31,7 +33,8 @@ export const addressSchema = Yup.object()
 export const sampleSchema = Yup.object()
   .shape({
     specimenCode: requiredString,
-    collectionDate: requiredDate,
+    collectionDateTime: requiredDate,
+    receivedDateTime: requiredDate,
     specimenType: requiredString,
     reasonForTestCode: requiredString,
     reasonForTestText: requiredString,
@@ -41,6 +44,7 @@ export const sampleSchema = Yup.object()
 export const variantSchema = Yup.object()
   .shape({
     gene: requiredString,
+    geneInformation: requiredString,
     transcript: requiredString,
     genomicHGVS: requiredString,
     proteinHGVS: requiredString,
@@ -56,7 +60,6 @@ export const variantSchema = Yup.object()
 export const reportDetailSchema = Yup.object()
   .shape({
     resultSummary: requiredString,
-    geneInformation: requiredString,
     reportingScientist: requiredString,
     reportingScientistTitle: requiredString,
     reportingDate: requiredDate,

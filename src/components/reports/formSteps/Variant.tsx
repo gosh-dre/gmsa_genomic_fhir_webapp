@@ -20,6 +20,7 @@ const Variant: FC<Props> = (props) => {
 
     if (!currentVariantExists) {
       setFieldValue("variant.gene", "none");
+      setFieldValue("variant.geneInformation", "none");
       setFieldValue("variant.genomicHGVS", "none");
       setFieldValue("variant.inheritanceMethod", "none");
       setFieldValue("variant.classification", "none");
@@ -33,6 +34,7 @@ const Variant: FC<Props> = (props) => {
 
     if (currentVariantExists) {
       setFieldValue("variant.gene", "");
+      setFieldValue("variant.geneInformation", "");
       setFieldValue("variant.genomicHGVS", "");
       setFieldValue("variant.inheritanceMethod", "");
       setFieldValue("variant.classification", "");
@@ -58,6 +60,7 @@ const Variant: FC<Props> = (props) => {
       {variantExists && (
         <>
           <FieldSet name="variant.gene" label="Gene Symbol" />
+          <FieldSet as="textarea" name="variant.geneInformation" label="Gene Information" />
           <FieldSet name="variant.transcript" label="Transcript" />
           <FieldSet name="variant.genomicHGVS" label="Genomic HGVS" />
           <FieldSet name="variant.proteinHGVS" label="Protein HGVS" />
