@@ -1,6 +1,6 @@
-import classes from './Layout.module.css'
+import classes from "./Layout.module.css";
 import NavBar from "./NavBar";
-import {FC} from "react";
+import { FC } from "react";
 
 /**
  * Generic layout component to ensure consistent styling of the app.
@@ -10,7 +10,7 @@ import {FC} from "react";
 const Layout: FC<any> = (props) => {
   return (
     <>
-      <NavBar/>
+      <NavBar />
       <main className={classes.main}>{props.children}</main>
     </>
   );

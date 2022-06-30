@@ -1,9 +1,9 @@
-import {render, screen} from "@testing-library/react";
-import {Form, Formik} from "formik";
+import { render, screen } from "@testing-library/react";
+import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
 import FieldSet from "./FieldSet";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import userEvent from "@testing-library/user-event";
 
 
@@ -13,8 +13,8 @@ const testSchema = Yup.object().shape({
 
 const TestComponent: React.FC = () => {
   const initialValues: Yup.InferType<typeof testSchema> = {
-    test: ""
-  }
+    test: "",
+  };
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [testField, setTestField] = useState("");
 
@@ -25,20 +25,20 @@ const TestComponent: React.FC = () => {
         initialValues={initialValues}
         validationSchema={testSchema}
         onSubmit={(values, actions) => {
-          setIsSubmitted(true)
-          setTestField(values.test)
+          setIsSubmitted(true);
+          setTestField(values.test);
           actions.setSubmitting(false);
         }}
       >
         <Form>
-          <FieldSet name={"test"} label={"Test field"}/>
+          <FieldSet name={"test"} label={"Test field"} />
           <button type="submit">submit</button>
         </Form>
       </Formik>
     </>
 
   );
-}
+};
 
 
 describe("Field Set", () => {
@@ -48,9 +48,9 @@ describe("Field Set", () => {
      * When a value is submitted
      * Then the form should successfully submit
      */
-    test('Form values are accessible through FieldSet wrapper', async () => {
+    test("Form values are accessible through FieldSet wrapper", async () => {
       // Arrange
-      render(<TestComponent/>);
+      render(<TestComponent />);
 
       // Act
       const expected = "testValue";
@@ -58,7 +58,7 @@ describe("Field Set", () => {
       userEvent.click(screen.getByText(/submit/i));
 
       // Assert
-      const output = await screen.findByTitle(/output/i)
+      const output = await screen.findByTitle(/output/i);
       expect(output).toHaveTextContent(expected);
     });
 
@@ -67,13 +67,13 @@ describe("Field Set", () => {
      * When the form field has been moved onto, then moved away from without entering any data
      * Then there should be a validation error
      */
-    test('Form validation is preserved', async () => {
+    test("Form validation is preserved", async () => {
       // Arrange
-      render(<TestComponent/>);
+      render(<TestComponent />);
 
       // Act
       const testField = screen.getByLabelText(/test/i);
-      userEvent.click(testField)
+      userEvent.click(testField);
       userEvent.tab();
 
       // Assert
@@ -83,6 +83,6 @@ describe("Field Set", () => {
       expect(requiredText).toBeInTheDocument();
     });
 
-  }
+  },
 );
 
