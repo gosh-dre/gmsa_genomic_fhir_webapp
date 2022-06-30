@@ -10,10 +10,13 @@ import {
   DiagnosticReport,
   Observation,
   Organization,
-  Patient, PlanDefinition,
-  Practitioner, Resource,
+  Patient,
+  PlanDefinition,
+  Practitioner,
+  Resource,
   ServiceRequest,
-  Specimen, Task,
+  Specimen,
+  Task,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { generatedNarrative, makeGoshAssigner, observationComponent, reference } from "./resource_helpers";
 
@@ -23,16 +26,16 @@ export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-4
  * Resource and reference ID for referring to the resource within a bundle.
  */
 type ResourceAndId = {
-  resource: Resource,
-  id: string
-}
+  resource: Resource;
+  id: string;
+};
 
 /**
  * {@link ResourceAndId} with an identifier used as a search term in PUT request of bundle.
  */
 type ResourceAndIds = ResourceAndId & {
-  identifier: string
-}
+  identifier: string;
+};
 
 /**
  * Create a FHIR patient object from form data
@@ -47,17 +50,22 @@ export const patientAndId = (form: typeof patientSchema, organisationId: string)
     { value: form.mrn, ...makeGoshAssigner("MRN") },
     // implementing GOSH's structure, they chose this to represent a family as it doesn't exist in the specification
     {
-      extension: [{
-        url: "https://fhir.nhs.uk/R4/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus",
-        valueCodeableConcept: {
-          coding: [{
-            system: "https://fhir.nhs.uk/R4/CodeSystem/UKCore-NHSNumberVerificationStatus",
-            code: form.familyNumber,
-            display: "Family Number",
-          }],
+      extension: [
+        {
+          url: "https://fhir.nhs.uk/R4/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus",
+          valueCodeableConcept: {
+            coding: [
+              {
+                system: "https://fhir.nhs.uk/R4/CodeSystem/UKCore-NHSNumberVerificationStatus",
+                code: form.familyNumber,
+                display: "Family Number",
+              },
+            ],
+          },
         },
-      }],
-    }];
+      ],
+    },
+  ];
   patient.birthDate = form.dateOfBirth;
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
@@ -71,21 +79,27 @@ export const organisationAndId = (form: typeof addressSchema): ResourceAndIds =>
   org.identifier = [{ value: GOSH_GENETICS_IDENTIFIER }];
   org.resourceType = "Organization";
   org.active = true;
-  org.type = [{
-    "coding": [{
-      "system": "http://terminology.hl7.org/CodeSystem/organization-type",
-      "code": "prov",
-      "display": "Healthcare Provider",
-    }],
-    "text": "Healthcare Provider",
-  }];
+  org.type = [
+    {
+      coding: [
+        {
+          system: "http://terminology.hl7.org/CodeSystem/organization-type",
+          code: "prov",
+          display: "Healthcare Provider",
+        },
+      ],
+      text: "Healthcare Provider",
+    },
+  ];
   org.name = form.name;
-  org.address = [{
-    line: form.streetAddress,
-    city: form.city,
-    postalCode: form.postalCode,
-    country: form.country,
-  }];
+  org.address = [
+    {
+      line: form.streetAddress,
+      city: form.city,
+      postalCode: form.postalCode,
+      country: form.country,
+    },
+  ];
   org.text = generatedNarrative(form.name);
 
   return { identifier: GOSH_GENETICS_IDENTIFIER, id: org.id, resource: org };
@@ -130,11 +144,13 @@ export const specimenAndId = (sample: typeof sampleSchema, patientId: string): R
   specimen.collection = { collectedDateTime: sample.collectionDate };
   specimen.identifier = [{ value: sample.specimenCode, id: "specimenId" }];
   specimen.type = {
-    coding: [{
-      system: "http://snomed.info/sct",
-      code: "122555007",
-      display: "Venus blood specimen",
-    }],
+    coding: [
+      {
+        system: "http://snomed.info/sct",
+        code: "122555007",
+        display: "Venus blood specimen",
+      },
+    ],
   };
   specimen.subject = reference("Patient", patientId);
 
@@ -143,7 +159,11 @@ export const specimenAndId = (sample: typeof sampleSchema, patientId: string): R
 
 export const variantAndId = (
   variant: typeof variantSchema,
-  patientId: string, specimenId: string, specimenBarcode: string, reporterId: string, authoriserId: string,
+  patientId: string,
+  specimenId: string,
+  specimenBarcode: string,
+  reporterId: string,
+  authoriserId: string,
 ): ResourceAndIds => {
   const obs = new Observation();
   obs.id = uuidv4();
@@ -151,17 +171,20 @@ export const variantAndId = (
   obs.status = Observation.StatusEnum.Final;
   obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/Variant"] };
   obs.code = {
-    coding: [{
-      system: "http://loinc.org",
-      code: "69548-6",
-      display: "Genetic variant assessment",
-    }],
+    coding: [
+      {
+        system: "http://loinc.org",
+        code: "69548-6",
+        display: "Genetic variant assessment",
+      },
+    ],
   };
   obs.subject = reference("Patient", patientId);
   obs.specimen = reference("Specimen", specimenId);
   obs.performer = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
   obs.component = [
-    observationComponent({
+    observationComponent(
+      {
         system: "http://loinc.org",
         code: "48013-7",
         display: "Genomic reference sequence ID",
@@ -169,8 +192,10 @@ export const variantAndId = (
       {
         system: "http://www.ncbi.nlm.nih.gov/refseq",
         code: variant.transcript,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         system: "http://loinc.org",
         code: "53034-5",
         display: "Allelic state",
@@ -180,8 +205,10 @@ export const variantAndId = (
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         code: "LA6705-3",
         display: variant.zygosity,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "LL4034-6",
@@ -191,8 +218,10 @@ export const variantAndId = (
         system: "http://loinc.org",
         code: "LA26332-9",
         display: variant.classification,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "79742-3",
@@ -202,8 +231,10 @@ export const variantAndId = (
         system: "http://loinc.org",
         code: "LA24640-7",
         display: variant.inheritanceMethod,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "48005-3",
@@ -212,8 +243,10 @@ export const variantAndId = (
       {
         system: "http://varnomen.hgvs.org/",
         code: variant.proteinHGVS,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "48004-6",
@@ -223,8 +256,10 @@ export const variantAndId = (
         system: "http://loinc.org",
         code: "48004-6",
         display: variant.genomicHGVS,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://www.genenames.org/geneId",
         code: "HGNC:4389",
@@ -232,7 +267,8 @@ export const variantAndId = (
       },
       variant.gene,
     ),
-    observationComponent({
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://hl7.org/mutation",
         code: "confirmed-variant",
@@ -241,27 +277,35 @@ export const variantAndId = (
       variant.confirmedVariant,
     ),
   ];
-  obs.note = [{
-    authorString: "comments",
-    text: variant.comment,
-  }];
+  obs.note = [
+    {
+      authorString: "comments",
+      text: variant.comment,
+    },
+  ];
   const identifier = `${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`;
   obs.identifier = [{ value: identifier, id: "specimenBarcode$transcript:genomicHGVS" }];
 
   return { identifier: identifier, id: obs.id, resource: obs };
 };
 
-export const planDefinitionAndId = (sample: typeof sampleSchema, report: typeof reportDetailSchema, patientId: string): ResourceAndId => {
+export const planDefinitionAndId = (
+  sample: typeof sampleSchema,
+  report: typeof reportDetailSchema,
+  patientId: string,
+): ResourceAndId => {
   const plan = new PlanDefinition();
   plan.id = uuidv4();
   plan.resourceType = "PlanDefinition";
   plan.status = PlanDefinition.StatusEnum.Active;
   plan.type = {
-    "coding": [{
-      system: "http://terminology.hl7.org/CodeSystem/plan-definition-type",
-      code: "protocol",
-      display: "Protocol",
-    }],
+    coding: [
+      {
+        system: "http://terminology.hl7.org/CodeSystem/plan-definition-type",
+        code: "protocol",
+        display: "Protocol",
+      },
+    ],
   };
   plan.description = sample.reasonForTestText;
   plan.action = [
@@ -295,11 +339,13 @@ export const furtherTestingAndId = (report: typeof reportDetailSchema, patientId
   task.code = {
     // harcoded for now but should be set from form, allowing multiple selections from the coding system
     // coding system: LL1037-2
-    coding: [{
-      system: "http://loinc.org",
-      code: "LA14020-4",
-      display: "Genetic counseling recommended",
-    }],
+    coding: [
+      {
+        system: "http://loinc.org",
+        code: "LA14020-4",
+        display: "Genetic counseling recommended",
+      },
+    ],
   };
   task.description = report.furtherTesting;
   task.for = reference("Patient", patientId);
@@ -315,7 +361,11 @@ export const furtherTestingAndId = (report: typeof reportDetailSchema, patientId
  * @param specimenId
  */
 export const serviceRequestAndId = (
-  sample: typeof sampleSchema, patientId: string, planId: string, practitionerId: string, specimenId: string,
+  sample: typeof sampleSchema,
+  patientId: string,
+  planId: string,
+  practitionerId: string,
+  specimenId: string,
 ): ResourceAndId => {
   const request = new ServiceRequest();
   request.resourceType = "ServiceRequest";
@@ -325,31 +375,41 @@ export const serviceRequestAndId = (
   request.instantiatesCanonical = [`PlanDefinition/${planId}`];
   request.status = "active";
   request.intent = "order";
-  request.category = [{
-    coding: [{
-      system: "http://snomed.info/sct",
-      code: "108252007",
-      display: "Laboratory procedure",
-    }],
-  }];
+  request.category = [
+    {
+      coding: [
+        {
+          system: "http://snomed.info/sct",
+          code: "108252007",
+          display: "Laboratory procedure",
+        },
+      ],
+    },
+  ];
   request.subject = reference("Patient", patientId);
   request.performerType = {
-    coding: [{
-      system: "http://snomed.info/sct",
-      code: "310049001",
-      display: "Clinical genetics service",
-    }],
+    coding: [
+      {
+        system: "http://snomed.info/sct",
+        code: "310049001",
+        display: "Clinical genetics service",
+      },
+    ],
   };
   request.performer = [reference("Practitioner", practitionerId)];
-  request.reasonCode = [{
-    coding: [{
-      // hardcoded for now, but have issue to pull this through from clinical APIs
-      system: "http://snomed.info/sct",
-      code: sample.reasonForTestCode,
-      display: "Reason for recommending early-onset benign childhood occipita epilepsy",
-    }],
-    text: sample.reasonForTestText,
-  }];
+  request.reasonCode = [
+    {
+      coding: [
+        {
+          // hardcoded for now, but have issue to pull this through from clinical APIs
+          system: "http://snomed.info/sct",
+          code: sample.reasonForTestCode,
+          display: "Reason for recommending early-onset benign childhood occipita epilepsy",
+        },
+      ],
+      text: sample.reasonForTestText,
+    },
+  ];
   request.specimen = [reference("Specimen", specimenId)];
 
   return { id: request.id, resource: request };
@@ -357,7 +417,12 @@ export const serviceRequestAndId = (
 
 export const reportAndId = (
   result: typeof reportDetailSchema,
-  patientId: string, reporterId: string, authoriserId: string, organisationId: string, specimenId: string, resultIds: string[],
+  patientId: string,
+  reporterId: string,
+  authoriserId: string,
+  organisationId: string,
+  specimenId: string,
+  resultIds: string[],
 ): ResourceAndId => {
   const report = new DiagnosticReport();
   report.id = uuidv4();
@@ -366,18 +431,17 @@ export const reportAndId = (
   report.subject = reference("Patient", patientId);
   report.specimen = [reference("Specimen", specimenId)];
   report.performer = [reference("Organization", organisationId)];
-  report.result = resultIds.map(resultId => reference("Observation", resultId));
-  report.resultsInterpreter = [
-    reference("Practitioner", reporterId),
-    reference("Practitioner", authoriserId),
-  ];
+  report.result = resultIds.map((resultId) => reference("Observation", resultId));
+  report.resultsInterpreter = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
   report.code = {
-    coding: [{
-      // harcoded for now, but will pull this through
-      system: "http://loinc.org",
-      code: "81247-9",
-      display: "Early onset or syndromic epilepsy",
-    }],
+    coding: [
+      {
+        // harcoded for now, but will pull this through
+        system: "http://loinc.org",
+        code: "81247-9",
+        display: "Early onset or syndromic epilepsy",
+      },
+    ],
   };
   report.conclusion = result.clinicalConclusion;
 
