@@ -45,6 +45,8 @@ type ResourceAndIds = ResourceAndId & {
 export const patientAndId = (form: typeof patientSchema, organisationId: string): ResourceAndIds => {
   const patient = new Patient();
   patient.id = uuidv4();
+  patient.active = true;
+  patient.gender = form.gender;
   patient.name = [{ family: form.lastName, given: [form.firstName] }];
   patient.identifier = [
     { value: form.mrn, ...makeGoshAssigner("MRN") },
