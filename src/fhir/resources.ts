@@ -426,6 +426,8 @@ export const reportAndId = (
 ): ResourceAndId => {
   const report = new DiagnosticReport();
   report.id = uuidv4();
+  report.effectiveDateTime = result.authorisingDate;
+  report.issued = result.reportingDate;
   report.resourceType = "DiagnosticReport";
   report.status = DiagnosticReport.StatusEnum.Final;
   report.subject = reference("Patient", patientId);
@@ -433,6 +435,7 @@ export const reportAndId = (
   report.performer = [reference("Organization", organisationId)];
   report.result = resultIds.map((resultId) => reference("Observation", resultId));
   report.resultsInterpreter = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
+  // waiting for confirmation of change of coding system to snomed-ct
   report.code = {
     coding: [
       {
