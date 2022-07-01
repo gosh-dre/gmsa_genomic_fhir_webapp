@@ -51,7 +51,7 @@ const variantSchema = Yup.object({
 
 export type VariantSchema = Yup.InferType<typeof variantSchema>;
 
-export const variantsSchema = Yup.array().of(variantSchema.required());
+export const variantsSchema = Yup.array().of(variantSchema);
 
 export const reportDetailSchema = Yup.object({
   resultSummary: requiredString,

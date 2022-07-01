@@ -53,6 +53,7 @@ const initialValues: FormValues = {
       "An SLC2A1 variant is suspected.",
   },
   variant: [
+    // should initially be set to empty array but for development keeping details in
     {
       gene: "GNAO1",
       genomicHGVS: "c.119G>T",

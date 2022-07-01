@@ -157,6 +157,42 @@ export const specimenAndId = (sample: SampleSchema, patientId: string): Resource
   return { identifier: sample.specimenCode, id: specimen.id, resource: specimen };
 };
 
+export const createNullVariantAndId = (
+  patientId: string,
+  specimenId: string,
+  specimenBarcode: string,
+  reporterId: string,
+  authoriserId: string,
+) => {
+  // once merged in changes for v2 of fhir bundle, abstract away common steps
+  const obs = new Observation();
+  obs.id = uuidv4();
+  obs.resourceType = "Observation";
+  obs.status = Observation.StatusEnum.Final;
+  obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/Variant"] };
+  obs.code = {
+    coding: [
+      {
+        system: "http://loinc.org",
+        code: "69548-6",
+        display: "Genetic variant assessment",
+      },
+    ],
+  };
+  obs.subject = reference("Patient", patientId);
+  obs.specimen = reference("Specimen", specimenId);
+  obs.performer = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
+  obs.note = [
+    {
+      text: "No variants reported",
+    },
+  ];
+  const identifier = `${specimenBarcode}$null:null`;
+  obs.identifier = [{ value: identifier, id: "specimenBarcode$transcript:genomicHGVS" }];
+
+  return { identifier: identifier, id: obs.id, resource: obs };
+};
+
 export const variantAndId = (
   variant: VariantSchema,
   patientId: string,

@@ -13,16 +13,10 @@ interface Props {
 }
 
 const Variant: FC<Props> = (props) => {
-  const { nextStep, prevStep, variantExists, setVariantExists, setFieldValue } = props;
+  const { nextStep, prevStep, variantExists, setVariantExists } = props;
 
   const setVariantHandler = () => {
-    const currentVariantExists = !variantExists;
-
-    if (!currentVariantExists) {
-      setFieldValue("variants", []);
-    }
-
-    setVariantExists(currentVariantExists);
+    setVariantExists(!variantExists);
   };
 
   return (
@@ -35,16 +29,16 @@ const Variant: FC<Props> = (props) => {
 
       {variantExists && (
         <>
-          <FieldSet name="variant.gene" label="Gene Symbol" />
-          <FieldSet name="variant.transcript" label="Transcript" />
-          <FieldSet name="variant.genomicHGVS" label="Genomic HGVS" />
-          <FieldSet name="variant.proteinHGVS" label="Protein HGVS" />
-          <FieldSet name="variant.zygosity" label="Zygosity" />
-          <FieldSet name="variant.inheritanceMethod" label="Inhertiance Method" />
-          <FieldSet name="variant.classification" label="Classification" />
-          <FieldSet as="textarea" name="variant.classificationEvidence" label="Classification Evidence" />
-          <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed" />
-          <FieldSet as="textarea" name="variant.comment" label="Comment" />
+          <FieldSet name="variant[0].gene" label="Gene Symbol" />
+          <FieldSet name="variant[0].transcript" label="Transcript" />
+          <FieldSet name="variant[0].genomicHGVS" label="Genomic HGVS" />
+          <FieldSet name="variant[0].proteinHGVS" label="Protein HGVS" />
+          <FieldSet name="variant[0].zygosity" label="Zygosity" />
+          <FieldSet name="variant[0].inheritanceMethod" label="Inhertiance Method" />
+          <FieldSet name="variant[0].classification" label="Classification" />
+          <FieldSet as="textarea" name="variant[0].classificationEvidence" label="Classification Evidence" />
+          <FieldSet type="checkbox" name="variant[0].confirmedVariant" label="Variant Confirmed" />
+          <FieldSet as="textarea" name="variant[0].comment" label="Comment" />
         </>
       )}
 

@@ -1,6 +1,7 @@
 import { Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { FormValues } from "../components/reports/ReportForm";
 import {
+  createNullVariantAndId,
   furtherTestingAndId,
   organisationAndId,
   patientAndId,
@@ -34,9 +35,15 @@ export const createBundle = (form: FormValues) => {
   const furtherTesting = furtherTestingAndId(form.result, patient.id);
   const plan = planDefinitionAndId(form.sample, form.result, patient.id);
   const { authoriser, reporter } = practitionersAndIds(form.result);
-  const variants: ResourceAndIds[] = form.variant.map((variant: VariantSchema) =>
-    variantAndId(variant, patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id),
-  );
+  let variants: ResourceAndIds[];
+  if (form.variant.length) {
+    variants = form.variant.map((variant: VariantSchema) =>
+      variantAndId(variant, patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id),
+    );
+  } else {
+    variants = [createNullVariantAndId(patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id)];
+  }
+
   const serviceRequest = serviceRequestAndId(form.sample, patient.id, plan.id, reporter.id, specimen.id);
   const report = reportAndId(
     form.result,
