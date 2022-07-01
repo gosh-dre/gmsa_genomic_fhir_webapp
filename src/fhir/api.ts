@@ -63,7 +63,7 @@ export const createBundle = (form: FormValues) => {
       createEntry(specimen.resource, specimen.identifier),
       createEntry(authoriser.resource),
       createEntry(reporter.resource),
-      variants.map((variant) => createEntry(variant.resource, variant.identifier)),
+      ...variants.map((variant) => createEntry(variant.resource, variant.identifier)),
       createEntry(furtherTesting.resource),
       createEntry(plan.resource),
       createEntry(serviceRequest.resource),

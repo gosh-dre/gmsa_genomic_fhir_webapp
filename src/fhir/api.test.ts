@@ -2,6 +2,7 @@ import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { Fhir } from "fhir/fhir";
 import { FormValues } from "../components/reports/ReportForm";
 import { createBundle } from "./api";
+import { Observation } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 const fhir = new Fhir();
 
@@ -92,9 +93,38 @@ describe("FHIR resources", () => {
    * When a FHIR bundle is created
    * Then the fhir library should pass validation of the bundle
    */
-  test("Bundle is valid", () => {
+  test("Bundle with variants is valid", () => {
     const bundle = createBundle(testValues);
 
+    const output = fhir.validate(bundle);
+    console.info("Validation output");
+    console.info(JSON.stringify(output.messages, null, 2));
+    expect(output.valid).toBeTruthy();
+  });
+
+  /**
+   * Given that form data has been populated with no variants
+   * When a FHIR bundle is created
+   * Then the fhir library should pass validation of the bundle and null variant entry
+   */
+  test("Bundle without variants", () => {
+    const noVariants = { ...testValues, variant: [] };
+
+    const bundle = createBundle(noVariants);
+
+    // null variant entry
+    const variantNotes = bundle.entry
+      .filter((entry) => entry.resourceType === "Observation")
+      .map((entry) => entry.resource as Observation)
+      .filter((obs) =>
+        obs.meta?.profile?.includes("http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/Variant"),
+      )
+      .map((obs) => obs.note)
+      .flat();
+
+    expect(variantNotes).toEqual([{ text: "No variants reported" }]);
+
+    // fhir validation
     const output = fhir.validate(bundle);
     console.info("Validation output");
     console.info(JSON.stringify(output.messages, null, 2));
