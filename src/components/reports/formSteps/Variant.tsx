@@ -19,29 +19,7 @@ const Variant: FC<Props> = (props) => {
     const currentVariantExists = !variantExists;
 
     if (!currentVariantExists) {
-      setFieldValue("variant.gene", "none");
-      setFieldValue("variant.genomicHGVS", "none");
-      setFieldValue("variant.inheritanceMethod", "none");
-      setFieldValue("variant.classification", "none");
-      setFieldValue("variant.proteinHGVS", "none");
-      setFieldValue("variant.transcript", "none");
-      setFieldValue("variant.zygosity", "none");
-      setFieldValue("variant.classificationEvidence", "none");
-      setFieldValue("variant.confirmedVariant", false);
-      setFieldValue("variant.comment", "none");
-    }
-
-    if (currentVariantExists) {
-      setFieldValue("variant.gene", "");
-      setFieldValue("variant.genomicHGVS", "");
-      setFieldValue("variant.inheritanceMethod", "");
-      setFieldValue("variant.classification", "");
-      setFieldValue("variant.proteinHGVS", "");
-      setFieldValue("variant.transcript", "");
-      setFieldValue("variant.zygosity", "");
-      setFieldValue("variant.classificationEvidence", "");
-      setFieldValue("variant.confirmedVariant", false);
-      setFieldValue("variant.comment", "");
+      setFieldValue("variants", []);
     }
 
     setVariantExists(currentVariantExists);
