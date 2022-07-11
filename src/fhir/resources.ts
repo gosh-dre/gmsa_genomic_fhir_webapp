@@ -121,15 +121,15 @@ const practitionerAndId = (fullName: string, title: string): ResourceAndIds => {
   const nameSplit = fullName.split(/\s/g);
   const firstName = nameSplit[0];
   const lastName = nameSplit.slice(1).join(" ");
-
   const practitioner = new Practitioner();
+
   practitioner.id = uuidv4();
   practitioner.resourceType = "Practitioner";
-  practitioner.identifier = [{ value: fullName }];
   practitioner.active = true;
   practitioner.name = [{ given: [firstName], family: lastName, prefix: [title] }];
-
-  return { identifier: `${fullName} ${title}`, id: practitioner.id, resource: practitioner };
+  const identifier = fullName.toLowerCase().replaceAll(/\s/g, "");
+  practitioner.identifier = [{ value: identifier }];
+  return { identifier: identifier, id: practitioner.id, resource: practitioner };
 };
 
 /**
