@@ -1,4 +1,4 @@
-import { Patient as PatientClass } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { FormValues } from "./ReportForm";
 
 export const initialValues: FormValues = {
@@ -18,7 +18,7 @@ export const initialValues: FormValues = {
     firstName: "Donald",
     lastName: "Duck",
     dateOfBirth: "2012-03-04",
-    gender: PatientClass.GenderEnum.Male,
+    gender: Patient.GenderEnum.Male,
     familyNumber: "Z409929",
   },
   sample: {
