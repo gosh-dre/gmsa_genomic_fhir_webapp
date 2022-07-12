@@ -1,7 +1,5 @@
 /**
- * required to allow for tests to run against API.
  * May mock out API later but useful for testing during development
- * @jest-environment node
  */
 
 import { getValues, zygosity } from "./loinc";

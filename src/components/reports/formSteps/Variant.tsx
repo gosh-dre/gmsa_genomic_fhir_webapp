@@ -1,8 +1,9 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 
 import FieldSet from "../FieldSet";
 import FormStepBtn from "../../UI/FormStepBtn";
 import classes from "./Variant.module.css";
+import { getValues, zygosity } from "../../../code_systems/loinc";
 
 interface Props {
   nextStep: () => void;
@@ -12,8 +13,32 @@ interface Props {
   setFieldValue: (field: string, value: string | string[] | boolean) => void;
 }
 
+const dropDownStructure = {
+  inheritanceMethod: "",
+  classification: "",
+  zygosity: {},
+};
+
 const Variant: FC<Props> = (props) => {
   const { nextStep, prevStep, variantExists, setVariantExists, setFieldValue } = props;
+  const [dropDownItems, setDropDownItems] = useState(dropDownStructure);
+
+  useEffect(() => {
+    const setDataFromApis = async () => {
+      try {
+        const valueSet = await zygosity();
+        dropDownStructure.zygosity = getValues(valueSet);
+        setDropDownItems(dropDownStructure);
+        console.info("Drop down items set");
+        console.info(dropDownStructure);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    setDataFromApis().then();
+  }, []);
+
+  console.log(dropDownItems.zygosity);
 
   const setVariantHandler = () => {
     const currentVariantExists = !variantExists;
