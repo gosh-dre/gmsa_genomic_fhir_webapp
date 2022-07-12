@@ -3,6 +3,7 @@ import { FormValues } from "../components/reports/ReportForm";
 import {
   createNullVariantAndId,
   furtherTestingAndId,
+  interpretationAndId,
   organisationAndId,
   patientAndId,
   planDefinitionAndId,
@@ -44,6 +45,15 @@ export const createBundle = (form: FormValues) => {
     variants = [createNullVariantAndId(patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id)];
   }
 
+  const variant = variantAndId(form.variant, patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id);
+  const overallInterpretation = interpretationAndId(
+    form.result,
+    patient.id,
+    specimen.id,
+    specimen.identifier,
+    reporter.id,
+    authoriser.id,
+  );
   const serviceRequest = serviceRequestAndId(form.sample, patient.id, plan.id, reporter.id, specimen.id);
   const report = reportAndId(
     form.result,
@@ -63,6 +73,8 @@ export const createBundle = (form: FormValues) => {
       createEntry(specimen.resource, specimen.identifier),
       createEntry(authoriser.resource),
       createEntry(reporter.resource),
+      createEntry(variant.resource, variant.identifier),
+      createEntry(overallInterpretation.resource, overallInterpretation.identifier),
       ...variants.map((variant) => createEntry(variant.resource, variant.identifier)),
       createEntry(furtherTesting.resource),
       createEntry(plan.resource),

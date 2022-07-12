@@ -14,7 +14,8 @@ describe("FHIR resource for development", () => {
       specimenCode: "19RG-183G0127",
       // will need codes here too - but probably best to load all possible codes and then query
       specimenType: "Venus blood specimen",
-      collectionDate: new Date("2019-06-04"),
+      receivedDateTime: new Date("2019-06-04"),
+      collectionDateTime: new Date("2019-06-04"),
       reasonForTestCode: "230387008",
       reasonForTestText:
         "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +

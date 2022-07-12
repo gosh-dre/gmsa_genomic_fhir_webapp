@@ -1,8 +1,10 @@
 import * as Yup from "yup";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 
+const today = new Date();
+
 const requiredString = Yup.string().required();
-const requiredDate = Yup.date().min("1900-01-01").required();
+const requiredDate = Yup.date().min("1900-01-01").max(today).required();
 const boolField = Yup.boolean().default(false).nullable(false);
 
 export const patientSchema = Yup.object({
@@ -28,7 +30,8 @@ export type AddressSchema = Yup.InferType<typeof addressSchema>;
 
 export const sampleSchema = Yup.object({
   specimenCode: requiredString,
-  collectionDate: requiredDate,
+  collectionDateTime: requiredDate,
+  receivedDateTime: requiredDate,
   specimenType: requiredString,
   reasonForTestCode: requiredString,
   reasonForTestText: requiredString,
@@ -38,6 +41,7 @@ export type SampleSchema = Yup.InferType<typeof sampleSchema>;
 
 const variantSchema = Yup.object({
   gene: requiredString,
+  geneInformation: requiredString,
   transcript: requiredString,
   genomicHGVS: requiredString,
   proteinHGVS: requiredString,
@@ -55,7 +59,6 @@ export const variantsSchema = Yup.array().of(variantSchema);
 
 export const reportDetailSchema = Yup.object({
   resultSummary: requiredString,
-  geneInformation: requiredString,
   reportingScientist: requiredString,
   reportingScientistTitle: requiredString,
   reportingDate: requiredDate,
@@ -65,6 +68,7 @@ export const reportDetailSchema = Yup.object({
   furtherTesting: requiredString,
   testMethodology: requiredString,
   clinicalConclusion: requiredString,
+  citation: requiredString,
 });
 
 export type ReportDetailSchema = Yup.InferType<typeof reportDetailSchema>;

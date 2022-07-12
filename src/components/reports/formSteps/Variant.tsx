@@ -30,6 +30,7 @@ const Variant: FC<Props> = (props) => {
       {variantExists && (
         <>
           <FieldSet name="variant[0].gene" label="Gene Symbol" />
+          <FieldSet as="textarea" name="variant[0].geneInformation" label="Gene Information" />
           <FieldSet name="variant[0].transcript" label="Transcript" />
           <FieldSet name="variant[0].genomicHGVS" label="Genomic HGVS" />
           <FieldSet name="variant[0].proteinHGVS" label="Protein HGVS" />
