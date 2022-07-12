@@ -8,14 +8,24 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import {
   DiagnosticReport,
-  Observation,
+  HumanName,
   Organization,
-  Patient, PlanDefinition,
-  Practitioner, Resource,
+  Patient,
+  PlanDefinition,
+  Practitioner,
+  RelatedArtifact,
+  Resource,
   ServiceRequest,
-  Specimen, Task,
+  Specimen,
+  Task,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import { generatedNarrative, makeGoshAssigner, observationComponent, reference } from "./resource_helpers";
+import {
+  createPatientObservation,
+  generatedNarrative,
+  makeGoshAssigner,
+  observationComponent,
+  reference,
+} from "./resource_helpers";
 
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
@@ -23,16 +33,16 @@ export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-4
  * Resource and reference ID for referring to the resource within a bundle.
  */
 type ResourceAndId = {
-  resource: Resource,
-  id: string
-}
+  resource: Resource;
+  id: string;
+};
 
 /**
  * {@link ResourceAndId} with an identifier used as a search term in PUT request of bundle.
  */
 type ResourceAndIds = ResourceAndId & {
-  identifier: string
-}
+  identifier: string;
+};
 
 /**
  * Create a FHIR patient object from form data
@@ -42,22 +52,29 @@ type ResourceAndIds = ResourceAndId & {
 export const patientAndId = (form: typeof patientSchema, organisationId: string): ResourceAndIds => {
   const patient = new Patient();
   patient.id = uuidv4();
+  patient.active = true;
+  patient.gender = form.gender;
   patient.name = [{ family: form.lastName, given: [form.firstName] }];
   patient.identifier = [
     { value: form.mrn, ...makeGoshAssigner("MRN") },
     // implementing GOSH's structure, they chose this to represent a family as it doesn't exist in the specification
     {
-      extension: [{
-        url: "https://fhir.nhs.uk/R4/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus",
-        valueCodeableConcept: {
-          coding: [{
-            system: "https://fhir.nhs.uk/R4/CodeSystem/UKCore-NHSNumberVerificationStatus",
-            code: form.familyNumber,
-            display: "Family Number",
-          }],
+      extension: [
+        {
+          url: "https://fhir.nhs.uk/R4/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus",
+          valueCodeableConcept: {
+            coding: [
+              {
+                system: "https://fhir.nhs.uk/R4/CodeSystem/UKCore-NHSNumberVerificationStatus",
+                code: form.familyNumber,
+                display: "Family Number",
+              },
+            ],
+          },
         },
-      }],
-    }];
+      ],
+    },
+  ];
   patient.birthDate = form.dateOfBirth;
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
@@ -71,21 +88,27 @@ export const organisationAndId = (form: typeof addressSchema): ResourceAndIds =>
   org.identifier = [{ value: GOSH_GENETICS_IDENTIFIER }];
   org.resourceType = "Organization";
   org.active = true;
-  org.type = [{
-    "coding": [{
-      "system": "http://terminology.hl7.org/CodeSystem/organization-type",
-      "code": "prov",
-      "display": "Healthcare Provider",
-    }],
-    "text": "Healthcare Provider",
-  }];
+  org.type = [
+    {
+      coding: [
+        {
+          system: "http://terminology.hl7.org/CodeSystem/organization-type",
+          code: "prov",
+          display: "Healthcare Provider",
+        },
+      ],
+      text: "Healthcare Provider",
+    },
+  ];
   org.name = form.name;
-  org.address = [{
-    line: form.streetAddress,
-    city: form.city,
-    postalCode: form.postalCode,
-    country: form.country,
-  }];
+  org.address = [
+    {
+      line: form.streetAddress,
+      city: form.city,
+      postalCode: form.postalCode,
+      country: form.country,
+    },
+  ];
   org.text = generatedNarrative(form.name);
 
   return { identifier: GOSH_GENETICS_IDENTIFIER, id: org.id, resource: org };
@@ -113,7 +136,9 @@ const practitionerAndId = (fullName: string, title: string): ResourceAndIds => {
   practitioner.resourceType = "Practitioner";
   practitioner.identifier = [{ value: fullName }];
   practitioner.active = true;
-  practitioner.name = [{ given: [firstName], family: lastName, prefix: [title] }];
+  practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Usual }];
+  // suggested shorter form for role
+  practitioner.qualification = [{ code: { text: title } }];
 
   return { identifier: `${fullName} ${title}`, id: practitioner.id, resource: practitioner };
 };
@@ -127,50 +152,95 @@ export const specimenAndId = (sample: typeof sampleSchema, patientId: string): R
   const specimen = new Specimen();
   specimen.id = uuidv4();
   specimen.resourceType = "Specimen";
-  specimen.collection = { collectedDateTime: sample.collectionDate };
+  specimen.receivedTime = sample.receivedDateTime;
+  specimen.collection = { collectedDateTime: sample.collectionDateTime };
   specimen.identifier = [{ value: sample.specimenCode, id: "specimenId" }];
   specimen.type = {
-    coding: [{
-      system: "http://snomed.info/sct",
-      code: "122555007",
-      display: "Venus blood specimen",
-    }],
+    coding: [
+      {
+        system: "http://snomed.info/sct",
+        code: "122555007",
+        display: "Venus blood specimen",
+      },
+    ],
   };
   specimen.subject = reference("Patient", patientId);
 
   return { identifier: sample.specimenCode, id: specimen.id, resource: specimen };
 };
 
+export const interpretationAndId = (
+  result: typeof reportDetailSchema,
+  patientId: string,
+  specimenId: string,
+  specimenBarcode: string,
+  reporterId: string,
+  authoriserId: string,
+): ResourceAndIds => {
+  const obsId = uuidv4();
+  const obs = createPatientObservation(
+    obsId,
+    patientId,
+    specimenId,
+    reporterId,
+    authoriserId,
+    "51968-6",
+    "Genetic disease analysis overall interpretation",
+  );
+
+  obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/overall-interpretation"] };
+  obs.interpretation = [
+    {
+      coding: [
+        {
+          system: "http://loinc.org",
+          code: "LA6576-8",
+          display: result.overallInterpretation,
+        },
+      ],
+    },
+  ];
+  obs.valueString = result.resultSummary;
+  obs.note = [{ text: result.geneInformation }];
+  const identifier = `${specimenBarcode}$overall-interpretation`;
+  obs.identifier = [{ value: identifier, id: "{specimenBarcode}$overall-interpretation" }];
+
+  return { identifier: identifier, id: obsId, resource: obs };
+};
+
 export const variantAndId = (
   variant: typeof variantSchema,
-  patientId: string, specimenId: string, specimenBarcode: string, reporterId: string, authoriserId: string,
+  patientId: string,
+  specimenId: string,
+  specimenBarcode: string,
+  reporterId: string,
+  authoriserId: string,
 ): ResourceAndIds => {
-  const obs = new Observation();
-  obs.id = uuidv4();
-  obs.resourceType = "Observation";
-  obs.status = Observation.StatusEnum.Final;
-  obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/Variant"] };
-  obs.code = {
-    coding: [{
-      system: "http://loinc.org",
-      code: "69548-6",
-      display: "Genetic variant assessment",
-    }],
-  };
-  obs.subject = reference("Patient", patientId);
-  obs.specimen = reference("Specimen", specimenId);
-  obs.performer = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
+  const obsId = uuidv4();
+  const obs = createPatientObservation(
+    obsId,
+    patientId,
+    specimenId,
+    reporterId,
+    authoriserId,
+    "69548-6",
+    "Genetic variant assessment",
+  );
+  obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"] };
   obs.component = [
-    observationComponent({
+    observationComponent(
+      {
         system: "http://loinc.org",
-        code: "48013-7",
-        display: "Genomic reference sequence ID",
+        code: "51958-7",
+        display: "Transcript reference sequence identifier",
       },
       {
         system: "http://www.ncbi.nlm.nih.gov/refseq",
         code: variant.transcript,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         system: "http://loinc.org",
         code: "53034-5",
         display: "Allelic state",
@@ -180,19 +250,23 @@ export const variantAndId = (
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         code: "LA6705-3",
         display: variant.zygosity,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
-        code: "LL4034-6",
-        display: "ACMG_Clinical significance of genetic variation",
+        code: "53037-8",
+        display: "Genetic disease sequence variation interpretation",
       },
       {
         system: "http://loinc.org",
         code: "LA26332-9",
         display: variant.classification,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "79742-3",
@@ -202,8 +276,10 @@ export const variantAndId = (
         system: "http://loinc.org",
         code: "LA24640-7",
         display: variant.inheritanceMethod,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "48005-3",
@@ -212,73 +288,76 @@ export const variantAndId = (
       {
         system: "http://varnomen.hgvs.org/",
         code: variant.proteinHGVS,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "48004-6",
         display: "DNA change (c.HGVS)",
       },
       {
-        system: "http://loinc.org",
-        code: "48004-6",
+        system: "http://varnomen.hgvs.org/",
         display: variant.genomicHGVS,
-      }),
-    observationComponent({
+      },
+    ),
+    observationComponent(
+      {
+        // custom code
+        system: "http://hl7.org/evidence",
+        code: "evidence",
+        display: "Evidence for classification of variant",
+      },
+      variant.classificationEvidence,
+    ),
+    observationComponent(
+      {
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://www.genenames.org/geneId",
         code: "HGNC:4389",
-        display: "Approved symbol",
       },
       variant.gene,
     ),
-    observationComponent({
-        // code hard-coded for now but this will be addressed when linking in with clinical coding
-        system: "http://hl7.org/mutation",
+    observationComponent(
+      {
+        // custom code
+        system: "http://hl7.org/variant",
         code: "confirmed-variant",
-        display: "confirmed-variant",
       },
       variant.confirmedVariant,
     ),
   ];
-  obs.note = [{
-    authorString: "comments",
-    text: variant.comment,
-  }];
+  obs.note = [
+    {
+      authorString: "comments",
+      text: variant.comment,
+    },
+    {
+      authorString: "gene information",
+      text: variant.geneInformation,
+    },
+  ];
   const identifier = `${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`;
-  obs.identifier = [{ value: identifier, id: "specimenBarcode$transcript:genomicHGVS" }];
+  obs.identifier = [{ value: identifier, id: "{specimenBarcode}${transcript}:{genomicHGVS}" }];
 
-  return { identifier: identifier, id: obs.id, resource: obs };
+  return { identifier: identifier, id: obsId, resource: obs };
 };
 
-export const planDefinitionAndId = (sample: typeof sampleSchema, report: typeof reportDetailSchema, patientId: string): ResourceAndId => {
+export const planDefinitionAndId = (
+  sample: typeof sampleSchema,
+  report: typeof reportDetailSchema,
+  patientId: string,
+): ResourceAndId => {
   const plan = new PlanDefinition();
   plan.id = uuidv4();
   plan.resourceType = "PlanDefinition";
   plan.status = PlanDefinition.StatusEnum.Active;
-  plan.type = {
-    "coding": [{
-      system: "http://terminology.hl7.org/CodeSystem/plan-definition-type",
-      code: "protocol",
-      display: "Protocol",
-    }],
-  };
-  plan.description = sample.reasonForTestText;
-  plan.action = [
+  plan.description = sample.testMethodology;
+  plan.relatedArtifact = [
     {
-      prefix: "1",
-      description: report.testMethodology,
-      title: "Test Method",
-    },
-    {
-      prefix: "2",
-      description: report.geneInformation,
-      title: "Gene information",
-    },
-    {
-      prefix: "3",
-      description: report.testMethodology,
-      title: "Gene Interpretation",
+      type: RelatedArtifact.TypeEnum.Citation,
+      citation: report.citation,
     },
   ];
   plan.subjectReference = reference("Patient", patientId);
@@ -295,11 +374,13 @@ export const furtherTestingAndId = (report: typeof reportDetailSchema, patientId
   task.code = {
     // harcoded for now but should be set from form, allowing multiple selections from the coding system
     // coding system: LL1037-2
-    coding: [{
-      system: "http://loinc.org",
-      code: "LA14020-4",
-      display: "Genetic counseling recommended",
-    }],
+    coding: [
+      {
+        system: "http://loinc.org",
+        code: "LA14020-4",
+        display: "Genetic counseling recommended",
+      },
+    ],
   };
   task.description = report.furtherTesting;
   task.for = reference("Patient", patientId);
@@ -315,41 +396,45 @@ export const furtherTestingAndId = (report: typeof reportDetailSchema, patientId
  * @param specimenId
  */
 export const serviceRequestAndId = (
-  sample: typeof sampleSchema, patientId: string, planId: string, practitionerId: string, specimenId: string,
+  sample: typeof sampleSchema,
+  patientId: string,
+  planId: string,
+  practitionerId: string,
+  specimenId: string,
 ): ResourceAndId => {
   const request = new ServiceRequest();
   request.resourceType = "ServiceRequest";
   request.id = uuidv4();
   request.meta = { profile: ["http://hl7.org/fhir/StructureDefinition/servicerequest"] };
   request.text = generatedNarrative("Lab Procedure");
-  request.instantiatesCanonical = [`PlanDefinition/${planId}`];
   request.status = "active";
   request.intent = "order";
-  request.category = [{
-    coding: [{
-      system: "http://snomed.info/sct",
-      code: "108252007",
-      display: "Laboratory procedure",
-    }],
-  }];
+  request.category = [
+    {
+      coding: [
+        {
+          system: "http://snomed.info/sct",
+          code: "108252007",
+          display: "Laboratory procedure",
+        },
+      ],
+    },
+  ];
+  request.supportingInfo = [reference("PlanDefinition", planId)];
   request.subject = reference("Patient", patientId);
-  request.performerType = {
-    coding: [{
-      system: "http://snomed.info/sct",
-      code: "310049001",
-      display: "Clinical genetics service",
-    }],
-  };
-  request.performer = [reference("Practitioner", practitionerId)];
-  request.reasonCode = [{
-    coding: [{
-      // hardcoded for now, but have issue to pull this through from clinical APIs
-      system: "http://snomed.info/sct",
-      code: sample.reasonForTestCode,
-      display: "Reason for recommending early-onset benign childhood occipita epilepsy",
-    }],
-    text: sample.reasonForTestText,
-  }];
+  request.reasonCode = [
+    {
+      coding: [
+        {
+          // hardcoded for now, but have issue to pull this through from clinical APIs
+          system: "http://snomed.info/sct",
+          code: sample.reasonForTestCode,
+          display: "Reason for recommending early-onset benign childhood occipita epilepsy",
+        },
+      ],
+      text: sample.reasonForTestText,
+    },
+  ];
   request.specimen = [reference("Specimen", specimenId)];
 
   return { id: request.id, resource: request };
@@ -357,27 +442,34 @@ export const serviceRequestAndId = (
 
 export const reportAndId = (
   result: typeof reportDetailSchema,
-  patientId: string, reporterId: string, authoriserId: string, organisationId: string, specimenId: string, resultIds: string[],
+  patientId: string,
+  reporterId: string,
+  authoriserId: string,
+  organisationId: string,
+  specimenId: string,
+  resultIds: string[],
 ): ResourceAndId => {
   const report = new DiagnosticReport();
   report.id = uuidv4();
+  report.effectiveDateTime = result.authorisingDate;
+  report.issued = result.reportingDate;
   report.resourceType = "DiagnosticReport";
   report.status = DiagnosticReport.StatusEnum.Final;
   report.subject = reference("Patient", patientId);
   report.specimen = [reference("Specimen", specimenId)];
   report.performer = [reference("Organization", organisationId)];
-  report.result = resultIds.map(resultId => reference("Observation", resultId));
-  report.resultsInterpreter = [
-    reference("Practitioner", reporterId),
-    reference("Practitioner", authoriserId),
-  ];
+  report.result = resultIds.map((resultId) => reference("Observation", resultId));
+  report.resultsInterpreter = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
+  // waiting for confirmation of change of coding system to snomed-ct
   report.code = {
-    coding: [{
-      // harcoded for now, but will pull this through
-      system: "http://loinc.org",
-      code: "81247-9",
-      display: "Early onset or syndromic epilepsy",
-    }],
+    coding: [
+      {
+        // harcoded for now, but will pull this through
+        system: "http://loinc.org",
+        code: "81247-9",
+        display: "Early onset or syndromic epilepsy",
+      },
+    ],
   };
   report.conclusion = result.clinicalConclusion;
 

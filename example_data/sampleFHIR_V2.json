@@ -1,0 +1,1247 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "DiagnosticReport/85940927-468f-f53d-864a-7a50b48d73f1",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/StructureDefinition/genomicreport"
+          ]
+        },
+        "id": "85940927-468f-f53d-864a-7a50b48d73f1",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "82511000000108",
+              "display": "Early-onset_or_syndromic_epilepsy"
+            }
+          ]
+        },
+        "subject": {
+          "type": "Patient",
+          "reference": "Patient/148b2758-d7ab-7928-09e4-69e6ec62b2c8"
+        },
+        "issued": "2020-04-06",
+        "resultsInterpreter": [
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d450fe4a-ec4f-217b-b306-d1a8e5eeac76"
+          },
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d67e55fd-642b-fa42-aef9-c00b8a64c1b9"
+          }
+        ],
+        "specimen": [
+          {
+            "type": "Specimen",
+            "reference": "Specimen/37176e84-d977-e993-3c49-d76fcfc6e625"
+          }
+        ],
+        "result": [
+          {
+            "type": "Observation",
+            "reference": "Observation/d3447490-96fd-35d0-adf2-0806e5214606"
+          },
+          {
+            "type": "Observation",
+            "reference": "Observation/46743741-9466-e472-6b5f-5241f323ca74"
+          },
+          {
+            "type": "Observation",
+            "reference": "Observation/a425799a-a905-d750-7e1e-a9c573581a81"
+          },
+          {
+            "type": "Observation",
+            "reference": "Observation/fb82860d-eabc-a8d0-b341-facdff0ac0f1"
+          }
+        ],
+        "conclusion": "Consistent with a diagnosis of Rett syndrome."
+      },
+      "request": {
+        "method": "POST",
+        "url": "DiagnosticReport"
+      }
+    },
+    {
+      "fullUrl": "Patient/148b2758-d7ab-7928-09e4-69e6ec62b2c8",
+      "resource": {
+        "id": "148b2758-d7ab-7928-09e4-69e6ec62b2c8",
+        "resourceType": "Patient",
+        "active": true,
+        "name": [
+          {
+            "family": "Manager",
+            "given": [
+              "General"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "2016-06-01",
+        "identifier": [
+          {
+            "value": "60791509",
+            "use": "official"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "Specimen/37176e84-d977-e993-3c49-d76fcfc6e625",
+      "resource": {
+        "resourceType": "Specimen",
+        "id": "37176e84-d977-e993-3c49-d76fcfc6e625",
+        "receivedTime": "2020-03-10T11:10:00",
+        "collection": {
+          "collectedDateTime": "2020-06-02T14:21:00"
+        },
+        "identifier": [
+          {
+            "value": "20RG-114G00099",
+            "id": "specimen_id"
+          }
+        ],
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "122555007",
+              "display": "Blood, Venous"
+            }
+          ]
+        },
+        "subject": {
+          "type": "Patient",
+          "reference": "Patient/148b2758-d7ab-7928-09e4-69e6ec62b2c8"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Specimen"
+      }
+    },
+    {
+      "fullUrl": "Practitioner/d450fe4a-ec4f-217b-b306-d1a8e5eeac76",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "d450fe4a-ec4f-217b-b306-d1a8e5eeac76",
+        "active": true,
+        "name": [
+          {
+            "use": "usual",
+            "family": "Nephrology",
+            "given": [
+              "Clinics"
+            ],
+            "text": "Authorized By"
+          }
+        ],
+        "qualification": [
+          {
+            "identifier": [
+              {
+                "type": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                      "code": "gosh-staff-owl",
+                      "display": "National Provider identifier"
+                    }
+                  ]
+                },
+                "system": "http://hl7.org/fhir/sid/us-npi",
+                "value": "123456"
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-2.7-0360",
+                  "code": "gosh-staff-owl",
+                  "display": "Gosh Lab Scientist"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "text": "Principal Clinical Scientist"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "fullUrl": "Practitioner/d67e55fd-642b-fa42-aef9-c00b8a64c1b9",
+      "resource": {
+        "resourceType": "Practitioner",
+        "active": true,
+        "id": "d67e55fd-642b-fa42-aef9-c00b8a64c1b9",
+        "name": [
+          {
+            "use": "usual",
+            "family": "Quality",
+            "given": [
+              "Activity"
+            ],
+            "text": "Reported By"
+          }
+        ],
+        "qualification": [
+          {
+            "identifier": [
+              {
+                "type": {
+                  "coding": [
+                    {
+                      "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                      "code": "gosh-staff-owl",
+                      "display": "National Provider identifier"
+                    }
+                  ]
+                },
+                "system": "http://hl7.org/fhir/sid/us-npi",
+                "value": "123456"
+              }
+            ],
+            "code": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-2.7-0360",
+                  "code": "gosh-staff-owl",
+                  "display": "Gosh Lab Scientist"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "text": "Clinical Scientist"
+            }
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Practitioner"
+      }
+    },
+    {
+      "fullUrl": "Observation/d3447490-96fd-35d0-adf2-0806e5214606",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "d3447490-96fd-35d0-adf2-0806e5214606",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "69548-6",
+              "display": "Genetic variant accesment"
+            }
+          ]
+        },
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/genomic-reporting/variant1"
+          ]
+        },
+        "subject": {
+          "type": "Patient",
+          "reference": "Patient/148b2758-d7ab-7928-09e4-69e6ec62b2c8"
+        },
+        "specimen": {
+          "type": "Specimen",
+          "reference": "Specimen/37176e84-d977-e993-3c49-d76fcfc6e625"
+        },
+        "performer": [
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d450fe4a-ec4f-217b-b306-d1a8e5eeac76"
+          },
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d67e55fd-642b-fa42-aef9-c00b8a64c1b9"
+          }
+        ],
+        "note": [
+          {
+            "authorString": "gene information",
+            "text": "MECP2: Pathogenic variants in MECP2 can cause a variety of X-linked conditions: Rett syndrome (OMIM, 312750), neonatal severe encephalopathy (OMIM,300673), and X-linked syndromic mental retardation (OMIM 300260 and 300055)."
+          }
+        ],
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "51958-7",
+                  "display": "Transcript reference sequence [ID]"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://www.nvbi.nlm.nih.gov/nuccore",
+                  "code": "NM_001350626.1",
+                  "display": "NM_001350626.1"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48004-6",
+                  "display": "DNA change (c.HGVS)"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://varnomen.hgvs.org",
+                  "code": "c.1550G>T",
+                  "display": "c.1550G>T"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48005-3",
+                  "display": "Amino acid change (pHGVS)"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://varnomen.hgvs.org/",
+                  "code": "p.(Leu321Arg)",
+                  "display": "p.(Leu321Arg)"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53034-5",
+                  "display": "zygosity"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA6706-1",
+                  "display": "heterozygote"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53037-8",
+                  "display": "Clinical significance"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA26332-9",
+                  "display": "likely_pathogetic"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53034-0",
+                  "display": "Inheritance pattern based on family history"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA24947-6",
+                  "display": "associated_and_x_linked"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://www.genenames.org/geneId",
+                  "code": "HGNC:795",
+                  "display": "MECP2"
+                }
+              ]
+            },
+            "valueString": "MECP2"
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/evidence",
+                  "code": "evidence",
+                  "display": "Evidence for classification of variant"
+                }
+              ]
+            },
+            "valueString": "_ predicted to be deleterious by in silico prediction tools (PP3_Supporting). _ previous reported in the literature in a female patient with Rett syndrome (1) and having arisen de novo in a male patient with cognitive impairment/progressive dystonia (2) (PS4_Moderate) & (PM6_Supporting) _ Similar variant affecting the same amino acid, c.953G>A p.(Arg318His) has"
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/variant",
+                  "code": "confirmed-mutation",
+                  "display": true
+                }
+              ]
+            },
+            "valueBoolean": true
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "Observation/46743741-9466-e472-6b5f-5241f323ca74",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "46743741-9466-e472-6b5f-5241f323ca74",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "69548-6",
+              "display": "Genetic variant accesment"
+            }
+          ]
+        },
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/genomic-reporting/variant2"
+          ]
+        },
+        "subject": {
+          "type": "Patient",
+          "reference": "Patient/148b2758-d7ab-7928-09e4-69e6ec62b2c8"
+        },
+        "specimen": {
+          "type": "Specimen",
+          "reference": "Specimen/37176e84-d977-e993-3c49-d76fcfc6e625"
+        },
+        "performer": [
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d450fe4a-ec4f-217b-b306-d1a8e5eeac76"
+          },
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d67e55fd-642b-fa42-aef9-c00b8a64c1b9"
+          }
+        ],
+        "note": [
+          {
+            "authorString": "gene information",
+            "text": "BRAT1: Biallelic pathogenic variants cause lethal neonatal rigidity and multifocal seizures syndrome (RMFSL) (MIM 614498) which is a severe autosomal recessive epileptic encephalopathy; affected infants achieve no developmental milestones and die within the first months or years of life."
+          }
+        ],
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "51958-7",
+                  "display": "Transcript reference sequence [ID]"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://www.nvbi.nlm.nih.gov/nuccore",
+                  "code": "NM_032504.1",
+                  "display": "NM_032504.1"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48004-6",
+                  "display": "DNA change (c.HGVS)"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://varnomen.hgvs.org",
+                  "code": "c.923G>C",
+                  "display": "c.923G>C"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48005-3",
+                  "display": "Amino acid change (pHGVS)"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://varnomen.hgvs.org/",
+                  "code": "p.(Gly40Val)",
+                  "display": "p.(Gly40Val)"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53034-5",
+                  "display": "zygosity"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA6706-1",
+                  "display": "heterozygote"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53037-8",
+                  "display": "Clinical significance"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA26333-7",
+                  "display": "uncertain_significance"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53034-0",
+                  "display": "Inheritance pattern based on family history"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA24641-5",
+                  "display": "autosomal_recessive_digenic"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://www.genenames.org/geneId",
+                  "code": "HGNC:795",
+                  "display": "BRAT1"
+                }
+              ]
+            },
+            "valueString": "BRAT1"
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/evidence",
+                  "code": "evidence",
+                  "display": "Evidence for classification of variant"
+                }
+              ]
+            },
+            "valueString": "These variants occurs in a recessive genes that have been 100% sequenced and no second variant identified."
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/variant",
+                  "code": "confirmed-mutation",
+                  "display": true
+                }
+              ]
+            },
+            "valueBoolean": true
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "Observation/a425799a-a905-d750-7e1e-a9c573581a81",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "a425799a-a905-d750-7e1e-a9c573581a81",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "69548-6",
+              "display": "Genetic variant accesment"
+            }
+          ]
+        },
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/genomic-reporting/variant3"
+          ]
+        },
+        "subject": {
+          "type": "Patient",
+          "reference": "Patient/148b2758-d7ab-7928-09e4-69e6ec62b2c8"
+        },
+        "specimen": {
+          "type": "Specimen",
+          "reference": "Specimen/37176e84-d977-e993-3c49-d76fcfc6e625"
+        },
+        "performer": [
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d450fe4a-ec4f-217b-b306-d1a8e5eeac76"
+          },
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d67e55fd-642b-fa42-aef9-c00b8a64c1b9"
+          }
+        ],
+        "note": [
+          {
+            "authorString": "gene information",
+            "text": "UNC80: Biallelic pathogenic variants cause infantile hypotonia with psychomotor retardation and characteristic facies-2 (IHPRF2) (MIM 616801) which is a severe neurodevelopmental disorder with onset at birth or in early infancy. Affected individuals show severe global developmental delay with poor or absent speech and absent or limited ability to walk."
+          }
+        ],
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "51958-7",
+                  "display": "Transcript reference sequence [ID]"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://www.nvbi.nlm.nih.gov/nuccore",
+                  "code": "NM_001110792.1",
+                  "display": "NM_001110792.1"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48004-6",
+                  "display": "DNA change (c.HGVS)"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://varnomen.hgvs.org",
+                  "code": "c.606G>A",
+                  "display": "c.606G>A"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48005-3",
+                  "display": "Amino acid change (pHGVS)"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://varnomen.hgvs.org/",
+                  "code": "p.(Thr359Argfs*59)",
+                  "display": "p.(Thr359Argfs*59)"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53034-5",
+                  "display": "zygosity"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA6706-1",
+                  "display": "heterozygote"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53037-8",
+                  "display": "Clinical significance"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA26333-7",
+                  "display": "uncertain_significance"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53034-0",
+                  "display": "Inheritance pattern based on family history"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA24640-7",
+                  "display": "autosomal_recessive_digenic"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://www.genenames.org/geneId",
+                  "code": "HGNC:795",
+                  "display": "UNC80"
+                }
+              ]
+            },
+            "valueString": "UNC80"
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/evidence",
+                  "code": "evidence",
+                  "display": "Evidence for classification of variant"
+                }
+              ]
+            },
+            "valueString": ""
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/variant",
+                  "code": "confirmed-mutation",
+                  "display": false
+                }
+              ]
+            },
+            "valueBoolean": false
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "Observation/fb82860d-eabc-a8d0-b341-facdff0ac0f1",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "fb82860d-eabc-a8d0-b341-facdff0ac0f1",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "69548-6",
+              "display": "Genetic variant accesment"
+            }
+          ]
+        },
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/genomic-reporting/variant4"
+          ]
+        },
+        "subject": {
+          "type": "Patient",
+          "reference": "Patient/148b2758-d7ab-7928-09e4-69e6ec62b2c8"
+        },
+        "specimen": {
+          "type": "Specimen",
+          "reference": "Specimen/37176e84-d977-e993-3c49-d76fcfc6e625"
+        },
+        "performer": [
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d450fe4a-ec4f-217b-b306-d1a8e5eeac76"
+          },
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d67e55fd-642b-fa42-aef9-c00b8a64c1b9"
+          }
+        ],
+        "note": [
+          {
+            "authorString": "gene information",
+            "text": "MECP3: Pathogenic variants in MECP3 can cause a variety of X-linked conditions: Rett syndrome (OMIM, 312750), neonatal severe encephalopathy (OMIM,300673), and X-linked syndromic mental retardation (OMIM 300260 and 300055)."
+          }
+        ],
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "51958-7",
+                  "display": "Transcript reference sequence [ID]"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "https://www.nvbi.nlm.nih.gov/nuccore",
+                  "code": "NM_002693.2",
+                  "display": "NM_002693.2"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48004-6",
+                  "display": "DNA change (c.HGVS)"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://varnomen.hgvs.org",
+                  "code": "c.849-5A>G",
+                  "display": "c.849-5A>G"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "48005-3",
+                  "display": "Amino acid change (pHGVS)"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://varnomen.hgvs.org/",
+                  "code": "p.(Met202Ile)",
+                  "display": "p.(Met202Ile)"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53034-5",
+                  "display": "zygosity"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA6707-9",
+                  "display": "hemizygote"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53037-8",
+                  "display": "Clinical significance"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA6668-3",
+                  "display": "pathogenic"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "53034-0",
+                  "display": "Inheritance pattern based on family history"
+                }
+              ]
+            },
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA24640-7",
+                  "display": "autosomal_dominant_imprinted"
+                }
+              ]
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://www.genenames.org/geneId",
+                  "code": "HGNC:795",
+                  "display": "MECP3"
+                }
+              ]
+            },
+            "valueString": "MECP3"
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/evidence",
+                  "code": "evidence",
+                  "display": "Evidence for classification of variant"
+                }
+              ]
+            },
+            "valueString": "_ predicted to be deleterious by in silico prediction tools (PP3_Supporting). _ previous reported in the literature in a female patient with Rett syndrome (1) and having arisen de novo in a male patient with cognitive impairment/progressive dystonia (2) (PS4_Moderate) & (PM6_Supporting) _ Similar variant affecting the same amino acid, c.953G>A p.(Arg318His) has"
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://hl7.org/variant",
+                  "code": "confirmed-mutation",
+                  "display": false
+                }
+              ]
+            },
+            "valueBoolean": false
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "Task/5306f3f5-1516-6570-5b7c-709acb175a5a",
+      "resource": {
+        "resourceType": "Task",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/StructureDefinition/task-rec-followup"
+          ]
+        },
+        "id": "5306f3f5-1516-6570-5b7c-709acb175a5a",
+        "status": "requested",
+        "intent": "plan",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "LA14020-4",
+              "display": "Genetic counceling recommended"
+            }
+          ]
+        },
+        "description": "Next generation sequence analysis indicates that General Manager is heterozygous for the MECP2 c.953G>C p.(Arg318Pro) likely pathogenic variant that has been confirmed by Sanger sequence analysis",
+        "for": {
+          "type": "Patient",
+          "reference": "Patient/148b2758-d7ab-7928-09e4-69e6ec62b2c8"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Task"
+      }
+    },
+    {
+      "fullUrl": "Observation/964a870c-7c87-9b74-1d87-8f9f9cdf5a86",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "964a870c-7c87-9b74-1d87-8f9f9cdf5a86",
+        "status": "final",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/uv/genomic-reporting/overall-interpretation"
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "51968-6",
+              "display": "Genetic disease analysis overall interpretation"
+            }
+          ]
+        },
+        "subject": {
+          "type": "Patient",
+          "reference": "Patient/148b2758-d7ab-7928-09e4-69e6ec62b2c8"
+        },
+        "specimen": {
+          "type": "Specimen",
+          "reference": "Specimen/37176e84-d977-e993-3c49-d76fcfc6e625"
+        },
+        "performer": [
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/d450fe4a-ec4f-217b-b306-d1a8e5eeac76"
+          }
+        ],
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/obs-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "effectiveDateTime": "2020-06-03",
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://loinc.org",
+                "code": "LA6668-3",
+                "display": "pathogenic"
+              }
+            ]
+          }
+        ],
+        "valueString": "Next generation sequence analysis indicates that General Manager is heterozygous for the MECP2 c.953G>C p.(Arg318Pro) likely pathogenic variant that has been confirmed by Sanger sequence analysis"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/30bcab0e-d857-0102-55d4-4936a1515607",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "meta": {
+          "profile": [
+            "http://hl7.org/fhir/StructureDefinition/servicerequest"
+          ]
+        },
+        "id": "30bcab0e-d857-0102-55d4-4936a1515607",
+        "status": "active",
+        "intent": "order",
+        "supportingInfo": [
+          {
+            "reference": "PlanDefinition/4562be7f-bb42-e0b2-0426-465e3e37952d"
+          }
+        ],
+        "subject": {
+          "type": "Patient",
+          "reference": "Patient/148b2758-d7ab-7928-09e4-69e6ec62b2c8"
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "108252007",
+                "display": "Laboratory procedure"
+              }
+            ]
+          }
+        ],
+        "reasonCode": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "230387008",
+                "display": "Reason for recommending early-onset benign childhood epilepsy"
+              }
+            ],
+            "text": "Sequence variant screening in General Manager because of developmental delay, repetitive hand/finger movement and seizures. There is a clinical suspicion involving the MECP2 and the TCF4 genes"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "ServiceRequest"
+      }
+    },
+    {
+      "fullUrl": "PlanDefinition/4562be7f-bb42-e0b2-0426-465e3e37952d",
+      "resource": {
+        "resourceType": "PlanDefinition",
+        "id": "4562be7f-bb42-e0b2-0426-465e3e37952d",
+        "status": "active",
+        "participant": [
+          {
+            "type": "patient"
+          }
+        ],
+        "description": "Screening of 82 genes associated with severe delay and seizures (ADSL, ALG13, ARHGEF9, ARX, ATP1A3, ATRX, BRAT1, CDKL5, CHD2, CHRNA2, CHRNA4, CHRNB2, CLN5, CLN6, CLN8, CNTNAP2, DNM1, DOCK7, DYRK1A, EHMT1, FOXG1, GABRA1, GABRB3, GATAD2B, GNAO1, GRIN1, GRIN2A, GRIN2B, HCN1, IQSEC2, KCNA2, KCNB1, KCNC1, KCNQ2, KCNT1, KIAA1279 (KIF1BP), KIAA2022, LGI1, MAGI2, MBD5, MECP2, MEF2C, MFSD8, NACC1, NRXN1, PCDH19, PIGA, PIGN, PLCB1, PNKP, POLG, PRRT2, PURA, QARS, SCN1A, SCN1B, SCN2A, SCN8A, SETD5, SIK1, SLC12A5, SLC13A5, SLC16A2, SLC25A22, SLC2A1, SLC35A2, SLC6A1, SLC9A6, SMC1A, SPTAN1, STX1B, STXBP1, SYNGAP1, TBC1D24, TCF4, TPP1, UBE2A, UBE3A, UNC80, WDR45, WWOX, ZEB2) was carried out using next generation sequencing (Agilent SureSelect + MiSeq/NextSeq). *Pseudogenes with significant sequence homology to DMN1 exons 18, 19, 20 and 22 may result in incorrect coverage data for this gene and variants in these exons may not be detected. 99.6% of the coding bases in the targeted genes were covered >30x. Sequencing includes the coding region of the genes targeted, including intron/exon splice regions (-14 splice acceptor and +6 splice donor, unless otherwise specified). Inhouse validation attributes a minimum sensitivity of 99.9% to detect single nucleotide substitutions (with 95% confidence) and 77% for insertion/deletion variants (with 95% confidence) for regions covered by 30 or more reads. Variants are classified using the ACMG/AMP guidelines (Richards et al 2015 Genet Med) /ACGS Best Practice guidelines (2019).",
+        "relatedArtifact": [
+          {
+            "type": "citation",
+            "citation": "(1) Shapiro et al Pediatr Res. 2010 Nov;68(5):446-51. (2) Neul et al Am J Med Genet B Neuropsychiatr Genet. 2019 Jan;180(1):55-67. (3) Cheadle et al, Hum Mol Genet. 2000, 9, 1119-1129.",
+            "display": "Gene reference"
+          }
+        ]
+      },
+      "request": {
+        "method": "POST",
+        "url": "PlanDefinition"
+      }
+    }
+  ]
+}
