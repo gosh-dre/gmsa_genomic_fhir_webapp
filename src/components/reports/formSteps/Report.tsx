@@ -16,7 +16,6 @@ const Report: FC<Props> = (props) => {
       <h2>Report</h2>
       <FieldSet as="textarea" name="result.resultSummary" label="Result summary" />
       <FieldSet as="textarea" name="result.clinicalConclusion" label="Clinical Conclusion" />
-      <FieldSet as="textarea" name="result.overallInterpretation" label="Overall Interpretation" />
       <FieldSet as="textarea" name="result.citation" label="Citation" />
       <FieldSet as="textarea" name="result.furtherTesting" label="Further testing" />
       <FieldSet as="textarea" name="result.testMethodology" label="Test Methodology" />
