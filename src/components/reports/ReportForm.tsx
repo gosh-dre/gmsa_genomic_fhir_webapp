@@ -13,15 +13,13 @@ import Variant from "./formSteps/Variant";
 import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
 
-const FormValidation = Yup.object()
-  .shape({
-    address: addressSchema.required(),
-    patient: patientSchema.required(),
-    sample: sampleSchema.required(),
-    variant: variantsSchema.required(),
-    result: reportDetailSchema.required(),
-  })
-  .required();
+const FormValidation = Yup.object({
+  address: addressSchema.required(),
+  patient: patientSchema.required(),
+  sample: sampleSchema.required(),
+  variant: variantsSchema.required(),
+  result: reportDetailSchema.required(),
+}).required();
 
 export type FormValues = Yup.InferType<typeof FormValidation>;
 
