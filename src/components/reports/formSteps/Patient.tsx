@@ -36,6 +36,7 @@ const Patient: FC<Props> = (props) => {
 
       <LabSelect selectedLab={selectedLab} setSelectedLabHandler={setSelectedLabHandler} />
 
+      <FieldSet name="address.name" label="Laboratory Name" />
       <FieldSet as="textarea" name="address.streetAddress" label="Street Address" />
       <FieldSet name="address.city" label="City" />
       <FieldSet name="address.postCode" label="Post Code" />
