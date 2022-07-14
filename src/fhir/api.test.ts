@@ -1,6 +1,6 @@
 import { Fhir } from "fhir/fhir";
 import { createBundle } from "./api";
-import { initialValues } from "../components/reports/FormDefaults";
+import { initialValues, initialWithNoVariant } from "../components/reports/FormDefaults";
 import { Observation } from "fhir/r4";
 
 const fhir = new Fhir();
@@ -26,9 +26,7 @@ describe("FHIR resources", () => {
    * Then the fhir library should pass validation of the bundle and null variant entry
    */
   test("Bundle without variants", () => {
-    const noVariants = { ...initialValues, variant: [] };
-
-    const bundle = createBundle(noVariants);
+    const bundle = createBundle(initialWithNoVariant);
 
     // null variant entry
     const variantNotes = bundle.entry

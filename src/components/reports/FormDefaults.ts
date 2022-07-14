@@ -79,6 +79,11 @@ export const initialValues: FormValues = {
   },
 };
 
+export const initialWithNoVariant = {
+  ...initialValues,
+  variant: [],
+};
+
 const invalidDate = new Date("1970-01-01");
 
 export const noValues: FormValues = {
