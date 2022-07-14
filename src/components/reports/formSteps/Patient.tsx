@@ -17,6 +17,7 @@ const Patient: FC<Props> = (props) => {
 
   const setSelectedLabHandler = (lab: string) => {
     if (lab === "gosh") {
+      setFieldValue("address.name", "London North Genomic Laboratory Hub");
       setFieldValue("address.streetAddress", [
         "Great Ormond Street Hospital for Children NHS Foundation Trust",
         "Levels 4-6 Barclay House",
