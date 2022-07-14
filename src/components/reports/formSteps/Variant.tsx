@@ -17,12 +17,14 @@ type Options = {
   inheritance: LoincOption[];
   classification: LoincOption[];
   zygosity: LoincOption[];
+  followUp: LoincOption[];
 };
 
 const selectOptions: Options = {
   inheritance: [],
   classification: [],
   zygosity: [],
+  followUp: [],
 };
 
 const Variant: FC<Props> = (props) => {

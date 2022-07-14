@@ -263,7 +263,6 @@ export const variantAndId = (
         // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://www.genenames.org/geneId",
         code: "HGNC:4389",
-        display: "Approved symbol",
       },
       variant.gene,
     ),

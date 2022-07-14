@@ -22,6 +22,7 @@ export const variantCodes = async () => {
     classification: await getValueSetData("LL4034-6"),
     inheritance: await getValueSetData("LL3731-8"),
     zygosity: await getValueSetData("LL381-5"),
+    followUp: await getValueSetData("LL1037-2"),
   };
 };
 
