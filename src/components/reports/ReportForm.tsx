@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { FC, useContext, useRef, useState } from "react";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import * as Yup from "yup";
 import { FhirContext } from "../fhir/FhirContext";
@@ -12,7 +12,6 @@ import Sample from "./formSteps/Sample";
 import Variant from "./formSteps/Variant";
 import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
-import { initialValues } from "./FormDefaults";
 
 const FormValidation = Yup.object()
   .shape({
@@ -26,7 +25,11 @@ const FormValidation = Yup.object()
 
 export type FormValues = Yup.InferType<typeof FormValidation>;
 
-const ReportForm = () => {
+type Props = {
+  initialValues: FormValues;
+};
+
+const ReportForm: FC<Props> = (props: Props) => {
   const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(1);
   const [variantExists, setVariantExists] = useState(true);
@@ -85,7 +88,7 @@ const ReportForm = () => {
       <h1>Add a new report</h1>
       <Formik
         enableReinitialize={true}
-        initialValues={initialValues}
+        initialValues={props.initialValues}
         validationSchema={FormValidation}
         onSubmit={onSuccessfulSubmitHandler}
         innerRef={formRef}

@@ -79,3 +79,43 @@ export const initialValues: FormValues = {
     clinicalConclusion: "Confirms the diagnosis of Childhood-nset epileptic encephalopathy (EEOC).",
   },
 };
+
+export const noValues: FormValues = {
+  address: {
+    name: "",
+    streetAddress: [],
+    city: "",
+    country: "",
+    postCode: "",
+  },
+  patient: {
+    mrn: "",
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    gender: "",
+    familyNumber: "",
+  },
+  sample: {
+    specimenCode: "",
+    specimenType: "",
+    collectionDateTime: "",
+    receivedDateTime: "",
+    reasonForTestCode: "",
+    reasonForTestText: "",
+  },
+  variant: [],
+  result: {
+    overallInterpretation: "",
+    resultSummary: "",
+    citation: "",
+    authorisingDate: "",
+    authorisingScientist: "",
+    authorisingScientistTitle: "",
+    furtherTesting: "",
+    reportingScientist: "",
+    reportingScientistTitle: "",
+    testMethodology: "",
+    clinicalConclusion: "",
+  },
+};
