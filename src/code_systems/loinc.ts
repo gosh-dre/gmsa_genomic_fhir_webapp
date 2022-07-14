@@ -20,7 +20,7 @@ export const zygosity = async (): Promise<ValueSet> => {
 };
 
 const getValueSetData = async (valueSet: string): Promise<ValueSet> => {
-  const url = `https://fhir.loinc.org/ValueSet/${valueSet}`;
+  const url = `/loinc/ValueSet/${valueSet}`;
   const response = await fetch(url, requestInit);
 
   if (!response.ok) {

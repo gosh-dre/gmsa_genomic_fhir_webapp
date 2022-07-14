@@ -1,0 +1,10 @@
+version: "3.7"
+services:
+  nginx:
+    image: nginx:1.23.0-alpine
+    ports:
+      - "5702:82"
+    volumes:
+      - type: bind
+        source: ./nginx/conf.d
+        target: /etc/nginx/conf.d
