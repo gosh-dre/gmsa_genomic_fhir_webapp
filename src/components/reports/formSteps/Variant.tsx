@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from "react";
 import FieldSet from "../FieldSet";
 import FormStepBtn from "../../UI/FormStepBtn";
 import classes from "./Variant.module.css";
-import { getValues, zygosity } from "../../../code_systems/loinc";
+import { getValues, LoincOption, variantCodes } from "../../../code_systems/loinc";
 
 interface Props {
   nextStep: () => void;
@@ -13,32 +13,38 @@ interface Props {
   setFieldValue: (field: string, value: string | string[] | boolean) => void;
 }
 
-const dropDownStructure = {
-  inheritanceMethod: "",
-  classification: "",
-  zygosity: {},
+type Options = {
+  inheritance: LoincOption[];
+  classification: LoincOption[];
+  zygosity: LoincOption[];
+};
+
+const selectOptions: Options = {
+  inheritance: [],
+  classification: [],
+  zygosity: [],
 };
 
 const Variant: FC<Props> = (props) => {
   const { nextStep, prevStep, variantExists, setVariantExists, setFieldValue } = props;
-  const [dropDownItems, setDropDownItems] = useState(dropDownStructure);
+  const [dropDownItems, setDropDownItems] = useState(selectOptions);
 
   useEffect(() => {
     const setDataFromApis = async () => {
       try {
-        const valueSet = await zygosity();
-        dropDownStructure.zygosity = getValues(valueSet);
-        setDropDownItems(dropDownStructure);
-        console.info("Drop down items set");
-        console.info(dropDownStructure);
+        const valueSets = await variantCodes();
+        // replace this with some sort of mapping function?
+        // or better yet query all code on startup and then drill down?
+        selectOptions.classification = getValues(valueSets.classification);
+        selectOptions.inheritance = getValues(valueSets.inheritance);
+        selectOptions.zygosity = getValues(valueSets.zygosity);
+        setDropDownItems(selectOptions);
       } catch (e) {
         console.error(e);
       }
     };
     setDataFromApis().then();
   }, []);
-
-  console.log(dropDownItems.zygosity);
 
   const setVariantHandler = () => {
     const currentVariantExists = !variantExists;
@@ -86,9 +92,13 @@ const Variant: FC<Props> = (props) => {
           <FieldSet name="variant.transcript" label="Transcript" />
           <FieldSet name="variant.genomicHGVS" label="Genomic HGVS" />
           <FieldSet name="variant.proteinHGVS" label="Protein HGVS" />
-          <FieldSet name="variant.zygosity" label="Zygosity" />
-          <FieldSet name="variant.inheritanceMethod" label="Inhertiance Method" />
-          <FieldSet name="variant.classification" label="Classification" />
+          <FieldSet name="variant.zygosity" label="Zygosity" selectOptions={dropDownItems.zygosity} />
+          <FieldSet
+            name="variant.inheritanceMethod"
+            label="Inheritance Method"
+            selectOptions={dropDownItems.inheritance}
+          />
+          <FieldSet name="variant.classification" label="Classification" selectOptions={dropDownItems.classification} />
           <FieldSet as="textarea" name="variant.classificationEvidence" label="Classification Evidence" />
           <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed" />
           <FieldSet as="textarea" name="variant.comment" label="Comment" />

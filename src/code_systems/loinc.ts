@@ -15,8 +15,14 @@ const requestInit = {
   },
 };
 
-export const zygosity = async (): Promise<ValueSet> => {
-  return getValueSetData("LL381-5");
+export type LoincOption = { code: string; display: string };
+
+export const variantCodes = async () => {
+  return {
+    classification: await getValueSetData("LL4034-6"),
+    inheritance: await getValueSetData("LL3731-8"),
+    zygosity: await getValueSetData("LL381-5"),
+  };
 };
 
 const getValueSetData = async (valueSet: string): Promise<ValueSet> => {
@@ -29,8 +35,12 @@ const getValueSetData = async (valueSet: string): Promise<ValueSet> => {
   return await response.json();
 };
 
-export const getValues = (valueSet: ValueSet): ValueSetComposeIncludeConcept[] => {
-  const unpacked = valueSet.compose?.include?.flatMap((c) => c.concept).filter(isConcept);
+export const getValues = (valueSet: ValueSet): LoincOption[] => {
+  const unpacked = valueSet.compose?.include
+    ?.flatMap((c) => c.concept)
+    .filter(isConcept)
+    .flatMap((c) => makeLoincOption(c));
+
   if (unpacked === undefined) {
     return [];
   } else {
@@ -40,4 +50,8 @@ export const getValues = (valueSet: ValueSet): ValueSetComposeIncludeConcept[] =
 
 const isConcept = (concept: ValueSetComposeIncludeConcept | undefined): concept is ValueSetComposeIncludeConcept => {
   return !!concept;
+};
+
+const makeLoincOption = (concept: ValueSetComposeIncludeConcept): LoincOption => {
+  return { code: concept.code, display: concept.display || concept.code };
 };
