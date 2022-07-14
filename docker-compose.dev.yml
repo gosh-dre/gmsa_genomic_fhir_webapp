@@ -1,5 +1,13 @@
 version: "3.7"
 services:
+  nginx:
+    image: nginx:1.23.0-alpine
+    volumes:
+      - type: bind
+        source: ./nginx/conf.d
+        target: /etc/nginx/conf.d
+    ports:
+      - "5700:5700"
   fhir:
     image: "hapiproject/hapi:v5.6.0"
     ports:
@@ -22,5 +30,6 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_USER: admin
       POSTGRES_DB: hapi_r4
+
 volumes:
   fhir-db-data:

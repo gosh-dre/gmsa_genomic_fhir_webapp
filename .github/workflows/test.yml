@@ -25,7 +25,7 @@ jobs:
       - name: Setup .env file
         run: cp env/test.env .env
       - name: Run fake FHIR in docker
-        run: docker-compose -f docker-compose.fake-fhir.yml up -d
+        run: docker-compose -f docker-compose.dev.yml up -d
       - name: Build
         run: npm run build --if-present
       - name: npm test

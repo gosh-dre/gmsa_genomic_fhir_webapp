@@ -38,12 +38,12 @@ The `.evn` file is ignored by git so won't be accidentally committed.
 cp env/test.env .env 
 ```
 
-## Fake FHIR server
+## Development services
 
-Start the FHIR server in docker, running in the background
+Start the FHIR server and nginx in docker, running in the background
 
 ```shell
-docker compose -f docker-compose.fake-fhir.yml up -d
+docker compose -f docker-compose.dev.yml up -d
 ```
 
     [+] Running 3/3
@@ -55,17 +55,27 @@ docker compose -f docker-compose.fake-fhir.yml up -d
 The status of the services using `ps`
 
 ```shell
-docker compose -f docker-compose.fake-fhir.yml ps
+docker compose -f docker-compose.dev.yml ps
 ```
 
-    NAME                    COMMAND                  SERVICE             STATUS              PORTS
-    fhir-report_fhir-db_1   "docker-entrypoint.s…"   fhir-db             running             5432/tcp
-    fhir-report_fhir_1      "catalina.sh run"        fhir                running             0.0.0.0:8090->8080/tcp
-
-
+            Name                       Command               State               Ports             
+    -----------------------------------------------------------------------------------------------
+    fhir-report_fhir-db_1   docker-entrypoint.sh postgres    Up      5432/tcp                      
+    fhir-report_fhir_1      catalina.sh run                  Up      0.0.0.0:8090->8080/tcp        
+    fhir-report_nginx_1     /docker-entrypoint.sh ngin ...   Up      0.0.0.0:5700->5700/tcp, 80/tcp
 
 ## Building and running
 
 - From the repository directory, you can build and run development version using `npm start`
 - Tests can be run by: `npm test`
 - A production build can be created using `npm run build` 
+- Instead of using the react development port, nagivate to port [5700](http://localhost:5700)
+  so that the reverse proxy is in use
+
+# Decision log
+
+## Remote proxy
+
+- The LOINC rest API is experimental and doesn't have [CORS set up](https://loinc.org/forums/topic/cors-for-web-browsers/)
+- In order to be able to query the LOINC rest API, an nginx reverse proxy has been set up to avoid CORS errors
+- The configuration of this is in ()[nginx/conf.d/default.cong]
