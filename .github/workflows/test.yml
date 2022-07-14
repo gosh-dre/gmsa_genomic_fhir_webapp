@@ -23,7 +23,7 @@ jobs:
       - name: Run linting
         run: npm run lint
       - name: Setup .env file
-        run: cp env/test.env .env
+        run: cp env/dev.env .env
       - name: Run fake FHIR in docker
         run: docker-compose -f docker-compose.dev.yml up -d
       - name: Build

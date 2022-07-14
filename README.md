@@ -35,7 +35,7 @@ From the root of the project, copy the test env file to the root directory so th
 The `.evn` file is ignored by git so won't be accidentally committed. 
 
 ```shell
-cp env/test.env .env 
+cp env/dev.env .env 
 ```
 
 ## Development services
