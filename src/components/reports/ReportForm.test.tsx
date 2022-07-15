@@ -2,6 +2,7 @@ import ReportForm from "./ReportForm";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+import { noValues } from "./FormDefaults";
 
 const typeInput = (element: Element, value: string) => {
   userEvent.type(element, value);
@@ -34,7 +35,7 @@ function setLabAndPatient() {
 
 function setDummyAndNext(withDates: boolean) {
   setDummyValues(withDates);
-  userEvent.click(screen.getByText(/^next$/i));
+  userEvent.click(screen.getByText(/next/i));
 }
 
 describe("Report form", () => {
@@ -45,7 +46,7 @@ describe("Report form", () => {
    */
   test("Values returned by form submission", async () => {
     // Arrange
-    render(<ReportForm />);
+    render(<ReportForm initialValues={noValues} />);
 
     // Act    // set
     setLabAndPatient();

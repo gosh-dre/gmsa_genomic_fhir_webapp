@@ -14,38 +14,10 @@ interface Props {
 }
 
 const Variant: FC<Props> = (props) => {
-  const { nextStep, prevStep, variantExists, setVariantExists, setFieldValue } = props;
+  const { nextStep, prevStep, variantExists, setVariantExists } = props;
 
   const setVariantHandler = () => {
-    const currentVariantExists = !variantExists;
-
-    if (!currentVariantExists) {
-      setFieldValue("variant.gene", "none");
-      setFieldValue("variant.genomicHGVS", "none");
-      setFieldValue("variant.inheritanceMethod", "none");
-      setFieldValue("variant.classification", "none");
-      setFieldValue("variant.proteinHGVS", "none");
-      setFieldValue("variant.transcript", "none");
-      setFieldValue("variant.zygosity", "none");
-      setFieldValue("variant.classificationEvidence", "none");
-      setFieldValue("variant.confirmedVariant", false);
-      setFieldValue("variant.comment", "none");
-    }
-
-    if (currentVariantExists) {
-      setFieldValue("variant.gene", "");
-      setFieldValue("variant.genomicHGVS", "");
-      setFieldValue("variant.inheritanceMethod", "");
-      setFieldValue("variant.classification", "");
-      setFieldValue("variant.proteinHGVS", "");
-      setFieldValue("variant.transcript", "");
-      setFieldValue("variant.zygosity", "");
-      setFieldValue("variant.classificationEvidence", "");
-      setFieldValue("variant.confirmedVariant", false);
-      setFieldValue("variant.comment", "");
-    }
-
-    setVariantExists(currentVariantExists);
+    setVariantExists(!variantExists);
   };
 
   return (
@@ -58,20 +30,18 @@ const Variant: FC<Props> = (props) => {
 
       {variantExists && (
         <>
-          <FieldSet name="variant.gene" label="Gene Symbol" />
-          <FieldSet name="variant.transcript" label="Transcript" />
-          <FieldSet name="variant.genomicHGVS" label="Genomic HGVS" />
-          <FieldSet name="variant.proteinHGVS" label="Protein HGVS" />
-          <FieldSet name="variant.zygosity" label="Zygosity" selectOptions={loincSelect.zygosity} />
-          <FieldSet
-            name="variant.inheritanceMethod"
-            label="Inheritance Method"
-            selectOptions={loincSelect.inheritance}
+          <FieldSet name="variant[0].gene" label="Gene Symbol" />
+          <FieldSet as="textarea" name="variant[0].geneInformation" label="Gene Information" />
+          <FieldSet name="variant[0].transcript" label="Transcript" />
+          <FieldSet name="variant[0].genomicHGVS" label="Genomic HGVS" />
+          <FieldSet name="variant[0].proteinHGVS" label="Protein HGVS" />
+          <FieldSet name="variant[0].zygosity" label="Zygosity" selectOptions={loincSelect.zygosity}/>
+          <FieldSet name="variant[0].inheritanceMethod" label="Inhertiance Method"             selectOptions={loincSelect.inheritance}
           />
-          <FieldSet name="variant.classification" label="Classification" selectOptions={loincSelect.classification} />
-          <FieldSet as="textarea" name="variant.classificationEvidence" label="Classification Evidence" />
-          <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed" />
-          <FieldSet as="textarea" name="variant.comment" label="Comment" />
+          <FieldSet name="variant[0].classification" label="Classification" />
+          <FieldSet as="textarea" name="variant[0].classificationEvidence" label="Classification Evidence" selectOptions={loincSelect.classification}/>
+          <FieldSet type="checkbox" name="variant[0].confirmedVariant" label="Variant Confirmed" />
+          <FieldSet as="textarea" name="variant[0].comment" label="Comment" />
         </>
       )}
 

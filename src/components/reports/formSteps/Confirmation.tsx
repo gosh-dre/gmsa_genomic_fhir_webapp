@@ -1,10 +1,8 @@
-import { FC } from "react";
+import React, { FC } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import classes from "../ReportForm.module.css";
 import FormStepBtn from "../../UI/FormStepBtn";
-
-import { FormValues } from "../ReportForm";
 
 interface Props {
   nextStep: () => void;
@@ -15,7 +13,7 @@ interface Props {
 const Confirmation: FC<Props> = (props) => {
   const { nextStep, prevStep, formRef } = props;
 
-  const formObj: FormValues = formRef.current.values;
+  const formObj = formRef.current.values;
   const formObjAsArray: { [key: string]: string }[] = Object.keys(formObj).map((key: any) => {
     return formObj[key];
   });

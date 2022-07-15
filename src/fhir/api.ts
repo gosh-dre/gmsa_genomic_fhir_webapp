@@ -1,13 +1,20 @@
 import { Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { FormValues } from "../components/reports/ReportForm";
 import {
+  createNullVariantAndId,
   furtherTestingAndId,
+  interpretationAndId,
   organisationAndId,
-  patientAndId, planDefinitionAndId,
-  practitionersAndIds, reportAndId, serviceRequestAndId,
+  patientAndId,
+  planDefinitionAndId,
+  practitionersAndIds,
+  reportAndId,
+  ResourceAndIds,
+  serviceRequestAndId,
   specimenAndId,
   variantAndId,
 } from "./resources";
+import { VariantSchema } from "../components/reports/formDataValidation";
 
 /**
  * Create a report bundle
@@ -29,9 +36,33 @@ export const createBundle = (form: FormValues) => {
   const furtherTesting = furtherTestingAndId(form.result, patient.id);
   const plan = planDefinitionAndId(form.sample, form.result, patient.id);
   const { authoriser, reporter } = practitionersAndIds(form.result);
-  const variant = variantAndId(form.variant, patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id);
+  let variants: ResourceAndIds[];
+  if (form.variant.length) {
+    variants = form.variant.map((variant: VariantSchema) =>
+      variantAndId(variant, patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id),
+    );
+  } else {
+    variants = [createNullVariantAndId(patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id)];
+  }
+
+  const overallInterpretation = interpretationAndId(
+    form.result,
+    patient.id,
+    specimen.id,
+    specimen.identifier,
+    reporter.id,
+    authoriser.id,
+  );
   const serviceRequest = serviceRequestAndId(form.sample, patient.id, plan.id, reporter.id, specimen.id);
-  const report = reportAndId(form.result, patient.id, reporter.id, authoriser.id, org.id, specimen.id, [variant.id]);
+  const report = reportAndId(
+    form.result,
+    patient.id,
+    reporter.id,
+    authoriser.id,
+    org.id,
+    specimen.id,
+    variants.map((variant) => variant.id),
+  );
   return {
     resourceType: "Bundle",
     type: "transaction",
@@ -41,7 +72,8 @@ export const createBundle = (form: FormValues) => {
       createEntry(specimen.resource, specimen.identifier),
       createEntry(authoriser.resource),
       createEntry(reporter.resource),
-      createEntry(variant.resource, variant.identifier),
+      createEntry(overallInterpretation.resource, overallInterpretation.identifier),
+      ...variants.map((variant) => createEntry(variant.resource, variant.identifier)),
       createEntry(furtherTesting.resource),
       createEntry(plan.resource),
       createEntry(serviceRequest.resource),
@@ -64,7 +96,8 @@ const createEntry = (resource: Resource, identifier?: string) => {
   }
 
   return {
-    resource: resource, resourceType: resource.resourceType,
+    resource: resource,
+    resourceType: resource.resourceType,
     request: requestInfo,
   };
 };
