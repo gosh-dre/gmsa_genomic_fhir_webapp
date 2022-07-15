@@ -3,6 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { noValues } from "./FormDefaults";
+import { act } from "react-dom/test-utils";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -49,12 +50,14 @@ describe("Report form", () => {
     // Arrange
     render(<ReportForm initialValues={noValues} />);
 
-    // Act    // set
-    setLabAndPatient();
-    setDummyAndNext(true);
-    setDummyAndNext(false);
-    setDummyAndNext(true);
-    userEvent.click(screen.getByText(/submit/i));
+    // Act
+    act(() => {
+      setLabAndPatient();
+      setDummyAndNext(true);
+      setDummyAndNext(false);
+      setDummyAndNext(true);
+      userEvent.click(screen.getByText(/submit/i));
+    });
 
     // Assert
     const result = await screen.findByRole("alert");
