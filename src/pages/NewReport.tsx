@@ -6,7 +6,7 @@ import { initialWithNoVariant, noValues } from "../components/reports/FormDefaul
 const NewReport: FC = () => {
   return (
     <FhirProvider>
-      <ReportForm initialValues={noValues} />
+      <ReportForm initialValues={initialWithNoVariant} />
     </FhirProvider>
   );
 };

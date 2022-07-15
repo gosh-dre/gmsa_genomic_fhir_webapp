@@ -123,7 +123,7 @@ const ReportForm: FC<Props> = (props: Props) => {
             <h2 className={classes["step-header"]}>Form step {formStep} of 5</h2>
             {returnStepContent(setFieldValue, validateForm)}
 
-            <FormStepBtn prevStep={prevStep} showNext={true} showPrev={false} showSubmit={false} />
+            <FormStepBtn prevStep={prevStep} formStep={formStep} />
           </Form>
         )}
       </Formik>
