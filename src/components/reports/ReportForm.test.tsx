@@ -3,38 +3,58 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { noValues } from "./FormDefaults";
+import { act } from "react-dom/test-utils";
 
 const typeInput = (element: Element, value: string) => {
   userEvent.type(element, value);
 };
 
-const setDummyValues = (withDates: boolean) => {
-  const dummyValue = "Always the same";
+const clearAndType = (element: Element, value: string) => {
+  userEvent.type(element, value);
+  userEvent.clear(element);
+};
+
+type DropDown = {
+  field: RegExp;
+  value: string;
+};
+
+const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
   const form = screen.getByRole("form");
+  const dummyValue = "Always the same";
   const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|mrn|date|address).)*$/i);
   textInputs.forEach((input) => typeInput(input, dummyValue));
+
   if (withDates) {
     within(form)
       .getAllByLabelText(/date/i)
       .forEach((input) => {
-        typeInput(input, "2019-01-01");
+        clearAndType(input, "2019-01-01");
       });
+  }
+
+  if (dropDowns) {
+    dropDowns.map((dd) => {
+      const field = within(form).getByLabelText(dd.field);
+      userEvent.selectOptions(field, dd.value);
+    });
   }
 };
 
 function setLabAndPatient() {
-  userEvent.selectOptions(screen.getByDisplayValue(/select a lab/i), ["gosh"]);
   setDummyValues(true);
-  typeInput(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
+  userEvent.selectOptions(screen.getByDisplayValue(/select a lab/i), "gosh");
+  clearAndType(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
 
   // set MRN value
   const newMRNValue = "10293879";
   userEvent.type(screen.getByLabelText(/mrn/i), newMRNValue);
   userEvent.click(screen.getByText(/next/i));
+  userEvent.click(screen.getByText(/next/i));
 }
 
-function setDummyAndNext(withDates: boolean) {
-  setDummyValues(withDates);
+function setDummyAndNext(withDates: boolean, dropDowns?: DropDown[]) {
+  setDummyValues(withDates, dropDowns);
   userEvent.click(screen.getByText(/next/i));
 }
 
@@ -47,13 +67,20 @@ describe("Report form", () => {
   test("Values returned by form submission", async () => {
     // Arrange
     render(<ReportForm initialValues={noValues} />);
+    const variantDropDowns = [
+      { field: /Zygosity/i, value: "Homozygous" },
+      { field: /Inhertiance Method/i, value: "Autosomal dominant" },
+      { field: /Classification$/i, value: "Pathogenic" },
+    ];
 
-    // Act    // set
-    setLabAndPatient();
-    setDummyAndNext(true);
-    setDummyAndNext(false);
-    setDummyAndNext(true);
-    userEvent.click(screen.getByText(/submit/i));
+    // Act
+    act(() => {
+      setLabAndPatient();
+      setDummyAndNext(true);
+      setDummyAndNext(false, variantDropDowns);
+      setDummyAndNext(true);
+      userEvent.click(screen.getByText(/submit/i));
+    });
 
     // Assert
     const result = await screen.findByRole("alert");

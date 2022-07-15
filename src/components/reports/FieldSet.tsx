@@ -16,7 +16,9 @@ const FieldSet: FC<Props> = ({ name, label, selectOptions, ...rest }) => {
     field = (
       <Field id={name} name={name} as="select" {...rest}>
         {selectOptions.map((opt) => (
-          <option value={opt.code}>{opt.display}</option>
+          <option key={opt.code} value={opt.code} role="select">
+            {opt.display}
+          </option>
         ))}
       </Field>
     );

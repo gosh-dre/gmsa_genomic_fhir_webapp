@@ -35,11 +35,18 @@ const Variant: FC<Props> = (props) => {
           <FieldSet name="variant[0].transcript" label="Transcript" />
           <FieldSet name="variant[0].genomicHGVS" label="Genomic HGVS" />
           <FieldSet name="variant[0].proteinHGVS" label="Protein HGVS" />
-          <FieldSet name="variant[0].zygosity" label="Zygosity" selectOptions={loincSelect.zygosity}/>
-          <FieldSet name="variant[0].inheritanceMethod" label="Inhertiance Method"             selectOptions={loincSelect.inheritance}
+          <FieldSet name="variant[0].zygosity" label="Zygosity" selectOptions={loincSelect.zygosity} />
+          <FieldSet
+            name="variant[0].inheritanceMethod"
+            label="Inhertiance Method"
+            selectOptions={loincSelect.inheritance}
           />
-          <FieldSet name="variant[0].classification" label="Classification" />
-          <FieldSet as="textarea" name="variant[0].classificationEvidence" label="Classification Evidence" selectOptions={loincSelect.classification}/>
+          <FieldSet
+            name="variant[0].classification"
+            label="Classification"
+            selectOptions={loincSelect.classification}
+          />
+          <FieldSet as="textarea" name="variant[0].classificationEvidence" label="Classification Evidence" />
           <FieldSet type="checkbox" name="variant[0].confirmedVariant" label="Variant Confirmed" />
           <FieldSet as="textarea" name="variant[0].comment" label="Comment" />
         </>

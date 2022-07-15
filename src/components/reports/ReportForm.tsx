@@ -56,6 +56,9 @@ const ReportForm: FC<Props> = (props: Props) => {
     setFormStep(formStep - 1);
   };
 
+  console.debug(`formStep: ${formStep}`);
+  console.debug(formRef?.current?.values.variant);
+
   const returnStepContent = (setFieldValue: any) => {
     switch (formStep) {
       case 1:
