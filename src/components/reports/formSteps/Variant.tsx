@@ -1,5 +1,7 @@
 import { FC } from "react";
 import { FieldArray } from "formik";
+import { v4 as uuidv4 } from "uuid";
+import * as Yup from "yup";
 
 import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
@@ -70,7 +72,7 @@ const Variant: FC<Props> = (props) => {
             <button
               className={`${classes["variant-btn"]} ${classes["variant-btn-center"]}`}
               type="button"
-              onClick={() => arrayHelpers.push(emptyVariant)}
+              onClick={() => arrayHelpers.push({ ...emptyVariant, id: uuidv4() })}
             >
               Add a variant
             </button>
