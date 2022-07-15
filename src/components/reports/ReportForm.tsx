@@ -119,7 +119,7 @@ const ReportForm: FC<Props> = (props: Props) => {
         innerRef={formRef}
       >
         {({ setFieldValue, validateForm }) => (
-          <Form role="form" className={classes.form}>
+          <Form role="form" autoComplete="off" className={classes.form}>
             <h2 className={classes["step-header"]}>Form step {formStep} of 5</h2>
             {returnStepContent(setFieldValue, validateForm)}
 
