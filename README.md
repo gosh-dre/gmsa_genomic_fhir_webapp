@@ -32,11 +32,13 @@ npm install
 ## Configuration
 
 From the root of the project, copy the test env file to the root directory so that the application can use the correct environmental variables. 
-The `.evn` file is ignored by git so won't be accidentally committed. 
+The `.evn` file is ignored by git so won't be accidentally committed.  
 
 ```shell
 cp env/dev.env .env 
 ```
+
+This file will need to be edited to allow automated testing to determine if the LOINC api is returning different value sets.
 
 ## Development services
 
@@ -62,20 +64,9 @@ docker compose -f docker-compose.dev.yml ps
     -----------------------------------------------------------------------------------------------
     fhir-report_fhir-db_1   docker-entrypoint.sh postgres    Up      5432/tcp                      
     fhir-report_fhir_1      catalina.sh run                  Up      0.0.0.0:8090->8080/tcp        
-    fhir-report_nginx_1     /docker-entrypoint.sh ngin ...   Up      0.0.0.0:5700->5700/tcp, 80/tcp
 
 ## Building and running
 
 - From the repository directory, you can build and run development version using `npm start`
 - Tests can be run by: `npm test`
-- A production build can be created using `npm run build` 
-- Instead of using the react development port, nagivate to port [5700](http://localhost:5700)
-  so that the reverse proxy is in use
-
-# Decision log
-
-## Remote proxy
-
-- The LOINC rest API is experimental and doesn't have [CORS set up](https://loinc.org/forums/topic/cors-for-web-browsers/)
-- In order to be able to query the LOINC rest API, an nginx reverse proxy has been set up to avoid CORS errors
-- The configuration of this is in ()[nginx/conf.d/default.cong]
+- A production build can be created using `npm run build`

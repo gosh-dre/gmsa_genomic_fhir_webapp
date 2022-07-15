@@ -1,9 +1,9 @@
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 
 import FieldSet from "../FieldSet";
 import FormStepBtn from "../../UI/FormStepBtn";
 import classes from "./Variant.module.css";
-import { getValues, LoincOption, variantCodes } from "../../../code_systems/loinc";
+import { loincSelect } from "../../../code_systems/loincCodes";
 
 interface Props {
   nextStep: () => void;
@@ -13,40 +13,8 @@ interface Props {
   setFieldValue: (field: string, value: string | string[] | boolean) => void;
 }
 
-type Options = {
-  inheritance: LoincOption[];
-  classification: LoincOption[];
-  zygosity: LoincOption[];
-  followUp: LoincOption[];
-};
-
-const selectOptions: Options = {
-  inheritance: [],
-  classification: [],
-  zygosity: [],
-  followUp: [],
-};
-
 const Variant: FC<Props> = (props) => {
   const { nextStep, prevStep, variantExists, setVariantExists, setFieldValue } = props;
-  const [dropDownItems, setDropDownItems] = useState(selectOptions);
-
-  useEffect(() => {
-    const setDataFromApis = async () => {
-      try {
-        const valueSets = await variantCodes();
-        // replace this with some sort of mapping function?
-        // or better yet query all code on startup and then drill down?
-        selectOptions.classification = getValues(valueSets.classification);
-        selectOptions.inheritance = getValues(valueSets.inheritance);
-        selectOptions.zygosity = getValues(valueSets.zygosity);
-        setDropDownItems(selectOptions);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    setDataFromApis().then();
-  }, []);
 
   const setVariantHandler = () => {
     const currentVariantExists = !variantExists;
@@ -94,13 +62,13 @@ const Variant: FC<Props> = (props) => {
           <FieldSet name="variant.transcript" label="Transcript" />
           <FieldSet name="variant.genomicHGVS" label="Genomic HGVS" />
           <FieldSet name="variant.proteinHGVS" label="Protein HGVS" />
-          <FieldSet name="variant.zygosity" label="Zygosity" selectOptions={dropDownItems.zygosity} />
+          <FieldSet name="variant.zygosity" label="Zygosity" selectOptions={loincSelect.zygosity} />
           <FieldSet
             name="variant.inheritanceMethod"
             label="Inheritance Method"
-            selectOptions={dropDownItems.inheritance}
+            selectOptions={loincSelect.inheritance}
           />
-          <FieldSet name="variant.classification" label="Classification" selectOptions={dropDownItems.classification} />
+          <FieldSet name="variant.classification" label="Classification" selectOptions={loincSelect.classification} />
           <FieldSet as="textarea" name="variant.classificationEvidence" label="Classification Evidence" />
           <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed" />
           <FieldSet as="textarea" name="variant.comment" label="Comment" />

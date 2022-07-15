@@ -3,8 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 
-const clearAndType = (element: Element, value: string) => {
-  userEvent.clear(element);
+const typeInput = (element: Element, value: string) => {
   userEvent.type(element, value);
 };
 
@@ -12,18 +11,20 @@ const setDummyValues = (withDates: boolean) => {
   const dummyValue = "Always the same";
   const form = screen.getByRole("form");
   const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|mrn|date|address).)*$/i);
-  textInputs.forEach(input => clearAndType(input, dummyValue));
+  textInputs.forEach((input) => typeInput(input, dummyValue));
   if (withDates) {
-    within(form).getAllByLabelText(/date/i).forEach(input => {
-      clearAndType(input, "2019-01-01");
-    });
+    within(form)
+      .getAllByLabelText(/date/i)
+      .forEach((input) => {
+        typeInput(input, "2019-01-01");
+      });
   }
 };
 
 function setLabAndPatient() {
   userEvent.selectOptions(screen.getByDisplayValue(/select a lab/i), ["gosh"]);
   setDummyValues(true);
-  clearAndType(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
+  typeInput(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
 
   // set MRN value
   const newMRNValue = "10293879";
@@ -33,7 +34,7 @@ function setLabAndPatient() {
 
 function setDummyAndNext(withDates: boolean) {
   setDummyValues(withDates);
-  userEvent.click(screen.getByText(/next/i));
+  userEvent.click(screen.getByText(/^next$/i));
 }
 
 describe("Report form", () => {
@@ -52,7 +53,6 @@ describe("Report form", () => {
     setDummyAndNext(false);
     setDummyAndNext(true);
     userEvent.click(screen.getByText(/submit/i));
-
 
     // Assert
     const result = await screen.findByRole("alert");

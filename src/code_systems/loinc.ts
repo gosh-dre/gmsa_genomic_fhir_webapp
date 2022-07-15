@@ -1,6 +1,7 @@
 import { ValueSet, ValueSetComposeIncludeConcept } from "fhir/r4";
 import { Buffer } from "buffer";
 import fetch from "node-fetch";
+import { LoincOption } from "./loincCodes";
 
 const USERNAME = process.env.REACT_APP_LOINC_USERNAME;
 const PASSWORD = process.env.REACT_APP_LOINC_PASSWORD;
@@ -15,8 +16,6 @@ const requestInit = {
   },
 };
 
-export type LoincOption = { code: string; display: string };
-
 export const variantCodes = async () => {
   return {
     classification: await getValueSetData("LL4034-6"),
@@ -27,7 +26,7 @@ export const variantCodes = async () => {
 };
 
 const getValueSetData = async (valueSet: string): Promise<ValueSet> => {
-  const url = `/loinc/ValueSet/${valueSet}`;
+  const url = `https://fhir.loinc.org/ValueSet/${valueSet}`;
   const response = await fetch(url, requestInit);
 
   if (!response.ok) {
@@ -36,7 +35,7 @@ const getValueSetData = async (valueSet: string): Promise<ValueSet> => {
   return await response.json();
 };
 
-export const getValues = (valueSet: ValueSet): LoincOption[] => {
+export const getSelectOptions = (valueSet: ValueSet): LoincOption[] => {
   const unpacked = valueSet.compose?.include
     ?.flatMap((c) => c.concept)
     .filter(isConcept)

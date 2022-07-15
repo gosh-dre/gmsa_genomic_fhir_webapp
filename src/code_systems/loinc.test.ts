@@ -2,16 +2,30 @@
  * May mock out API later but useful for testing during development
  */
 
-import { getValues, variantCodes } from "./loinc";
+import { getSelectOptions, variantCodes } from "./loinc";
+import { loincCodes } from "./loincCodes";
 
 describe("LOINC", () => {
-  test("Zygosity", async () => {
+  /**
+   * Given that the LOINC valuesets have been persisted to file
+   * When the LOINC api is queried
+   * Then the API results should be the same as the persisted data
+   */
+  test("Codes haven't changed", async () => {
     const valueSet = await variantCodes();
 
-    const values = getValues(valueSet.zygosity);
+    expect(valueSet).toEqual(loincCodes);
+  });
 
-    expect(valueSet.zygosity.resourceType).toEqual("ValueSet");
-    expect(values.length).toEqual(5);
-    expect(values).toContainEqual({ code: "LA6703-8", display: "Heteroplasmic" });
+  /**
+   * Given that persisted valueset for zygocity has 5 options including heteroplasmic
+   * When select options are extracted
+   * There should be 5 options, with one explicitly tested
+   */
+  test("Option values are returned from value set", async () => {
+    const options = getSelectOptions(loincCodes.zygosity);
+
+    expect(options.length).toEqual(5);
+    expect(options).toContainEqual({ code: "LA6703-8", display: "Heteroplasmic" });
   });
 });
