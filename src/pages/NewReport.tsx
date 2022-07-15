@@ -1,7 +1,7 @@
 import ReportForm from "../components/reports/ReportForm";
 import { FC } from "react";
 import { FhirProvider } from "../components/fhir/FhirContext";
-import { initialWithNoVariant, noValues } from "../components/reports/FormDefaults";
+import { initialWithNoVariant } from "../components/reports/FormDefaults";
 
 const NewReport: FC = () => {
   return (
