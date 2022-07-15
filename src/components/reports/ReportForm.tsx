@@ -1,5 +1,5 @@
 import { FC, useContext, useRef, useState } from "react";
-import { Form, Formik, FormikHelpers, FormikProps, FieldArray } from "formik";
+import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import * as Yup from "yup";
 import { FhirContext } from "../fhir/FhirContext";
 
