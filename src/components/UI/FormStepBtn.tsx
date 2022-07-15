@@ -21,9 +21,13 @@ const FormStepBtn: FC<Props> = (props) => {
       )}
 
       {showNext && (
-        <div className={`${classes["form-step-btn"]} ${classes["next"]}`} onClick={nextStep}>
-          Next
-        </div>
+        // <div className={`${classes["form-step-btn"]} ${classes["next"]}`} onClick={nextStep}>
+        //   Next
+        // </div>
+
+        <button className={`${classes["form-step-btn"]} ${classes["submit"]}`} type="submit">
+          Submit
+        </button>
       )}
 
       {showSubmit && (

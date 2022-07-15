@@ -21,6 +21,13 @@ const FormValidation = Yup.object({
   result: reportDetailSchema.required(),
 }).required();
 
+const PatientAndAddressValidation = Yup.object({
+  address: addressSchema.required(),
+  patient: patientSchema.required(),
+}).required();
+
+const validators = [PatientAndAddressValidation];
+
 export type FormValues = Yup.InferType<typeof FormValidation>;
 
 type Props = {
@@ -35,15 +42,20 @@ const ReportForm: FC<Props> = (props: Props) => {
   const formRef = useRef<FormikProps<FormValues>>(null);
 
   const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
-    const bundle = bundleRequest(values);
-
-    setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
-
-    ctx.client
-      ?.request(bundle)
-      .then((response) => console.debug("Bundle submitted", bundle, response))
-      .catch((error) => console.error(error));
+    actions.setTouched({});
     actions.setSubmitting(false);
+
+    setFormStep(formStep + 1);
+
+    // const bundle = bundleRequest(values);
+
+    // setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
+
+    // ctx.client
+    //   ?.request(bundle)
+    //   .then((response) => console.debug("Bundle submitted", bundle, response))
+    //   .catch((error) => console.error(error));
+    // actions.setSubmitting(false);
   };
 
   const nextStep = () => {
@@ -56,10 +68,12 @@ const ReportForm: FC<Props> = (props: Props) => {
     setFormStep(formStep - 1);
   };
 
-  const returnStepContent = (setFieldValue: any) => {
+  const returnStepContent = (setFieldValue: any, validateForm: any) => {
     switch (formStep) {
       case 1:
-        return <Patient nextStep={nextStep} prevStep={prevStep} setFieldValue={setFieldValue} />;
+        return (
+          <Patient nextStep={nextStep} prevStep={prevStep} setFieldValue={setFieldValue} validateForm={validateForm} />
+        );
       case 2:
         return <Sample nextStep={nextStep} prevStep={prevStep} />;
       case 3:
@@ -77,7 +91,7 @@ const ReportForm: FC<Props> = (props: Props) => {
       case 5:
         return <Confirmation nextStep={nextStep} prevStep={prevStep} formRef={formRef} />;
       default:
-        console.log("multi step form");
+        <div>Not found</div>;
     }
   };
 
@@ -87,14 +101,14 @@ const ReportForm: FC<Props> = (props: Props) => {
       <Formik
         enableReinitialize={true}
         initialValues={props.initialValues}
-        validationSchema={FormValidation}
+        validationSchema={validators[formStep - 1]}
         onSubmit={onSuccessfulSubmitHandler}
         innerRef={formRef}
       >
-        {({ setFieldValue }) => (
+        {({ setFieldValue, validateForm }) => (
           <Form role="form" className={classes.form}>
             <h2 className={classes["step-header"]}>Form step {formStep} of 5</h2>
-            {returnStepContent(setFieldValue)}
+            {returnStepContent(setFieldValue, validateForm)}
           </Form>
         )}
       </Formik>
