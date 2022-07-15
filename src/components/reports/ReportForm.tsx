@@ -14,32 +14,28 @@ import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
 import FormStepBtn from "../UI/FormStepBtn";
 
-const FormValidation = Yup.object({
+const PatientAndAddressValidation = Yup.object({
   address: addressSchema.required(),
   patient: patientSchema.required(),
-  sample: sampleSchema.required(),
-  variant: variantsSchema.required(),
-  result: reportDetailSchema.required(),
-}).required();
-
-export type FormValues = Yup.InferType<typeof FormValidation>;
-
-const PatientAndAddressValidation = Yup.object({
-  address: addressSchema,
-  patient: patientSchema,
 });
 
 const SampleValidation = Yup.object({
-  sample: sampleSchema,
+  sample: sampleSchema.required(),
 });
 
 const VariantValidation = Yup.object({
-  variant: variantsSchema,
+  variant: variantsSchema.required(),
 });
 
 const ResultValidation = Yup.object({
-  result: reportDetailSchema,
+  result: reportDetailSchema.required(),
 });
+
+const FormValidation = PatientAndAddressValidation.concat(SampleValidation)
+  .concat(VariantValidation)
+  .concat(ResultValidation);
+
+export type FormValues = Yup.InferType<typeof FormValidation>;
 
 const validators = [PatientAndAddressValidation, SampleValidation, VariantValidation, ResultValidation];
 
