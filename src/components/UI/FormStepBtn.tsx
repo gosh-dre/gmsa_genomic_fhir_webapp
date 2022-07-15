@@ -2,35 +2,26 @@ import { FC } from "react";
 import classes from "./FormStepBtn.module.css";
 
 interface Props {
-  showNext: boolean;
-  showPrev: boolean;
-  showSubmit: boolean;
-  nextStep: () => void;
+  formStep: number;
   prevStep: () => void;
+  isLastStep: boolean;
+  isSubmitting: boolean | undefined;
 }
 
 const FormStepBtn: FC<Props> = (props) => {
-  const { showNext, showPrev, showSubmit, nextStep, prevStep } = props;
+  const { prevStep, formStep, isSubmitting, isLastStep } = props;
 
   return (
     <div className={classes["form-step-btn-container"]}>
-      {showPrev && (
+      {formStep !== 0 && (
         <div className={`${classes["form-step-btn"]} ${classes["prev"]}`} onClick={prevStep}>
           Prev
         </div>
       )}
 
-      {showNext && (
-        <div className={`${classes["form-step-btn"]} ${classes["next"]}`} onClick={nextStep}>
-          Next
-        </div>
-      )}
-
-      {showSubmit && (
-        <button className={`${classes["form-step-btn"]} ${classes["submit"]}`} type="submit">
-          Submit
-        </button>
-      )}
+      <button className={`${classes["form-step-btn"]} ${classes["submit"]}`} type="submit" disabled={isSubmitting}>
+        {isLastStep ? "Submit" : "Next"}
+      </button>
     </div>
   );
 };

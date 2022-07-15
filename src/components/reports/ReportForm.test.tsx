@@ -3,6 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { noValues } from "./FormDefaults";
+import { act } from "react-dom/test-utils";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -12,7 +13,7 @@ const clearAndType = (element: Element, value: string) => {
 const setDummyValues = (withDates: boolean) => {
   const dummyValue = "Always the same";
   const form = screen.getByRole("form");
-  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|mrn|date|address).)*$/i);
+  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|mrn|date|address|gender).)*$/i);
   textInputs.forEach((input) => clearAndType(input, dummyValue));
   if (withDates) {
     within(form)
@@ -31,6 +32,7 @@ function setLabAndPatient() {
   // set MRN value
   const newMRNValue = "10293879";
   userEvent.type(screen.getByLabelText(/mrn/i), newMRNValue);
+  userEvent.tab();
   userEvent.click(screen.getByText(/next/i));
 }
 
@@ -49,12 +51,22 @@ describe("Report form", () => {
     // Arrange
     render(<ReportForm initialValues={noValues} />);
 
-    // Act    // set
-    setLabAndPatient();
-    setDummyAndNext(true);
-    setDummyAndNext(false);
-    setDummyAndNext(true);
-    userEvent.click(screen.getByText(/submit/i));
+    // Act
+    await act(async () => {
+      setLabAndPatient();
+    });
+    await act(async () => {
+      setDummyAndNext(true);
+    });
+    await act(async () => {
+      setDummyAndNext(false);
+    });
+    await act(async () => {
+      setDummyAndNext(true);
+    });
+    await act(async () => {
+      userEvent.click(screen.getByText(/submit/i));
+    });
 
     // Assert
     const result = await screen.findByRole("alert");
