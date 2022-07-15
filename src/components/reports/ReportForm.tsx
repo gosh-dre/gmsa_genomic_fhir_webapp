@@ -27,7 +27,19 @@ const PatientAndAddressValidation = Yup.object({
   patient: patientSchema.required(),
 }).required();
 
-const validators = [PatientAndAddressValidation];
+const SampleValidation = Yup.object({
+  sample: sampleSchema.required(),
+}).required();
+
+const VariantValidation = Yup.object({
+  variant: variantsSchema.required(),
+}).required();
+
+const ResultValidation = Yup.object({
+  result: reportDetailSchema.required(),
+}).required();
+
+const validators = [PatientAndAddressValidation, SampleValidation, VariantValidation, ResultValidation];
 
 export type FormValues = Yup.InferType<typeof FormValidation>;
 
@@ -42,21 +54,29 @@ const ReportForm: FC<Props> = (props: Props) => {
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);
 
-  const onSuccessfulSubmitHandler = (values: FormValues, actions: FormikHelpers<FormValues>) => {
+  const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
+    const bundle = bundleRequest(values);
+
+    setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
+
+    ctx.client
+      ?.request(bundle)
+      .then((response) => console.debug("Bundle submitted", bundle, response))
+      .catch((error) => console.error(error));
+    actions.setSubmitting(false);
+  };
+
+  const handleSubmit = (values: FormValues, actions: FormikHelpers<FormValues>) => {
+    if (formStep === 5) {
+      submitForm(values, actions);
+      return;
+    }
+
+    // validate form fields
     actions.setTouched({});
     actions.setSubmitting(false);
 
     setFormStep(formStep + 1);
-
-    // const bundle = bundleRequest(values);
-
-    // setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
-
-    // ctx.client
-    //   ?.request(bundle)
-    //   .then((response) => console.debug("Bundle submitted", bundle, response))
-    //   .catch((error) => console.error(error));
-    // actions.setSubmitting(false);
   };
 
   const nextStep = () => {
@@ -95,7 +115,7 @@ const ReportForm: FC<Props> = (props: Props) => {
         enableReinitialize={true}
         initialValues={props.initialValues}
         validationSchema={validators[formStep - 1]}
-        onSubmit={onSuccessfulSubmitHandler}
+        onSubmit={handleSubmit}
         innerRef={formRef}
       >
         {({ setFieldValue, validateForm }) => (
