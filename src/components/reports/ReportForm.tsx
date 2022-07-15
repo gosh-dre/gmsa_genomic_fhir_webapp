@@ -82,7 +82,7 @@ const ReportForm: FC<Props> = (props: Props) => {
     setFormStep(formStep - 1);
   };
 
-  const returnStepContent = (setFieldValue: any, values: any) => {
+  const returnStepContent = (setFieldValue: any, values: FormValues) => {
     switch (formStep) {
       case 0:
         return <Patient setFieldValue={setFieldValue} />;

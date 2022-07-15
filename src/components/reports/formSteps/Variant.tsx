@@ -2,11 +2,12 @@ import { FC } from "react";
 import { FieldArray } from "formik";
 import { v4 as uuidv4 } from "uuid";
 
+import { FormValues } from "../ReportForm";
 import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
 
 interface Props {
-  values: any;
+  values: FormValues;
 }
 
 const emptyVariant = {
