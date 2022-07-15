@@ -1,32 +1,33 @@
-import { useContext, useRef, useState } from "react";
+import { FC, useContext, useRef, useState } from "react";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import * as Yup from "yup";
 import { FhirContext } from "../fhir/FhirContext";
 
 import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
-import { addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantSchema } from "./formDataValidation";
+import { addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantsSchema } from "./formDataValidation";
 import { bundleRequest } from "../../fhir/api";
 import Patient from "./formSteps/Patient";
 import Sample from "./formSteps/Sample";
 import Variant from "./formSteps/Variant";
 import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
-import { initialValues } from "./FormDefaults";
 
-const FormValidation = Yup.object()
-  .shape({
-    address: addressSchema,
-    patient: patientSchema,
-    sample: sampleSchema,
-    variant: variantSchema,
-    result: reportDetailSchema,
-  })
-  .required();
+const FormValidation = Yup.object({
+  address: addressSchema.required(),
+  patient: patientSchema.required(),
+  sample: sampleSchema.required(),
+  variant: variantsSchema.required(),
+  result: reportDetailSchema.required(),
+}).required();
 
 export type FormValues = Yup.InferType<typeof FormValidation>;
 
-const ReportForm = () => {
+type Props = {
+  initialValues: FormValues;
+};
+
+const ReportForm: FC<Props> = (props: Props) => {
   const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(1);
   const [variantExists, setVariantExists] = useState(true);
@@ -85,7 +86,7 @@ const ReportForm = () => {
       <h1>Add a new report</h1>
       <Formik
         enableReinitialize={true}
-        initialValues={initialValues}
+        initialValues={props.initialValues}
         validationSchema={FormValidation}
         onSubmit={onSuccessfulSubmitHandler}
         innerRef={formRef}

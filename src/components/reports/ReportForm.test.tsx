@@ -2,6 +2,7 @@ import ReportForm from "./ReportForm";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+import { noValues } from "./FormDefaults";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -12,11 +13,13 @@ const setDummyValues = (withDates: boolean) => {
   const dummyValue = "Always the same";
   const form = screen.getByRole("form");
   const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|mrn|date|address).)*$/i);
-  textInputs.forEach(input => clearAndType(input, dummyValue));
+  textInputs.forEach((input) => clearAndType(input, dummyValue));
   if (withDates) {
-    within(form).getAllByLabelText(/date/i).forEach(input => {
-      clearAndType(input, "2019-01-01");
-    });
+    within(form)
+      .getAllByLabelText(/date/i)
+      .forEach((input) => {
+        clearAndType(input, "2019-01-01");
+      });
   }
 };
 
@@ -44,7 +47,7 @@ describe("Report form", () => {
    */
   test("Values returned by form submission", async () => {
     // Arrange
-    render(<ReportForm />);
+    render(<ReportForm initialValues={noValues} />);
 
     // Act    // set
     setLabAndPatient();
@@ -52,7 +55,6 @@ describe("Report form", () => {
     setDummyAndNext(false);
     setDummyAndNext(true);
     userEvent.click(screen.getByText(/submit/i));
-
 
     // Assert
     const result = await screen.findByRole("alert");

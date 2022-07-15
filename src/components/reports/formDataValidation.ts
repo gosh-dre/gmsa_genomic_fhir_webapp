@@ -7,67 +7,68 @@ const requiredString = Yup.string().required();
 const requiredDate = Yup.date().min("1900-01-01").max(today).required();
 const boolField = Yup.boolean().default(false).nullable(false);
 
-export const patientSchema = Yup.object()
-  .shape({
-    mrn: requiredString,
-    firstName: requiredString,
-    lastName: requiredString,
-    dateOfBirth: requiredDate,
-    gender: Yup.mixed<Patient.GenderEnum>().oneOf(Object.values(Patient.GenderEnum)),
-    familyNumber: requiredString,
-  })
-  .required();
+export const patientSchema = Yup.object({
+  mrn: requiredString,
+  firstName: requiredString,
+  lastName: requiredString,
+  dateOfBirth: requiredDate,
+  gender: Yup.mixed<Patient.GenderEnum>().oneOf(Object.values(Patient.GenderEnum)),
+  familyNumber: requiredString,
+});
 
-export const addressSchema = Yup.object()
-  .shape({
-    name: requiredString,
-    streetAddress: Yup.lazy((val) =>
-      Array.isArray(val) ? Yup.array().of(Yup.string()).required() : Yup.string().required(),
-    ),
-    city: requiredString,
-    postCode: requiredString,
-    country: requiredString,
-  })
-  .required();
+export type PatientSchema = Yup.InferType<typeof patientSchema>;
 
-export const sampleSchema = Yup.object()
-  .shape({
-    specimenCode: requiredString,
-    collectionDateTime: requiredDate,
-    receivedDateTime: requiredDate,
-    specimenType: requiredString,
-    reasonForTestCode: requiredString,
-    reasonForTestText: requiredString,
-  })
-  .required();
+export const addressSchema = Yup.object({
+  name: requiredString,
+  streetAddress: Yup.array().of(Yup.string().required()).required(),
+  city: requiredString,
+  postCode: requiredString,
+  country: requiredString,
+});
 
-export const variantSchema = Yup.object()
-  .shape({
-    gene: requiredString,
-    geneInformation: requiredString,
-    transcript: requiredString,
-    genomicHGVS: requiredString,
-    proteinHGVS: requiredString,
-    zygosity: requiredString,
-    classification: requiredString,
-    inheritanceMethod: requiredString,
-    classificationEvidence: requiredString,
-    confirmedVariant: boolField,
-    comment: requiredString,
-  })
-  .required();
+export type AddressSchema = Yup.InferType<typeof addressSchema>;
 
-export const reportDetailSchema = Yup.object()
-  .shape({
-    resultSummary: requiredString,
-    reportingScientist: requiredString,
-    reportingScientistTitle: requiredString,
-    reportingDate: requiredDate,
-    authorisingScientist: requiredString,
-    authorisingScientistTitle: requiredString,
-    authorisingDate: requiredDate,
-    furtherTesting: requiredString,
-    testMethodology: requiredString,
-    clinicalConclusion: requiredString,
-  })
-  .required();
+export const sampleSchema = Yup.object({
+  specimenCode: requiredString,
+  collectionDateTime: requiredDate,
+  receivedDateTime: requiredDate,
+  specimenType: requiredString,
+  reasonForTestCode: requiredString,
+  reasonForTestText: requiredString,
+});
+
+export type SampleSchema = Yup.InferType<typeof sampleSchema>;
+
+const variantSchema = Yup.object({
+  gene: requiredString,
+  geneInformation: requiredString,
+  transcript: requiredString,
+  genomicHGVS: requiredString,
+  proteinHGVS: requiredString,
+  zygosity: requiredString,
+  classification: requiredString,
+  inheritanceMethod: requiredString,
+  classificationEvidence: requiredString,
+  confirmedVariant: boolField,
+  comment: requiredString,
+});
+
+export type VariantSchema = Yup.InferType<typeof variantSchema>;
+
+export const variantsSchema = Yup.array().of(variantSchema);
+
+export const reportDetailSchema = Yup.object({
+  resultSummary: requiredString,
+  reportingScientist: requiredString,
+  reportingScientistTitle: requiredString,
+  reportingDate: requiredDate,
+  authorisingScientist: requiredString,
+  authorisingScientistTitle: requiredString,
+  authorisingDate: requiredDate,
+  furtherTesting: requiredString,
+  testMethodology: requiredString,
+  clinicalConclusion: requiredString,
+  citation: requiredString,
+});
+
+export type ReportDetailSchema = Yup.InferType<typeof reportDetailSchema>;

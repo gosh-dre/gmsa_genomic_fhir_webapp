@@ -1,9 +1,9 @@
 import {
-  addressSchema,
-  patientSchema,
-  reportDetailSchema,
-  sampleSchema,
-  variantSchema,
+  AddressSchema,
+  PatientSchema,
+  ReportDetailSchema,
+  SampleSchema,
+  VariantSchema,
 } from "../components/reports/formDataValidation";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -37,10 +37,7 @@ type ResourceAndId = {
   id: string;
 };
 
-/**
- * {@link ResourceAndId} with an identifier used as a search term in PUT request of bundle.
- */
-type ResourceAndIds = ResourceAndId & {
+export type ResourceAndIds = ResourceAndId & {
   identifier: string;
 };
 
@@ -49,7 +46,7 @@ type ResourceAndIds = ResourceAndId & {
  * @param form patient data
  * @param organisationId uuid for the organisation
  */
-export const patientAndId = (form: typeof patientSchema, organisationId: string): ResourceAndIds => {
+export const patientAndId = (form: PatientSchema, organisationId: string): ResourceAndIds => {
   const patient = new Patient();
   patient.id = uuidv4();
   patient.active = true;
@@ -75,14 +72,14 @@ export const patientAndId = (form: typeof patientSchema, organisationId: string)
       ],
     },
   ];
-  patient.birthDate = form.dateOfBirth;
+  patient.birthDate = form.dateOfBirth.toString();
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
   patient.managingOrganization = reference("Organization", organisationId);
   return { identifier: form.mrn, id: patient.id, resource: patient };
 };
 
-export const organisationAndId = (form: typeof addressSchema): ResourceAndIds => {
+export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
   const org = new Organization();
   org.id = uuidv4();
   org.identifier = [{ value: GOSH_GENETICS_IDENTIFIER }];
@@ -105,7 +102,7 @@ export const organisationAndId = (form: typeof addressSchema): ResourceAndIds =>
     {
       line: form.streetAddress,
       city: form.city,
-      postalCode: form.postalCode,
+      postalCode: form.postCode,
       country: form.country,
     },
   ];
@@ -114,7 +111,7 @@ export const organisationAndId = (form: typeof addressSchema): ResourceAndIds =>
   return { identifier: GOSH_GENETICS_IDENTIFIER, id: org.id, resource: org };
 };
 
-export const practitionersAndIds = (result: typeof reportDetailSchema) => {
+export const practitionersAndIds = (result: ReportDetailSchema) => {
   return {
     authoriser: practitionerAndId(result.authorisingScientist, result.authorisingScientistTitle),
     reporter: practitionerAndId(result.reportingScientist, result.reportingScientistTitle),
@@ -130,13 +127,14 @@ const practitionerAndId = (fullName: string, title: string): ResourceAndIds => {
   const nameSplit = fullName.split(/\s/g);
   const firstName = nameSplit[0];
   const lastName = nameSplit.slice(1).join(" ");
-
   const practitioner = new Practitioner();
+
   practitioner.id = uuidv4();
   practitioner.resourceType = "Practitioner";
-  practitioner.identifier = [{ value: fullName }];
   practitioner.active = true;
-  practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Usual }];
+  const identifier = fullName.toLowerCase().replaceAll(/\s/g, "");
+  practitioner.identifier = [{ value: identifier }];
+  practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official }];
   // suggested shorter form for role
   practitioner.qualification = [{ code: { text: title } }];
 
@@ -148,12 +146,12 @@ const practitionerAndId = (fullName: string, title: string): ResourceAndIds => {
  * @param sample form data
  * @param patientId to link the specimen with
  */
-export const specimenAndId = (sample: typeof sampleSchema, patientId: string): ResourceAndIds => {
+export const specimenAndId = (sample: SampleSchema, patientId: string): ResourceAndIds => {
   const specimen = new Specimen();
   specimen.id = uuidv4();
   specimen.resourceType = "Specimen";
   specimen.receivedTime = sample.receivedDateTime;
-  specimen.collection = { collectedDateTime: sample.collectionDateTime };
+  specimen.collection = { collectedDateTime: sample.collectionDateTime.toString() };
   specimen.identifier = [{ value: sample.specimenCode, id: "specimenId" }];
   specimen.type = {
     coding: [
@@ -169,8 +167,37 @@ export const specimenAndId = (sample: typeof sampleSchema, patientId: string): R
   return { identifier: sample.specimenCode, id: specimen.id, resource: specimen };
 };
 
+export const createNullVariantAndId = (
+  patientId: string,
+  specimenId: string,
+  specimenBarcode: string,
+  reporterId: string,
+  authoriserId: string,
+): ResourceAndIds => {
+  const obsId = uuidv4();
+  const obs = createPatientObservation(
+    obsId,
+    patientId,
+    specimenId,
+    reporterId,
+    authoriserId,
+    "69548-6",
+    "Genetic variant assessment",
+  );
+  obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/Variant"] };
+  obs.note = [
+    {
+      text: "No variants reported",
+    },
+  ];
+  const identifier = `${specimenBarcode}$null:null`;
+  obs.identifier = [{ value: identifier, id: "specimenBarcode$transcript:genomicHGVS" }];
+
+  return { identifier: identifier, id: obsId, resource: obs };
+};
+
 export const interpretationAndId = (
-  result: typeof reportDetailSchema,
+  result: ReportDetailSchema,
   patientId: string,
   specimenId: string,
   specimenBarcode: string,
@@ -195,13 +222,12 @@ export const interpretationAndId = (
         {
           system: "http://loinc.org",
           code: "LA6576-8",
-          display: result.overallInterpretation,
+          display: result.clinicalConclusion,
         },
       ],
     },
   ];
   obs.valueString = result.resultSummary;
-  obs.note = [{ text: result.geneInformation }];
   const identifier = `${specimenBarcode}$overall-interpretation`;
   obs.identifier = [{ value: identifier, id: "{specimenBarcode}$overall-interpretation" }];
 
@@ -209,7 +235,7 @@ export const interpretationAndId = (
 };
 
 export const variantAndId = (
-  variant: typeof variantSchema,
+  variant: VariantSchema,
   patientId: string,
   specimenId: string,
   specimenBarcode: string,
@@ -333,6 +359,12 @@ export const variantAndId = (
       authorString: "comments",
       text: variant.comment,
     },
+  ];
+  obs.note = [
+    {
+      authorString: "comments",
+      text: variant.comment,
+    },
     {
       authorString: "gene information",
       text: variant.geneInformation,
@@ -345,15 +377,31 @@ export const variantAndId = (
 };
 
 export const planDefinitionAndId = (
-  sample: typeof sampleSchema,
-  report: typeof reportDetailSchema,
+  sample: SampleSchema,
+  report: ReportDetailSchema,
   patientId: string,
 ): ResourceAndId => {
   const plan = new PlanDefinition();
   plan.id = uuidv4();
   plan.resourceType = "PlanDefinition";
   plan.status = PlanDefinition.StatusEnum.Active;
-  plan.description = sample.testMethodology;
+  plan.type = {
+    coding: [
+      {
+        system: "http://terminology.hl7.org/CodeSystem/plan-definition-type",
+        code: "protocol",
+        display: "Protocol",
+      },
+    ],
+  };
+  plan.description = sample.reasonForTestText;
+  plan.action = [
+    {
+      prefix: "1",
+      description: report.testMethodology,
+      title: "Test Method",
+    },
+  ];
   plan.relatedArtifact = [
     {
       type: RelatedArtifact.TypeEnum.Citation,
@@ -365,7 +413,7 @@ export const planDefinitionAndId = (
   return { id: plan.id, resource: plan };
 };
 
-export const furtherTestingAndId = (report: typeof reportDetailSchema, patientId: string): ResourceAndId => {
+export const furtherTestingAndId = (report: ReportDetailSchema, patientId: string): ResourceAndId => {
   const task = new Task();
   task.id = uuidv4();
   task.resourceType = "Task";
@@ -396,7 +444,7 @@ export const furtherTestingAndId = (report: typeof reportDetailSchema, patientId
  * @param specimenId
  */
 export const serviceRequestAndId = (
-  sample: typeof sampleSchema,
+  sample: SampleSchema,
   patientId: string,
   planId: string,
   practitionerId: string,
@@ -407,6 +455,7 @@ export const serviceRequestAndId = (
   request.id = uuidv4();
   request.meta = { profile: ["http://hl7.org/fhir/StructureDefinition/servicerequest"] };
   request.text = generatedNarrative("Lab Procedure");
+  request.instantiatesCanonical = [`PlanDefinition/${planId}`];
   request.status = "active";
   request.intent = "order";
   request.category = [
@@ -420,8 +469,30 @@ export const serviceRequestAndId = (
       ],
     },
   ];
-  request.supportingInfo = [reference("PlanDefinition", planId)];
   request.subject = reference("Patient", patientId);
+  request.performerType = {
+    coding: [
+      {
+        system: "http://snomed.info/sct",
+        code: "310049001",
+        display: "Clinical genetics service",
+      },
+    ],
+  };
+  request.performer = [reference("Practitioner", practitionerId)];
+  request.reasonCode = [
+    {
+      coding: [
+        {
+          // hardcoded for now, but have issue to pull this through from clinical APIs
+          system: "http://snomed.info/sct",
+          code: sample.reasonForTestCode,
+          display: "Reason for recommending early-onset benign childhood occipita epilepsy",
+        },
+      ],
+      text: sample.reasonForTestText,
+    },
+  ];
   request.reasonCode = [
     {
       coding: [
@@ -441,7 +512,7 @@ export const serviceRequestAndId = (
 };
 
 export const reportAndId = (
-  result: typeof reportDetailSchema,
+  result: ReportDetailSchema,
   patientId: string,
   reporterId: string,
   authoriserId: string,
@@ -451,8 +522,8 @@ export const reportAndId = (
 ): ResourceAndId => {
   const report = new DiagnosticReport();
   report.id = uuidv4();
-  report.effectiveDateTime = result.authorisingDate;
-  report.issued = result.reportingDate;
+  report.effectiveDateTime = result.authorisingDate.toString();
+  report.issued = result.reportingDate.toString();
   report.resourceType = "DiagnosticReport";
   report.status = DiagnosticReport.StatusEnum.Final;
   report.subject = reference("Patient", patientId);
