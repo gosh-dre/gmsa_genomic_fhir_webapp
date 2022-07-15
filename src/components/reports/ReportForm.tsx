@@ -119,7 +119,9 @@ const ReportForm: FC<Props> = (props: Props) => {
       >
         {({ setFieldValue, isSubmitting }) => (
           <Form role="form" autoComplete="off" className={classes.form}>
-            <h2 className={classes["step-header"]}>Form step {formStep + 1} of 5</h2>
+            <h2 className={classes["step-header"]}>
+              Form step {formStep + 1} of {steps.length}
+            </h2>
 
             {returnStepContent(setFieldValue)}
 
