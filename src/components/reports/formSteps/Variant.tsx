@@ -1,19 +1,16 @@
 import { FC } from "react";
 
 import FieldSet from "../FieldSet";
-import FormStepBtn from "../../UI/FormStepBtn";
 import classes from "./Variant.module.css";
 
 interface Props {
-  nextStep: () => void;
-  prevStep: () => void;
   variantExists: boolean;
   setVariantExists: (bool: boolean) => void;
   setFieldValue: (field: string, value: string | string[] | boolean) => void;
 }
 
 const Variant: FC<Props> = (props) => {
-  const { nextStep, prevStep, variantExists, setVariantExists } = props;
+  const { variantExists, setVariantExists } = props;
 
   const setVariantHandler = () => {
     setVariantExists(!variantExists);
@@ -44,8 +41,6 @@ const Variant: FC<Props> = (props) => {
       )}
 
       {!variantExists && <div>No variant has been set. Click the button above to set a new variant</div>}
-
-      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={true} showSubmit={false} />
     </>
   );
 };

@@ -2,19 +2,15 @@ import { FC, useState } from "react";
 
 import LabSelect from "../../UI/LabSelect";
 import FieldSet from "../FieldSet";
-import FormStepBtn from "../../UI/FormStepBtn";
 
 interface Props {
-  nextStep: () => void;
-  prevStep: () => void;
   setFieldValue: (field: string, value: string | string[]) => void;
-  validateForm: () => void;
 }
 
 const Patient: FC<Props> = (props) => {
   const [selectedLab, setSelectedLab] = useState("please select a lab");
 
-  const { nextStep, prevStep, setFieldValue, validateForm } = props;
+  const { setFieldValue } = props;
 
   const setSelectedLabHandler = (lab: string) => {
     if (lab === "gosh") {
@@ -30,12 +26,6 @@ const Patient: FC<Props> = (props) => {
     }
 
     setSelectedLab(lab);
-  };
-
-  const validateAndNext = () => {
-    validateForm();
-
-    //nextStep();
   };
 
   return (
@@ -57,14 +47,6 @@ const Patient: FC<Props> = (props) => {
       <FieldSet label="Date of Birth" name="patient.dateOfBirth" type="date" />
       <FieldSet label="Gender" name="patient.gender" />
       <FieldSet label="Family Number" name="patient.familyNumber" />
-
-      <FormStepBtn
-        nextStep={() => validateAndNext()}
-        prevStep={prevStep}
-        showNext={true}
-        showPrev={false}
-        showSubmit={false}
-      />
     </>
   );
 };

@@ -12,6 +12,7 @@ import Sample from "./formSteps/Sample";
 import Variant from "./formSteps/Variant";
 import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
+import FormStepBtn from "../UI/FormStepBtn";
 
 const FormValidation = Yup.object({
   address: addressSchema.required(),
@@ -71,25 +72,17 @@ const ReportForm: FC<Props> = (props: Props) => {
   const returnStepContent = (setFieldValue: any, validateForm: any) => {
     switch (formStep) {
       case 1:
-        return (
-          <Patient nextStep={nextStep} prevStep={prevStep} setFieldValue={setFieldValue} validateForm={validateForm} />
-        );
+        return <Patient setFieldValue={setFieldValue} />;
       case 2:
-        return <Sample nextStep={nextStep} prevStep={prevStep} />;
+        return <Sample />;
       case 3:
         return (
-          <Variant
-            nextStep={nextStep}
-            prevStep={prevStep}
-            variantExists={variantExists}
-            setVariantExists={setVariantExists}
-            setFieldValue={setFieldValue}
-          />
+          <Variant variantExists={variantExists} setVariantExists={setVariantExists} setFieldValue={setFieldValue} />
         );
       case 4:
-        return <Report nextStep={nextStep} prevStep={prevStep} />;
+        return <Report />;
       case 5:
-        return <Confirmation nextStep={nextStep} prevStep={prevStep} formRef={formRef} />;
+        return <Confirmation formRef={formRef} />;
       default:
         <div>Not found</div>;
     }
@@ -109,6 +102,8 @@ const ReportForm: FC<Props> = (props: Props) => {
           <Form role="form" className={classes.form}>
             <h2 className={classes["step-header"]}>Form step {formStep} of 5</h2>
             {returnStepContent(setFieldValue, validateForm)}
+
+            <FormStepBtn prevStep={prevStep} showNext={true} showPrev={false} showSubmit={false} />
           </Form>
         )}
       </Formik>

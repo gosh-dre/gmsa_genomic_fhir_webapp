@@ -2,16 +2,13 @@ import React, { FC } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import classes from "../ReportForm.module.css";
-import FormStepBtn from "../../UI/FormStepBtn";
 
 interface Props {
-  nextStep: () => void;
-  prevStep: () => void;
   formRef: any;
 }
 
 const Confirmation: FC<Props> = (props) => {
-  const { nextStep, prevStep, formRef } = props;
+  const { formRef } = props;
 
   const formObj = formRef.current.values;
   const formObjAsArray: { [key: string]: string }[] = Object.keys(formObj).map((key: any) => {
@@ -36,8 +33,6 @@ const Confirmation: FC<Props> = (props) => {
           );
         });
       })}
-
-      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={false} showPrev={true} showSubmit={true} />
     </>
   );
 };

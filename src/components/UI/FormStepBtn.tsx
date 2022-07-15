@@ -5,12 +5,11 @@ interface Props {
   showNext: boolean;
   showPrev: boolean;
   showSubmit: boolean;
-  nextStep: () => void;
   prevStep: () => void;
 }
 
 const FormStepBtn: FC<Props> = (props) => {
-  const { showNext, showPrev, showSubmit, nextStep, prevStep } = props;
+  const { showNext, showPrev, showSubmit, prevStep } = props;
 
   return (
     <div className={classes["form-step-btn-container"]}>
