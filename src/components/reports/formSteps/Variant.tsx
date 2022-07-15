@@ -1,7 +1,6 @@
 import { FC } from "react";
 import { FieldArray } from "formik";
 import { v4 as uuidv4 } from "uuid";
-import * as Yup from "yup";
 
 import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
@@ -26,8 +25,6 @@ const emptyVariant = {
 
 const Variant: FC<Props> = (props) => {
   const { values } = props;
-
-  console.log(values);
 
   return (
     <>
