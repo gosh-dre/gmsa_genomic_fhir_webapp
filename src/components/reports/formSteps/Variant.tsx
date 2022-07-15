@@ -1,46 +1,82 @@
 import { FC } from "react";
+import { FieldArray } from "formik";
 
 import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
 
 interface Props {
-  variantExists: boolean;
-  setVariantExists: (bool: boolean) => void;
-  setFieldValue: (field: string, value: string | string[] | boolean) => void;
+  values: any;
 }
 
-const Variant: FC<Props> = (props) => {
-  const { variantExists, setVariantExists } = props;
+const emptyVariant = {
+  gene: "",
+  geneInformation: "",
+  genomicHGVS: "",
+  inheritanceMethod: "",
+  classification: "",
+  proteinHGVS: "",
+  transcript: "",
+  zygosity: "",
+  classificationEvidence: "",
+  confirmedVariant: false,
+  comment: "",
+};
 
-  const setVariantHandler = () => {
-    setVariantExists(!variantExists);
-  };
+const Variant: FC<Props> = (props) => {
+  const { values } = props;
+
+  console.log(values);
 
   return (
     <>
       <h2>Variant</h2>
 
-      <div className={classes["variant-btn"]} onClick={() => setVariantHandler()}>
-        {variantExists ? "Set no variant" : "Set variant"}
-      </div>
+      <FieldArray
+        name="variant"
+        render={(arrayHelpers) => (
+          <div>
+            {values.variant &&
+              values.variant.length > 0 &&
+              values.variant.map((variant: any, index: number) => (
+                <div key={index}>
+                  <FieldSet name={`variant[${index}].gene`} label="Gene Symbol" />
+                  <FieldSet as="textarea" name={`variant[${index}].geneInformation`} label="Gene Information" />
+                  <FieldSet name={`variant[${index}].transcript`} label="Transcript" />
+                  <FieldSet name={`variant[${index}].genomicHGVS`} label="Genomic HGVS" />
+                  <FieldSet name={`variant[${index}].proteinHGVS`} label="Protein HGVS" />
+                  <FieldSet name={`variant[${index}].zygosity`} label="Zygosity" />
+                  <FieldSet name={`variant[${index}].inheritanceMethod`} label="Inhertiance Method" />
+                  <FieldSet name={`variant[${index}].classification`} label="Classification" />
+                  <FieldSet
+                    as="textarea"
+                    name={`variant[${index}].classificationEvidence`}
+                    label="Classification Evidence"
+                  />
+                  <FieldSet type="checkbox" name={`variant[${index}].confirmedVariant`} label="Variant Confirmed" />
+                  <FieldSet as="textarea" name={`variant[${index}].comment`} label="Comment" />
 
-      {variantExists && (
-        <>
-          <FieldSet name="variant[0].gene" label="Gene Symbol" />
-          <FieldSet as="textarea" name="variant[0].geneInformation" label="Gene Information" />
-          <FieldSet name="variant[0].transcript" label="Transcript" />
-          <FieldSet name="variant[0].genomicHGVS" label="Genomic HGVS" />
-          <FieldSet name="variant[0].proteinHGVS" label="Protein HGVS" />
-          <FieldSet name="variant[0].zygosity" label="Zygosity" />
-          <FieldSet name="variant[0].inheritanceMethod" label="Inhertiance Method" />
-          <FieldSet name="variant[0].classification" label="Classification" />
-          <FieldSet as="textarea" name="variant[0].classificationEvidence" label="Classification Evidence" />
-          <FieldSet type="checkbox" name="variant[0].confirmedVariant" label="Variant Confirmed" />
-          <FieldSet as="textarea" name="variant[0].comment" label="Comment" />
-        </>
-      )}
+                  <button
+                    className={classes["variant-btn"]}
+                    type="button"
+                    onClick={() => arrayHelpers.remove(index)} // remove a variant from the list
+                  >
+                    Delete variant
+                  </button>
 
-      {!variantExists && <div>No variant has been set. Click the button above to set a new variant</div>}
+                  <hr></hr>
+                </div>
+              ))}
+
+            <button
+              className={`${classes["variant-btn"]} ${classes["variant-btn-center"]}`}
+              type="button"
+              onClick={() => arrayHelpers.push(emptyVariant)}
+            >
+              Add a variant
+            </button>
+          </div>
+        )}
+      />
     </>
   );
 };
