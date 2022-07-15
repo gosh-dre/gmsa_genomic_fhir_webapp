@@ -22,26 +22,28 @@ const FormValidation = Yup.object({
   result: reportDetailSchema.required(),
 }).required();
 
+export type FormValues = Yup.InferType<typeof FormValidation>;
+
 const PatientAndAddressValidation = Yup.object({
-  address: addressSchema.required(),
-  patient: patientSchema.required(),
-}).required();
+  address: addressSchema,
+  patient: patientSchema,
+});
 
 const SampleValidation = Yup.object({
-  sample: sampleSchema.required(),
-}).required();
+  sample: sampleSchema,
+});
 
 const VariantValidation = Yup.object({
-  variant: variantsSchema.required(),
-}).required();
+  variant: variantsSchema,
+});
 
 const ResultValidation = Yup.object({
-  result: reportDetailSchema.required(),
-}).required();
+  result: reportDetailSchema,
+});
 
 const validators = [PatientAndAddressValidation, SampleValidation, VariantValidation, ResultValidation];
 
-export type FormValues = Yup.InferType<typeof FormValidation>;
+const steps = ["patient & Address", "sample", "variant", "result", "confirmation"];
 
 type Props = {
   initialValues: FormValues;
@@ -49,8 +51,9 @@ type Props = {
 
 const ReportForm: FC<Props> = (props: Props) => {
   const [result, setResult] = useState("");
-  const [formStep, setFormStep] = useState(1);
   const [variantExists, setVariantExists] = useState(true);
+  const [formStep, setFormStep] = useState(0);
+  const isLastStep = formStep === steps.length - 1;
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);
 
@@ -67,7 +70,7 @@ const ReportForm: FC<Props> = (props: Props) => {
   };
 
   const handleSubmit = (values: FormValues, actions: FormikHelpers<FormValues>) => {
-    if (formStep === 5) {
+    if (formStep === steps.length - 1) {
       submitForm(values, actions);
       return;
     }
@@ -79,29 +82,24 @@ const ReportForm: FC<Props> = (props: Props) => {
     setFormStep(formStep + 1);
   };
 
-  const nextStep = () => {
-    if (formStep === 5) return;
-    setFormStep(formStep + 1);
-  };
-
   const prevStep = () => {
-    if (formStep === 1) return;
+    if (formStep === 0) return;
     setFormStep(formStep - 1);
   };
 
-  const returnStepContent = (setFieldValue: any, validateForm: any) => {
+  const returnStepContent = (setFieldValue: any) => {
     switch (formStep) {
-      case 1:
+      case 0:
         return <Patient setFieldValue={setFieldValue} />;
-      case 2:
+      case 1:
         return <Sample />;
-      case 3:
+      case 2:
         return (
           <Variant variantExists={variantExists} setVariantExists={setVariantExists} setFieldValue={setFieldValue} />
         );
-      case 4:
+      case 3:
         return <Report />;
-      case 5:
+      case 4:
         return <Confirmation formRef={formRef} />;
       default:
         <div>Not found</div>;
@@ -111,19 +109,21 @@ const ReportForm: FC<Props> = (props: Props) => {
   return (
     <Card>
       <h1>Add a new report</h1>
+
       <Formik
         enableReinitialize={true}
         initialValues={props.initialValues}
-        validationSchema={validators[formStep - 1]}
+        validationSchema={validators[formStep]}
         onSubmit={handleSubmit}
         innerRef={formRef}
       >
-        {({ setFieldValue, validateForm }) => (
+        {({ setFieldValue, isSubmitting }) => (
           <Form role="form" autoComplete="off" className={classes.form}>
-            <h2 className={classes["step-header"]}>Form step {formStep} of 5</h2>
-            {returnStepContent(setFieldValue, validateForm)}
+            <h2 className={classes["step-header"]}>Form step {formStep + 1} of 5</h2>
 
-            <FormStepBtn prevStep={prevStep} formStep={formStep} />
+            {returnStepContent(setFieldValue)}
+
+            <FormStepBtn formStep={formStep} prevStep={prevStep} isLastStep={isLastStep} isSubmitting={isSubmitting} />
           </Form>
         )}
       </Formik>
