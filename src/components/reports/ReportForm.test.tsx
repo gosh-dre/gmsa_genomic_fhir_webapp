@@ -41,6 +41,14 @@ function setDummyAndNext(withDates: boolean) {
   userEvent.click(screen.getByText(/next/i));
 }
 
+async function setVariantFields() {
+  await act(async () => {
+    userEvent.click(screen.getByText(/add a variant/i));
+  });
+
+  setDummyAndNext(false);
+}
+
 describe("Report form", () => {
   /**
    * Given the report form
@@ -59,7 +67,7 @@ describe("Report form", () => {
       setDummyAndNext(true);
     });
     await act(async () => {
-      setDummyAndNext(false);
+      setVariantFields();
     });
     await act(async () => {
       setDummyAndNext(true);
