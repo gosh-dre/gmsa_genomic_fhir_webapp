@@ -47,7 +47,6 @@ type Props = {
 
 const ReportForm: FC<Props> = (props: Props) => {
   const [result, setResult] = useState("");
-  const [variantExists, setVariantExists] = useState(true);
   const [formStep, setFormStep] = useState(0);
   const isLastStep = formStep === steps.length - 1;
   const ctx = useContext(FhirContext);
@@ -83,16 +82,14 @@ const ReportForm: FC<Props> = (props: Props) => {
     setFormStep(formStep - 1);
   };
 
-  const returnStepContent = (setFieldValue: any) => {
+  const returnStepContent = (setFieldValue: any, values: FormValues) => {
     switch (formStep) {
       case 0:
         return <Patient setFieldValue={setFieldValue} />;
       case 1:
         return <Sample />;
       case 2:
-        return (
-          <Variant variantExists={variantExists} setVariantExists={setVariantExists} setFieldValue={setFieldValue} />
-        );
+        return <Variant values={values} />;
       case 3:
         return <Report />;
       case 4:
@@ -113,13 +110,13 @@ const ReportForm: FC<Props> = (props: Props) => {
         onSubmit={handleSubmit}
         innerRef={formRef}
       >
-        {({ setFieldValue, isSubmitting }) => (
+        {({ setFieldValue, isSubmitting, values }) => (
           <Form role="form" autoComplete="off" className={classes.form}>
             <h2 className={classes["step-header"]}>
               Form step {formStep + 1} of {steps.length}
             </h2>
 
-            {returnStepContent(setFieldValue)}
+            {returnStepContent(setFieldValue, values)}
 
             <FormStepBtn formStep={formStep} prevStep={prevStep} isLastStep={isLastStep} isSubmitting={isSubmitting} />
           </Form>

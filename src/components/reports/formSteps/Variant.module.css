@@ -9,3 +9,7 @@
   width: 150px;
   cursor: pointer;
 }
+
+.variant-btn-center {
+  display: flex;
+}
