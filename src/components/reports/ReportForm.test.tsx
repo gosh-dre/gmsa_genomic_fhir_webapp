@@ -54,6 +54,12 @@ async function setVariantFields() {
   });
 }
 
+async function setNoVariant() {
+  await act(async () => {
+    userEvent.click(screen.getByText(/next/i));
+  });
+}
+
 describe("Report form", () => {
   /**
    * Given the report form
@@ -68,6 +74,31 @@ describe("Report form", () => {
     await setLabAndPatient();
     await setDummyAndNext(true);
     await setVariantFields();
+    await setDummyAndNext(true);
+    await act(async () => {
+      userEvent.click(screen.getByText(/submit/i));
+    });
+
+    // Assert
+    const result = await screen.findByRole("alert");
+    expect(result).toBeInTheDocument();
+  });
+});
+
+describe("Report form with no variants added", () => {
+  /**
+   * Given the report form
+   * When all data filled in except for having no variant
+   * Then the rendered result should be rendered in an alert box
+   */
+  test("Values returned by form submission", async () => {
+    // Arrange
+    render(<ReportForm initialValues={noValues} />);
+
+    // Act
+    await setLabAndPatient();
+    await setDummyAndNext(true);
+    await setNoVariant();
     await setDummyAndNext(true);
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
