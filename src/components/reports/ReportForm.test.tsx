@@ -60,6 +60,8 @@ async function setNoVariant() {
   });
 }
 
+jest.setTimeout(20000);
+
 describe("Report form", () => {
   /**
    * Given the report form
@@ -67,7 +69,6 @@ describe("Report form", () => {
    * Then the rendered result should be rendered in an alert box
    */
   test("Report with variant", async () => {
-    jest.setTimeout(10000);
     // Arrange
     render(<ReportForm initialValues={noValues} />);
 
@@ -91,7 +92,6 @@ describe("Report form", () => {
    * Then the rendered result should be rendered in an alert box
    */
   test("Report without variant", async () => {
-    jest.setTimeout(10000);
     // Arrange
     render(<ReportForm initialValues={noValues} />);
 
