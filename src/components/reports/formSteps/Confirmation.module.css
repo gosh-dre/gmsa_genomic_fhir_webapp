@@ -11,3 +11,7 @@
 .confirmation-value {
   color: rgb(78, 73, 139);
 }
+
+.variant-key {
+  text-decoration: underline;
+}
