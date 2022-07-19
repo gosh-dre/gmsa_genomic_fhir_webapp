@@ -66,7 +66,7 @@ describe("Report form", () => {
    * When all data filled in
    * Then the rendered result should be rendered in an alert box
    */
-  test("Values returned by form submission", async () => {
+  test("Report with variant", async () => {
     // Arrange
     render(<ReportForm initialValues={noValues} />);
 
@@ -83,15 +83,13 @@ describe("Report form", () => {
     const result = await screen.findByRole("alert");
     expect(result).toBeInTheDocument();
   });
-});
 
-describe("Report form with no variants added", () => {
   /**
    * Given the report form
    * When all data filled in except for having no variant
    * Then the rendered result should be rendered in an alert box
    */
-  test("Values returned by form submission", async () => {
+  test("Report without variant", async () => {
     // Arrange
     render(<ReportForm initialValues={noValues} />);
 
