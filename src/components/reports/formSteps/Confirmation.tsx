@@ -12,6 +12,9 @@ const Confirmation: FC<Props> = (props) => {
 
   const formObj = formRef.current.values;
   const formObjAsArray: { [key: string]: string }[] = Object.keys(formObj).map((key: string) => {
+    if (key === "variant" && formObj[key].length === 0) {
+      return { variants: "no variants reported" };
+    }
     return formObj[key];
   });
   const formKeysArray: string[][] = formObjAsArray.map((key: any) => {
