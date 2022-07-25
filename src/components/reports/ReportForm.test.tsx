@@ -5,13 +5,9 @@ import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { noValues } from "./FormDefaults";
 import { act } from "react-dom/test-utils";
 
-const typeInput = (element: Element, value: string) => {
-  userEvent.type(element, value);
-};
-
 const clearAndType = (element: Element, value: string) => {
-  userEvent.type(element, value);
   userEvent.clear(element);
+  userEvent.type(element, value);
 };
 
 type DropDown = {
@@ -22,8 +18,30 @@ type DropDown = {
 const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
   const dummyValue = "Always the same";
   const form = screen.getByRole("form");
-  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|mrn|date|address|gender).)*$/i);
-  textInputs.forEach((input) => typeInput(input, dummyValue));
+  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|date|address|gender).)*$/i);
+
+  if (!dropDowns) {
+    textInputs.forEach((input) => {
+      clearAndType(input, dummyValue);
+    });
+  } else {
+    textInputs.forEach((input) => {
+      try {
+        clearAndType(input, dummyValue);
+      } catch (e) {
+        // swallow error if this is a drop-down field
+        const result = (e as Error).message;
+        if (!result.includes("clear currently only supports input and textarea elements")) {
+          throw e;
+        }
+      }
+    });
+    dropDowns.map((dd) => {
+      const field = within(form).getByLabelText(dd.field);
+      userEvent.selectOptions(field, dd.value);
+    });
+  }
+
   if (withDates) {
     within(form)
       .getAllByLabelText(/date/i)
@@ -31,25 +49,22 @@ const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
         clearAndType(input, "2019-01-01");
       });
   }
-
-  if (dropDowns) {
-    dropDowns.map((dd) => {
-      const field = within(form).getByLabelText(dd.field);
-      userEvent.selectOptions(field, dd.value);
-    });
-  }
 };
 
 async function setLabAndPatient() {
   await act(async () => {
-    setDummyValues(true);
     userEvent.selectOptions(screen.getByDisplayValue(/select a lab/i), ["gosh"]);
-    clearAndType(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
+  });
 
-    // set MRN value
-    const newMRNValue = "10293879";
-    userEvent.type(screen.getByLabelText(/mrn/i), newMRNValue);
-    userEvent.tab();
+  await act(async () => {
+    setDummyValues(true);
+  });
+
+  await act(async () => {
+    clearAndType(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
+  });
+
+  await act(async () => {
     userEvent.click(screen.getByText(/next/i));
   });
 }
@@ -57,6 +72,9 @@ async function setLabAndPatient() {
 async function setDummyAndNext(withDates: boolean, dropDowns?: DropDown[]) {
   await act(async () => {
     setDummyValues(withDates, dropDowns);
+  });
+
+  await act(async () => {
     userEvent.click(screen.getByText(/next/i));
   });
 }
@@ -66,7 +84,7 @@ async function setVariantFields() {
     userEvent.click(screen.getByText(/add a variant/i));
   });
   await act(async () => {
-    setDummyAndNext(false);
+    setDummyAndNext(false, variantDropDowns);
   });
 }
 
@@ -98,7 +116,7 @@ describe("Report form", () => {
     await setLabAndPatient();
     await setDummyAndNext(true);
     await setVariantFields();
-    await setDummyAndNext(true, variantDropDowns);
+    await setDummyAndNext(true);
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });
@@ -121,7 +139,7 @@ describe("Report form", () => {
     await setLabAndPatient();
     await setDummyAndNext(true);
     await setNoVariant();
-    await setDummyAndNext(true, variantDropDowns);
+    await setDummyAndNext(true);
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });
