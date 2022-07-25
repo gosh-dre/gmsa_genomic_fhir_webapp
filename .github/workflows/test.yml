@@ -29,4 +29,7 @@ jobs:
       - name: Build
         run: npm run build --if-present
       - name: npm test
+        env:
+          REACT_APP_LOINC_USERNAME: ${{secrets.REACT_APP_LOINC_USERNAME}}
+          REACT_APP_LOINC_PASSWORD: ${{secrets.REACT_APP_LOINC_PASSWORD}}
         run: npm test
