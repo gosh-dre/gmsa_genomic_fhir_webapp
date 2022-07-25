@@ -231,7 +231,7 @@
         },
         "meta": {
           "profile": [
-            "http://hl7.org/fhir/uv/genomic-reporting/variant1"
+            "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"
           ]
         },
         "subject": {
