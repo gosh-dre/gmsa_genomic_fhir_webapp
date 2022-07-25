@@ -1,7 +1,7 @@
+import { Coding, ValueSet } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { getSelectOptions } from "./loinc";
-import { ValueSet } from "fhir/r4";
 
-export type LoincOption = { code: string; display: string };
+export type LoincOption = { code: string; display: string; system: string };
 
 type LoincCodes = {
   classification: ValueSet;
@@ -269,9 +269,19 @@ export const loincCodes: LoincCodes = {
   },
 };
 
+export const loincResources = Object.values(loincCodes).map((vs) => {
+  const identifier = vs.identifier?.at(0)?.value as string;
+  return { resource: vs, identifier: identifier };
+});
+
 export const loincSelect = {
   classification: getSelectOptions(loincCodes.classification),
   inheritance: getSelectOptions(loincCodes.inheritance),
   zygosity: getSelectOptions(loincCodes.zygosity),
   followUp: getSelectOptions(loincCodes.followUp),
+};
+
+export const codedValue = (options: Coding[], id: string): Coding => {
+  const codingValue = options.filter((opt) => opt.code === id).pop();
+  return codingValue as Coding;
 };

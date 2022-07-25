@@ -1,7 +1,6 @@
-import { ValueSet, ValueSetComposeIncludeConcept } from "fhir/r4";
 import { Buffer } from "buffer";
 import fetch from "node-fetch";
-import { LoincOption } from "./loincCodes";
+import { Coding, ValueSet, ValueSetConcept } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 const USERNAME = process.env.REACT_APP_LOINC_USERNAME;
 const PASSWORD = process.env.REACT_APP_LOINC_PASSWORD;
@@ -35,7 +34,7 @@ const getValueSetData = async (valueSet: string): Promise<ValueSet> => {
   return await response.json();
 };
 
-export const getSelectOptions = (valueSet: ValueSet): LoincOption[] => {
+export const getSelectOptions = (valueSet: ValueSet): Coding[] => {
   const unpacked = valueSet.compose?.include
     ?.flatMap((c) => c.concept)
     .filter(isConcept)
@@ -48,10 +47,14 @@ export const getSelectOptions = (valueSet: ValueSet): LoincOption[] => {
   }
 };
 
-const isConcept = (concept: ValueSetComposeIncludeConcept | undefined): concept is ValueSetComposeIncludeConcept => {
+const isConcept = (concept: ValueSetConcept | undefined): concept is ValueSetConcept => {
   return !!concept;
 };
 
-const makeLoincOption = (concept: ValueSetComposeIncludeConcept): LoincOption => {
-  return { code: concept.code, display: concept.display || concept.code };
+const makeLoincOption = (concept: ValueSetConcept): Coding => {
+  return <Coding>{
+    code: concept.code,
+    display: concept.display || concept.code,
+    system: "http://loinc.org",
+  };
 };

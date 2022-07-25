@@ -1,12 +1,13 @@
 import { ErrorMessage, Field } from "formik";
 import { FC } from "react";
+import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 type Props = {
   name: string;
   label: string;
   type?: string;
   as?: string;
-  selectOptions?: { code: string; display: string }[];
+  selectOptions?: Coding[];
 };
 
 const FieldSet: FC<Props> = ({ name, label, selectOptions, ...rest }) => {

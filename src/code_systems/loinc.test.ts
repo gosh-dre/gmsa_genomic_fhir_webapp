@@ -26,6 +26,6 @@ describe("LOINC", () => {
     const options = getSelectOptions(loincCodes.zygosity);
 
     expect(options.length).toEqual(5);
-    expect(options).toContainEqual({ code: "LA6703-8", display: "Heteroplasmic" });
+    expect(options).toContainEqual({ code: "LA6703-8", display: "Heteroplasmic", system: "http://loinc.org" });
   });
 });

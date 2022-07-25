@@ -62,7 +62,7 @@ export function createPatientObservation(
 export const observationComponent = (coding: Coding, value: Coding | string | boolean): ObservationComponent => {
   const component = new ObservationComponent();
   component.code = { coding: [coding] };
-  if (value instanceof Coding) {
+  if (typeof value === "object") {
     component.valueCodeableConcept = { coding: [value] };
   } else if (typeof value == "boolean") {
     component.valueBoolean = value;
