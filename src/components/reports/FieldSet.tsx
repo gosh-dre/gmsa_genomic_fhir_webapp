@@ -13,9 +13,11 @@ const FieldSet: FC<Props> = ({ name, label, selectOptions, ...rest }) => {
   let field: JSX.Element = <Field id={name} name={name} {...rest} />;
 
   if (selectOptions !== undefined) {
+    const selectsWithInitial = [{ code: "", display: "Please select" }, ...selectOptions];
+
     field = (
       <Field id={name} name={name} as="select" {...rest}>
-        {selectOptions.map((opt) => (
+        {selectsWithInitial.map((opt) => (
           <option key={opt.code} value={opt.code} role="select">
             {opt.display}
           </option>
