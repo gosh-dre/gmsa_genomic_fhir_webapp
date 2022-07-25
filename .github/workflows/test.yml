@@ -9,6 +9,7 @@ on:
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
+    environment: test-env
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
