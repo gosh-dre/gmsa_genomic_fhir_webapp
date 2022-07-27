@@ -226,13 +226,13 @@ export const interpretationAndId = (
   );
 
   obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/overall-interpretation"] };
-  obs.interpretation = [
+  obs.category = [
     {
       coding: [
         {
-          system: "http://loinc.org",
-          code: "LA6576-8",
-          display: result.clinicalConclusion,
+          system: "http://terminology.hl7.org/obs-category",
+          code: "laboratory",
+          display: "Laboratory",
         },
       ],
     },
