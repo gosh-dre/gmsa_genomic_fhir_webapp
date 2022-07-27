@@ -161,7 +161,9 @@ export const specimenAndId = (sample: SampleSchema, patientId: string): Resource
   specimen.id = uuidv4();
   specimen.resourceType = "Specimen";
   specimen.receivedTime = sample.receivedDateTime;
-  specimen.collection = { collectedDateTime: sample.collectionDateTime.toString() };
+  if (sample.collectionDateTime !== undefined) {
+    specimen.collection = { collectedDateTime: sample.collectionDateTime.toString() };
+  }
   specimen.identifier = [{ value: sample.specimenCode, id: "specimen id" }];
   specimen.type = {
     coding: [
@@ -371,16 +373,20 @@ export const variantAndId = (
       text: variant.comment,
     },
   ];
+
   obs.note = [
     {
       authorString: "comments",
       text: variant.comment,
     },
-    {
+  ];
+  if (variant.geneInformation !== undefined) {
+    obs.note.push({
       authorString: "gene information",
       text: variant.geneInformation,
-    },
-  ];
+    });
+  }
+
   const identifier = `${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`;
   obs.identifier = [{ value: identifier, id: "{specimenBarcode}${transcript}:{genomicHGVS}" }];
 
@@ -396,7 +402,9 @@ export const planDefinitionAndId = (
   plan.id = uuidv4();
   plan.resourceType = "PlanDefinition";
   plan.status = PlanDefinition.StatusEnum.Active;
-  plan.description = sample.reasonForTestText;
+  if (sample.reasonForTestText !== undefined) {
+    plan.description = sample.reasonForTestText;
+  }
   plan.action = [
     {
       prefix: "1",
@@ -404,12 +412,15 @@ export const planDefinitionAndId = (
       title: "Test Method",
     },
   ];
-  plan.relatedArtifact = [
-    {
-      type: RelatedArtifact.TypeEnum.Citation,
-      citation: report.citation,
-    },
-  ];
+
+  if (report.citation !== undefined) {
+    plan.relatedArtifact = [
+      {
+        type: RelatedArtifact.TypeEnum.Citation,
+        citation: report.citation,
+      },
+    ];
+  }
   plan.subjectReference = reference("Patient", patientId);
 
   return { id: plan.id, resource: plan };
