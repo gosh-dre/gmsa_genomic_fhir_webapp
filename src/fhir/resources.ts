@@ -88,13 +88,14 @@ export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
   org.type = [
     {
       coding: [
+        // custom code, raising to see if useful
         {
-          system: "http://terminology.hl7.org/CodeSystem/organization-type",
-          code: "prov",
-          display: "Healthcare Provider",
+          system: "http://term.hl7.org/CodeSystem/org-id-types",
+          code: "gosh-org",
+          display: "NHS UK Healthcare Provider",
         },
       ],
-      text: "Healthcare Provider",
+      text: "NHS UK Healthcare Provider",
     },
   ];
   org.name = form.name;
@@ -152,7 +153,7 @@ export const specimenAndId = (sample: SampleSchema, patientId: string): Resource
   specimen.resourceType = "Specimen";
   specimen.receivedTime = sample.receivedDateTime;
   specimen.collection = { collectedDateTime: sample.collectionDateTime.toString() };
-  specimen.identifier = [{ value: sample.specimenCode, id: "specimenId" }];
+  specimen.identifier = [{ value: sample.specimenCode, id: "specimen id" }];
   specimen.type = {
     coding: [
       {
@@ -385,15 +386,6 @@ export const planDefinitionAndId = (
   plan.id = uuidv4();
   plan.resourceType = "PlanDefinition";
   plan.status = PlanDefinition.StatusEnum.Active;
-  plan.type = {
-    coding: [
-      {
-        system: "http://terminology.hl7.org/CodeSystem/plan-definition-type",
-        code: "protocol",
-        display: "Protocol",
-      },
-    ],
-  };
   plan.description = sample.reasonForTestText;
   plan.action = [
     {
