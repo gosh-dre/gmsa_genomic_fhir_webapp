@@ -114,32 +114,41 @@ export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
 
 export const practitionersAndIds = (result: ReportDetailSchema) => {
   return {
-    authoriser: practitionerAndId(result.authorisingScientist, result.authorisingScientistTitle),
-    reporter: practitionerAndId(result.reportingScientist, result.reportingScientistTitle),
+    authoriser: practitionerAndId(result.authorisingScientist, result.authorisingScientistTitle, "auth"),
+    reporter: practitionerAndId(result.reportingScientist, result.reportingScientistTitle, "report"),
   };
 };
 
+type ScientistRole = "auth" | "report";
+
 /**
  * Create a practitioner from limited data.
+ *
+ * If the same scientist reports and authorises reports, then each role will create a separate practitioner.
  * @param fullName the first word will be the firstName, remaining words will be lastName
- * @param title role or job title within the laboratory
+ * @param title job title within the laboratory
+ * @param role role in the reporting process
  */
-const practitionerAndId = (fullName: string, title: string): ResourceAndIds => {
+const practitionerAndId = (fullName: string, title: string, role: ScientistRole): ResourceAndIds => {
   const nameSplit = fullName.split(/\s/g);
   const firstName = nameSplit[0];
   const lastName = nameSplit.slice(1).join(" ");
   const practitioner = new Practitioner();
+
+  let roleText = "Reported By";
+  if (role === "auth") {
+    roleText = "Authorized By";
+  }
 
   practitioner.id = uuidv4();
   practitioner.resourceType = "Practitioner";
   practitioner.active = true;
   const identifier = fullName.toLowerCase().replaceAll(/\s/g, "");
   practitioner.identifier = [{ value: identifier }];
-  practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official }];
-  // suggested shorter form for role
+  practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official, text: roleText }];
   practitioner.qualification = [{ code: { text: title } }];
 
-  return { identifier: `${fullName} ${title}`, id: practitioner.id, resource: practitioner };
+  return { identifier: `${fullName}_${role}`, id: practitioner.id, resource: practitioner };
 };
 
 /**
