@@ -237,7 +237,7 @@ export const interpretationAndId = (
       ],
     },
   ];
-  obs.effectiveDateTime = result.authorisingDate.toLocaleDateString();
+  obs.effectiveDateTime = result.authorisingDate.toString();
   obs.valueString = result.resultSummary;
   const identifier = `${specimenBarcode}$overall-interpretation`;
   obs.identifier = [{ value: identifier, id: "{specimenBarcode}$overall-interpretation" }];
