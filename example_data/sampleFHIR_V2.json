@@ -16,9 +16,9 @@
         "code": {
           "coding": [
             {
-              "system": "http://snomed.info/sct",
-              "code": "82511000000108",
-              "display": "R59"
+              "system": "https://panelapp.genomicsengland.co.uk/panels",
+              "code": "R59",
+              "display": "Early onset or syndromic epilepsy"
             }
           ]
         },
@@ -86,23 +86,12 @@
             "text": "NHS UK Healthcare Provider"
           }
         ],
-        "identifier": [
-          {
-            "system": "http://term.hl7.org/CodeSystem/org-id-codes",
-            "value": "ISO 15189:2012"
-          }
-        ],
-        "name": "Great Ormond Street Hospital for Childreb NHS Foundation Trust",
-        "telecom": [
-          {
-            "system": "phone",
-            "value": "2078298870"
-          }
-        ],
+        "name": "Great Ormond Street Hospital for Children NHS Foundation Trust",
         "address": [
           {
             "line": [
-              "Level 4 Barclays House, 37 Queens Square"
+              "Level 4 Barclays House",
+              "37 Queens Square"
             ],
             "city": "London",
             "postalCode": "WC1N 3BH",
@@ -131,6 +120,9 @@
         ],
         "gender": "female",
         "birthDate": "2016-06-01",
+        "managingOrganization": {
+          "reference": "Organization/85940927-468f-f53d-864a-7a50b48d73f1"
+        },
         "identifier": [
           {
             "value": "40057119"
@@ -182,7 +174,7 @@
             {
               "system": "http://snomed.info/sct",
               "code": "122555007",
-              "display": "blood"
+              "display": "Venus blood specimen"
             }
           ]
         },
@@ -204,7 +196,7 @@
         "active": true,
         "name": [
           {
-            "use": "usual",
+            "use": "official",
             "family": "Nephrology",
             "given": [
               "Clinics"
@@ -244,7 +236,7 @@
         "active": true,
         "name": [
           {
-            "use": "usual",
+            "use": "official",
             "family": "Quality",
             "given": [
               "Activity"
@@ -287,7 +279,7 @@
             {
               "system": "http://loinc.org",
               "code": "69548-6",
-              "display": "Genetic variant assesment"
+              "display": "Genetic variant assessment"
             }
           ]
         },
@@ -334,7 +326,7 @@
             "valueCodeableConcept": {
               "coding": [
                 {
-                  "system": "https://www.nvbi.nlm.nih.gov/nuccore",
+                  "system": "http://www.ncbi.nlm.nih.gov/refseq",
                   "code": "NM_001350626.1"
                 }
               ]
@@ -423,7 +415,7 @@
               "coding": [
                 {
                   "system": "http://loinc.org",
-                  "code": "53034-0",
+                  "code": "79742-3",
                   "display": "Inheritance pattern based on family history"
                 }
               ]
@@ -455,7 +447,7 @@
                 {
                   "system": "http://hl7.org/evidence",
                   "code": "evidence",
-                  "display": "Evidence for classification of variant1"
+                  "display": "Evidence for classification of variant"
                 }
               ]
             },
@@ -466,11 +458,11 @@
               "coding": [
                 {
                   "system": "http://hl7.org/variant",
-                  "code": "confirmed-mutation",
-                  "display": ""
+                  "code": "confirmed-variant"
                 }
               ]
-            }
+            },
+            "valueBoolean": false
           }
         ]
       },
@@ -537,7 +529,7 @@
             "valueCodeableConcept": {
               "coding": [
                 {
-                  "system": "https://www.nvbi.nlm.nih.gov/nuccore",
+                  "system": "http://www.ncbi.nlm.nih.gov/refseq",
                   "code": "NM_032504.1"
                 }
               ]
@@ -626,7 +618,7 @@
               "coding": [
                 {
                   "system": "http://loinc.org",
-                  "code": "53034-0",
+                  "code": "79742-3",
                   "display": "Inheritance pattern based on family history"
                 }
               ]
@@ -669,11 +661,11 @@
               "coding": [
                 {
                   "system": "http://hl7.org/variant",
-                  "code": "confirmed-mutation",
-                  "display": false
+                  "code": "confirmed-variant"
                 }
               ]
-            }
+            },
+            "valueBoolean": false
           }
         ]
       },
@@ -740,7 +732,7 @@
             "valueCodeableConcept": {
               "coding": [
                 {
-                  "system": "https://www.nvbi.nlm.nih.gov/nuccore",
+                  "system": "http://www.ncbi.nlm.nih.gov/refseq",
                   "code": "NM_001110792.1"
                 }
               ]
@@ -829,7 +821,7 @@
               "coding": [
                 {
                   "system": "http://loinc.org",
-                  "code": "53034-0",
+                  "code": "79742-3",
                   "display": "Inheritance pattern based on family history"
                 }
               ]
@@ -872,11 +864,11 @@
               "coding": [
                 {
                   "system": "http://hl7.org/variant",
-                  "code": "confirmed-mutation",
-                  "display": true
+                  "code": "confirmed-variant"
                 }
               ]
-            }
+            },
+            "valueBoolean": true
           }
         ]
       },
@@ -943,7 +935,7 @@
             "valueCodeableConcept": {
               "coding": [
                 {
-                  "system": "https://www.nvbi.nlm.nih.gov/nuccore",
+                  "system": "http://www.ncbi.nlm.nih.gov/refseq",
                   "code": "NM_002693.2"
                 }
               ]
@@ -1032,7 +1024,7 @@
               "coding": [
                 {
                   "system": "http://loinc.org",
-                  "code": "53034-0",
+                  "code": "79742-3",
                   "display": "Inheritance pattern based on family history"
                 }
               ]
@@ -1075,11 +1067,11 @@
               "coding": [
                 {
                   "system": "http://hl7.org/variant",
-                  "code": "confirmed-mutation",
-                  "display": true
+                  "code": "confirmed-variant"
                 }
               ]
-            }
+            },
+            "valueBoolean": true
           }
         ]
       },
@@ -1105,7 +1097,7 @@
             {
               "system": "http://loinc.org",
               "code": "LA14020-4",
-              "display": "Genetic counceling recommended"
+              "display": "Genetic counseling recommended"
             }
           ]
         },
@@ -1128,7 +1120,7 @@
         "status": "final",
         "meta": {
           "profile": [
-            "http://hl7.org/fhir/uv/genomic-reporting/overall-interpretation"
+            "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/overall-interpretation"
           ]
         },
         "code": {
