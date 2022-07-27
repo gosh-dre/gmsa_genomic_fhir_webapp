@@ -1,78 +1,82 @@
 import { FC } from "react";
+import { FieldArray } from "formik";
+import { v4 as uuidv4 } from "uuid";
 
+import { FormValues } from "../ReportForm";
 import FieldSet from "../FieldSet";
-import FormStepBtn from "../../UI/FormStepBtn";
 import classes from "./Variant.module.css";
 
 interface Props {
-  nextStep: () => void;
-  prevStep: () => void;
-  variantExists: boolean;
-  setVariantExists: (bool: boolean) => void;
-  setFieldValue: (field: string, value: string | string[] | boolean) => void;
+  values: FormValues;
 }
 
+const emptyVariant = {
+  gene: "",
+  geneInformation: "",
+  genomicHGVS: "",
+  inheritanceMethod: "",
+  classification: "",
+  proteinHGVS: "",
+  transcript: "",
+  zygosity: "",
+  classificationEvidence: "",
+  confirmedVariant: false,
+  comment: "",
+};
+
 const Variant: FC<Props> = (props) => {
-  const { nextStep, prevStep, variantExists, setVariantExists, setFieldValue } = props;
-
-  const setVariantHandler = () => {
-    const currentVariantExists = !variantExists;
-
-    if (!currentVariantExists) {
-      setFieldValue("variant.gene", "none");
-      setFieldValue("variant.genomicHGVS", "none");
-      setFieldValue("variant.inheritanceMethod", "none");
-      setFieldValue("variant.classification", "none");
-      setFieldValue("variant.proteinHGVS", "none");
-      setFieldValue("variant.transcript", "none");
-      setFieldValue("variant.zygosity", "none");
-      setFieldValue("variant.classificationEvidence", "none");
-      setFieldValue("variant.confirmedVariant", false);
-      setFieldValue("variant.comment", "none");
-    }
-
-    if (currentVariantExists) {
-      setFieldValue("variant.gene", "");
-      setFieldValue("variant.genomicHGVS", "");
-      setFieldValue("variant.inheritanceMethod", "");
-      setFieldValue("variant.classification", "");
-      setFieldValue("variant.proteinHGVS", "");
-      setFieldValue("variant.transcript", "");
-      setFieldValue("variant.zygosity", "");
-      setFieldValue("variant.classificationEvidence", "");
-      setFieldValue("variant.confirmedVariant", false);
-      setFieldValue("variant.comment", "");
-    }
-
-    setVariantExists(currentVariantExists);
-  };
+  const { values } = props;
 
   return (
     <>
       <h2>Variant</h2>
 
-      <div className={classes["variant-btn"]} onClick={() => setVariantHandler()}>
-        {variantExists ? "Set no variant" : "Set variant"}
-      </div>
+      <FieldArray
+        name="variant"
+        render={(arrayHelpers) => (
+          <div>
+            {values.variant &&
+              values.variant.length > 0 &&
+              values.variant.map((variant: any, index: number) => (
+                <div key={index}>
+                  <FieldSet name={`variant[${index}].gene`} label="Gene Symbol" />
+                  <FieldSet as="textarea" name={`variant[${index}].geneInformation`} label="Gene Information" />
+                  <FieldSet name={`variant[${index}].transcript`} label="Transcript" />
+                  <FieldSet name={`variant[${index}].genomicHGVS`} label="Genomic HGVS" />
+                  <FieldSet name={`variant[${index}].proteinHGVS`} label="Protein HGVS" />
+                  <FieldSet name={`variant[${index}].zygosity`} label="Zygosity" />
+                  <FieldSet name={`variant[${index}].inheritanceMethod`} label="Inhertiance Method" />
+                  <FieldSet name={`variant[${index}].classification`} label="Classification" />
+                  <FieldSet
+                    as="textarea"
+                    name={`variant[${index}].classificationEvidence`}
+                    label="Classification Evidence"
+                  />
+                  <FieldSet type="checkbox" name={`variant[${index}].confirmedVariant`} label="Variant Confirmed" />
+                  <FieldSet as="textarea" name={`variant[${index}].comment`} label="Comment" />
 
-      {variantExists && (
-        <>
-          <FieldSet name="variant.gene" label="Gene Symbol" />
-          <FieldSet name="variant.transcript" label="Transcript" />
-          <FieldSet name="variant.genomicHGVS" label="Genomic HGVS" />
-          <FieldSet name="variant.proteinHGVS" label="Protein HGVS" />
-          <FieldSet name="variant.zygosity" label="Zygosity" />
-          <FieldSet name="variant.inheritanceMethod" label="Inhertiance Method" />
-          <FieldSet name="variant.classification" label="Classification" />
-          <FieldSet as="textarea" name="variant.classificationEvidence" label="Classification Evidence" />
-          <FieldSet type="checkbox" name="variant.confirmedVariant" label="Variant Confirmed" />
-          <FieldSet as="textarea" name="variant.comment" label="Comment" />
-        </>
-      )}
+                  <button
+                    className={classes["variant-btn"]}
+                    type="button"
+                    onClick={() => arrayHelpers.remove(index)} // remove a variant from the list
+                  >
+                    Delete variant
+                  </button>
 
-      {!variantExists && <div>No variant has been set. Click the button above to set a new variant</div>}
+                  <hr></hr>
+                </div>
+              ))}
 
-      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={true} showSubmit={false} />
+            <button
+              className={`${classes["variant-btn"]} ${classes["variant-btn-center"]}`}
+              type="button"
+              onClick={() => arrayHelpers.push({ ...emptyVariant, id: uuidv4() })}
+            >
+              Add a variant
+            </button>
+          </div>
+        )}
+      />
     </>
   );
 };

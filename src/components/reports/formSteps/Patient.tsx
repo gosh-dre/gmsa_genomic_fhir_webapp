@@ -2,21 +2,19 @@ import { FC, useState } from "react";
 
 import LabSelect from "../../UI/LabSelect";
 import FieldSet from "../FieldSet";
-import FormStepBtn from "../../UI/FormStepBtn";
 
 interface Props {
-  nextStep: () => void;
-  prevStep: () => void;
   setFieldValue: (field: string, value: string | string[]) => void;
 }
 
 const Patient: FC<Props> = (props) => {
   const [selectedLab, setSelectedLab] = useState("please select a lab");
 
-  const { nextStep, prevStep, setFieldValue } = props;
+  const { setFieldValue } = props;
 
   const setSelectedLabHandler = (lab: string) => {
     if (lab === "gosh") {
+      setFieldValue("address.name", "London North Genomic Laboratory Hub");
       setFieldValue("address.streetAddress", [
         "Great Ormond Street Hospital for Children NHS Foundation Trust",
         "Levels 4-6 Barclay House",
@@ -36,6 +34,7 @@ const Patient: FC<Props> = (props) => {
 
       <LabSelect selectedLab={selectedLab} setSelectedLabHandler={setSelectedLabHandler} />
 
+      <FieldSet name="address.name" label="Laboratory Name" />
       <FieldSet as="textarea" name="address.streetAddress" label="Street Address" />
       <FieldSet name="address.city" label="City" />
       <FieldSet name="address.postCode" label="Post Code" />
@@ -48,8 +47,6 @@ const Patient: FC<Props> = (props) => {
       <FieldSet label="Date of Birth" name="patient.dateOfBirth" type="date" />
       <FieldSet label="Gender" name="patient.gender" />
       <FieldSet label="Family Number" name="patient.familyNumber" />
-
-      <FormStepBtn nextStep={nextStep} prevStep={prevStep} showNext={true} showPrev={false} showSubmit={false} />
     </>
   );
 };
