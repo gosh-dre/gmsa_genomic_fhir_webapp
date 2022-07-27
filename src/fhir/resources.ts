@@ -237,6 +237,7 @@ export const interpretationAndId = (
       ],
     },
   ];
+  obs.effectiveDateTime = result.authorisingDate.toLocaleDateString();
   obs.valueString = result.resultSummary;
   const identifier = `${specimenBarcode}$overall-interpretation`;
   obs.identifier = [{ value: identifier, id: "{specimenBarcode}$overall-interpretation" }];
@@ -523,8 +524,8 @@ export const reportAndId = (
 ): ResourceAndId => {
   const report = new DiagnosticReport();
   report.id = uuidv4();
-  report.effectiveDateTime = result.authorisingDate.toString();
-  report.issued = result.reportingDate.toString();
+  // waiting for confirmation on where authorisation and issued dates are being stored
+  report.effectiveDateTime = result.reportingDate.toString();
   report.resourceType = "DiagnosticReport";
   report.status = DiagnosticReport.StatusEnum.Final;
   report.subject = reference("Patient", patientId);
