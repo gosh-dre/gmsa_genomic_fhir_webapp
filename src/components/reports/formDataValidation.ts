@@ -2,17 +2,32 @@ import * as Yup from "yup";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 import isValid from "date-fns/isValid";
 import isBefore from "date-fns/isBefore";
-import startOfToday from "date-fns/startOfToday";
-import parseIsoDate from "yup/es/util/isodate";
-
-const today = new Date();
+import { isMatch } from "date-fns";
+import parseIsoDate from "yup/lib/util/isodate";
+import { dateOrDatetimeFormat, parseDateTime, today } from "../../utils/dateTime";
 
 const requiredString = Yup.string().required();
-const requiredDate = Yup.string()
+export const requiredDate = Yup.string()
   .test("valid-date", "Please enter a valid date", (value) => !isValid(value))
-  .test("past-date", "Date should be in the past", (value) => isBefore(parseIsoDate(value), startOfToday()))
+  .test("past-date", "Please enter a valid date in the past", (value) => isBefore(parseIsoDate(value), today))
   .required();
-const requiredDateTime = Yup.date().min("1900-01-01").max(today).required();
+
+export const requiredDateTime = Yup.string()
+  .test("valid-date", "Please enter a valid date in dd/MM/yyyy or date time in dd/MM/yyyy HH:mm (24 hour)", (value) => {
+    if (!value) {
+      return false;
+    }
+    return isMatch(value, dateOrDatetimeFormat(value));
+  })
+  .test("past-date", "Please enter a valid date in the past", (value) => {
+    if (!value) {
+      return false;
+    }
+
+    return isBefore(parseDateTime(value), today);
+  })
+  .required();
+
 const boolField = Yup.boolean().default(false).nullable(false);
 
 export const patientSchema = Yup.object({
