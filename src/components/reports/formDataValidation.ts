@@ -1,10 +1,18 @@
 import * as Yup from "yup";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
+import isValid from "date-fns/isValid";
+import isBefore from "date-fns/isBefore";
+import startOfToday from "date-fns/startOfToday";
+import parseIsoDate from "yup/es/util/isodate";
 
 const today = new Date();
 
 const requiredString = Yup.string().required();
-const requiredDate = Yup.date().min("1900-01-01").max(today).required();
+const requiredDate = Yup.string()
+  .test("valid-date", "Please enter a valid date", (value) => !isValid(value))
+  .test("past-date", "Date should be in the past", (value) => isBefore(parseIsoDate(value), startOfToday()))
+  .required();
+const requiredDateTime = Yup.date().min("1900-01-01").max(today).required();
 const boolField = Yup.boolean().default(false).nullable(false);
 
 export const patientSchema = Yup.object({
@@ -30,8 +38,8 @@ export type AddressSchema = Yup.InferType<typeof addressSchema>;
 
 export const sampleSchema = Yup.object({
   specimenCode: requiredString,
-  collectionDateTime: requiredDate,
-  receivedDateTime: requiredDate,
+  collectionDateTime: requiredDateTime,
+  receivedDateTime: requiredDateTime,
   specimenType: requiredString,
   reasonForTestCode: requiredString,
   reasonForTestText: requiredString,
