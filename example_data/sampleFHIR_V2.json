@@ -16,8 +16,8 @@
         "code": {
           "coding": [
             {
-              "system": "https://panelapp.genomicsengland.co.uk/panels",
-              "code": "R59",
+              "system": "http://snomed.info/sct",
+              "code": "82511000000108",
               "display": "Early onset or syndromic epilepsy"
             }
           ]
@@ -334,7 +334,7 @@
               "coding": [
                 {
                   "system": "http://varnomen.hgvs.org",
-                  "code": "c.1550G>T"
+                  "code": "NM_001350626.1:c.1550G>T"
                 }
               ]
             }
@@ -537,7 +537,7 @@
               "coding": [
                 {
                   "system": "http://varnomen.hgvs.org",
-                  "code": "c.923G>C"
+                  "code": "NM_032504.1:c.923G>C"
                 }
               ]
             }
@@ -740,7 +740,7 @@
               "coding": [
                 {
                   "system": "http://varnomen.hgvs.org",
-                  "code": "c.606G>A"
+                  "code": "NM_001110792.1:c.606G>A"
                 }
               ]
             }
@@ -943,7 +943,7 @@
               "coding": [
                 {
                   "system": "http://varnomen.hgvs.org",
-                  "code": "c.849-5A>G"
+                  "code": "NM_002693.2:c.849-5A>G"
                 }
               ]
             }

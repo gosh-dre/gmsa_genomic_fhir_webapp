@@ -506,19 +506,7 @@ export const serviceRequestAndId = (
       text: sample.reasonForTestText,
     },
   ];
-  request.reasonCode = [
-    {
-      coding: [
-        {
-          // hardcoded for now, but have issue to pull this through from clinical APIs
-          system: "http://snomed.info/sct",
-          code: sample.reasonForTestCode,
-          display: "Reason for recommending early-onset benign childhood occipita epilepsy",
-        },
-      ],
-      text: sample.reasonForTestText,
-    },
-  ];
+
   request.specimen = [reference("Specimen", specimenId)];
 
   return { id: request.id, resource: request };
@@ -549,8 +537,8 @@ export const reportAndId = (
     coding: [
       {
         // harcoded for now, but will pull this through
-        system: "http://loinc.org",
-        code: "81247-9",
+        system: "http://snomed.info/sct",
+        code: "82511000000108",
         display: "Early onset or syndromic epilepsy",
       },
     ],
