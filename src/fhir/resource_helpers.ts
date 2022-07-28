@@ -64,7 +64,7 @@ export const observationComponent = (coding: Coding, value: Coding | string | bo
   component.code = { coding: [coding] };
   if (typeof value === "object") {
     component.valueCodeableConcept = { coding: [value] };
-  } else if (typeof value == "boolean") {
+  } else if (typeof value === "boolean") {
     component.valueBoolean = value;
   } else {
     component.valueString = value;
