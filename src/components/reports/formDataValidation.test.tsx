@@ -23,7 +23,9 @@ describe("Custom form validation", () => {
 
   test.each([
     ["invalid date", "20-01-01", validLocalDate],
-    ["invalid datetime", validDate, "2020-50-01 12:00"],
+    ["invalid datetime format", validDate, "2020-20-01 12:00"],
+    ["datetime missing digit", validDate, "1/01/1900 12:00"],
+    ["datetime missing all zeros", validDate, "1/1/19 12"],
     ["future date", "2100-01-01", validLocalDate],
     ["future datetime", validDate, "01/01/2100 12:00"],
   ])("'%s' fails validation", async (description: string, date: string, datetime: string) => {

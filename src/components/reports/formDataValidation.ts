@@ -17,7 +17,9 @@ export const requiredDateTime = Yup.string()
     if (!value) {
       return false;
     }
-    return isMatch(value, dateOrDatetimeFormat(value));
+    // date-dns match is a bit liberal with missing digits which causes problems when sending to fhir API
+    // so check that the length of the value is the date or datetime format as well
+    return [10, 16].includes(value.length) && isMatch(value, dateOrDatetimeFormat(value));
   })
   .test("past-date", "Please enter a valid date in the past", (value) => {
     if (!value) {
