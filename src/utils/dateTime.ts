@@ -1,17 +1,16 @@
-import startOfToday from "date-fns/startOfToday";
-import { parse } from "date-fns";
+import moment from "moment";
 
-export const today = startOfToday();
+export const today = moment().startOf("day");
 
 /**
  * Get format string for local date or local datetime with minute precision.
  * @param value date or datetime string
  */
 export const dateOrDatetimeFormat = (value: string) => {
-  let format = "dd/MM/yyyy HH:mm";
+  let format = "DD/MM/YYYY HH:mm";
 
   if (value.length === 10) {
-    format = "dd/MM/yyyy";
+    format = "DD/MM/YYYY";
   }
   return format;
 };
@@ -21,5 +20,5 @@ export const dateOrDatetimeFormat = (value: string) => {
  * @param value date or datetime string
  */
 export const parseDateTime = (value: string) => {
-  return parse(value, dateOrDatetimeFormat(value), new Date());
+  return moment(value, dateOrDatetimeFormat(value), true);
 };
