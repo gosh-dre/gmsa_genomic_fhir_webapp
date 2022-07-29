@@ -10,11 +10,38 @@ const clearAndType = (element: Element, value: string) => {
   userEvent.type(element, value);
 };
 
-const setDummyValues = (withDates: boolean) => {
+type DropDown = {
+  field: RegExp;
+  value: string;
+};
+
+const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
   const dummyValue = "Always the same";
   const form = screen.getByRole("form");
-  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|mrn|date|address|gender).)*$/i);
-  textInputs.forEach((input) => clearAndType(input, dummyValue));
+  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|date|address|gender).)*$/i);
+
+  if (!dropDowns) {
+    textInputs.forEach((input) => {
+      clearAndType(input, dummyValue);
+    });
+  } else {
+    textInputs.forEach((input) => {
+      try {
+        clearAndType(input, dummyValue);
+      } catch (e) {
+        // swallow error if this is a drop-down field
+        const result = (e as Error).message;
+        if (!result.includes("clear currently only supports input and textarea elements")) {
+          throw e;
+        }
+      }
+    });
+    dropDowns.map((dd) => {
+      const field = within(form).getByLabelText(dd.field);
+      userEvent.selectOptions(field, dd.value);
+    });
+  }
+
   if (withDates) {
     within(form)
       .getAllByLabelText(/date/i)
@@ -27,20 +54,27 @@ const setDummyValues = (withDates: boolean) => {
 async function setLabAndPatient() {
   await act(async () => {
     userEvent.selectOptions(screen.getByDisplayValue(/select a lab/i), ["gosh"]);
-    setDummyValues(true);
-    clearAndType(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
+  });
 
-    // set MRN value
-    const newMRNValue = "10293879";
-    userEvent.type(screen.getByLabelText(/mrn/i), newMRNValue);
-    userEvent.tab();
+  await act(async () => {
+    setDummyValues(true);
+  });
+
+  await act(async () => {
+    clearAndType(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
+  });
+
+  await act(async () => {
     userEvent.click(screen.getByText(/next/i));
   });
 }
 
-async function setDummyAndNext(withDates: boolean) {
+async function setDummyAndNext(withDates: boolean, dropDowns?: DropDown[]) {
   await act(async () => {
-    setDummyValues(withDates);
+    setDummyValues(withDates, dropDowns);
+  });
+
+  await act(async () => {
     userEvent.click(screen.getByText(/next/i));
   });
 }
@@ -50,7 +84,7 @@ async function setVariantFields() {
     userEvent.click(screen.getByText(/add a variant/i));
   });
   await act(async () => {
-    setDummyAndNext(false);
+    setDummyAndNext(false, variantDropDowns);
   });
 }
 
@@ -61,6 +95,12 @@ async function setNoVariant() {
 }
 
 jest.setTimeout(20000);
+
+const variantDropDowns = [
+  { field: /Zygosity/i, value: "Homozygous" },
+  { field: /Inhertiance Method/i, value: "Autosomal dominant" },
+  { field: /Classification$/i, value: "Pathogenic" },
+];
 
 describe("Report form", () => {
   /**

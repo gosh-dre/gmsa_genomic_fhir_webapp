@@ -22,5 +22,6 @@ services:
       POSTGRES_PASSWORD: admin
       POSTGRES_USER: admin
       POSTGRES_DB: hapi_r4
+
 volumes:
   fhir-db-data:

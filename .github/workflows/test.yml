@@ -9,6 +9,7 @@ on:
 jobs:
   build_and_test:
     runs-on: ubuntu-latest
+    environment: test-env
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -23,10 +24,13 @@ jobs:
       - name: Run linting
         run: npm run lint
       - name: Setup .env file
-        run: cp env/test.env .env
+        run: cp env/dev.env .env
       - name: Run fake FHIR in docker
-        run: docker-compose -f docker-compose.fake-fhir.yml up -d
+        run: docker-compose -f docker-compose.dev.yml up -d
       - name: Build
         run: npm run build --if-present
       - name: npm test
+        env:
+          REACT_APP_LOINC_USERNAME: ${{secrets.REACT_APP_LOINC_USERNAME}}
+          REACT_APP_LOINC_PASSWORD: ${{secrets.REACT_APP_LOINC_PASSWORD}}
         run: npm test

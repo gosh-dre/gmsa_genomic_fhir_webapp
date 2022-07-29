@@ -11,6 +11,7 @@
 }
 
 .form textarea,
+.form select,
 .form input {
   display: block;
   width: 100%;

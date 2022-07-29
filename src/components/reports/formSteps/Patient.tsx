@@ -30,7 +30,7 @@ const Patient: FC<Props> = (props) => {
 
   return (
     <>
-      <h2>Reporting laboratory (later as a dropdown)</h2>
+      <h2>Reporting laboratory</h2>
 
       <LabSelect selectedLab={selectedLab} setSelectedLabHandler={setSelectedLabHandler} />
 
