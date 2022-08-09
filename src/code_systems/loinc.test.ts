@@ -3,18 +3,24 @@
  */
 
 import { getSelectOptions, variantCodes } from "./loinc";
-import { loincCodes } from "./loincCodes";
+import { loincCodes, loincSelect } from "./loincCodes";
 
 describe("LOINC", () => {
   /**
-   * Given that the LOINC valuesets have been persisted to file
-   * When the LOINC api is queried
-   * Then the API results should be the same as the persisted data
+   * Given that the LOINC select options have been created from static file
+   * When the LOINC api is queried and converted to select options
+   * Then the results should be the same
    */
   test("Codes haven't changed", async () => {
     const valueSet = await variantCodes();
+    const selectValues = {
+      classification: getSelectOptions(valueSet.classification),
+      inheritance: getSelectOptions(valueSet.inheritance),
+      zygosity: getSelectOptions(valueSet.zygosity),
+      followUp: getSelectOptions(valueSet.followUp),
+    };
 
-    expect(valueSet).toEqual(loincCodes);
+    expect(selectValues).toEqual(loincSelect);
   });
 
   /**

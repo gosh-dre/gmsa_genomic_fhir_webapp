@@ -29,7 +29,8 @@ const getValueSetData = async (valueSet: string): Promise<ValueSet> => {
   const response = await fetch(url, requestInit);
 
   if (!response.ok) {
-    throw new Error(`Failed to get loinc ${valueSet}`);
+    console.error(response.body);
+    throw new Error(`Failed to get loinc ${valueSet}, maybe check your loinc credentials in the .env file`);
   }
   return await response.json();
 };
