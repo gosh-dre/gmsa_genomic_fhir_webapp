@@ -33,7 +33,9 @@ export const patientSchema = Yup.object({
   firstName: requiredString,
   lastName: requiredString,
   dateOfBirth: requiredDate,
-  gender: Yup.mixed<Patient.GenderEnum>().oneOf(Object.values(Patient.GenderEnum)),
+  gender: Yup.mixed<Patient.GenderEnum>()
+    .oneOf(Object.values(Patient.GenderEnum))
+    .test("required", "Please select an option", (value) => value !== undefined),
   familyNumber: requiredString,
 });
 

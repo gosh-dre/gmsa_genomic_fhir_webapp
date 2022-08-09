@@ -42,12 +42,11 @@ export const initialValues: FormValues = {
         "self-injurious behaviour and epileptic encephalopathy, to a milder course with moderate developmental delay, " +
         "complex stereotypies (facial dyskinesia) and mild epilepsy.",
       genomicHGVS: "c.119G>T",
-      inheritanceMethod: "Autosomal dominant",
-      // will also need a code
-      classification: "Likely Pathogenic",
+      inheritanceMethod: "LA24640-7", // Autosomal dominant
+      classification: "LA26332-9", // Likely Pathogenic
       proteinHGVS: "p.(Gly40Val)",
       transcript: "NM_006516.2",
-      zygosity: "hetezygote",
+      zygosity: "LA6706-1", // Heterozygous
       classificationEvidence:
         "absent from the gnomAD population database (PM2_Moderate).affects a gene with a low tolerance for missense variation (PP2_Supporting). predicted to be deleterious by in silico prediction tools (PP3_Supporting). similar variants affecting the same amino acid c.118G>A p.(Gly40Arg), c.118G>C p.(Gly40Arg), c.118G>T p.(Gly40Trp) & c.119G>A p.(Gly40Glu) have been previously reported in the literature (1-2) (PM5_Moderate) reported on ClinVar as likely pathogenic.",
       confirmedVariant: false,

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { FormValues } from "../ReportForm";
 import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
+import { loincSelect } from "../../../code_systems/loincCodes";
 
 interface Props {
   values: FormValues;
@@ -44,9 +45,17 @@ const Variant: FC<Props> = (props) => {
                   <FieldSet name={`variant[${index}].transcript`} label="Transcript" />
                   <FieldSet name={`variant[${index}].genomicHGVS`} label="Genomic HGVS" />
                   <FieldSet name={`variant[${index}].proteinHGVS`} label="Protein HGVS" />
-                  <FieldSet name={`variant[${index}].zygosity`} label="Zygosity" />
-                  <FieldSet name={`variant[${index}].inheritanceMethod`} label="Inhertiance Method" />
-                  <FieldSet name={`variant[${index}].classification`} label="Classification" />
+                  <FieldSet name={`variant[${index}].zygosity`} label="Zygosity" selectOptions={loincSelect.zygosity} />
+                  <FieldSet
+                    name={`variant[${index}].inheritanceMethod`}
+                    label="Inhertiance Method"
+                    selectOptions={loincSelect.inheritance}
+                  />
+                  <FieldSet
+                    name={`variant[${index}].classification`}
+                    label="Classification"
+                    selectOptions={loincSelect.classification}
+                  />
                   <FieldSet
                     as="textarea"
                     name={`variant[${index}].classificationEvidence`}

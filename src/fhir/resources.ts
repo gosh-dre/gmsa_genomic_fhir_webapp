@@ -27,6 +27,7 @@ import {
   reference,
 } from "./resource_helpers";
 import { parseDateTime } from "../utils/dateTime";
+import { codedValue, loincSelect } from "../code_systems/loincCodes";
 
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
@@ -272,42 +273,26 @@ export const variantAndId = (
         code: "53034-5",
         display: "Allelic state",
       },
-      {
-        system: "http://loinc.org",
-        // code hard-coded for now but this will be addressed when linking in with clinical coding
-        code: "LA6705-3",
-        display: variant.zygosity,
-      },
+      codedValue(loincSelect.zygosity, variant.zygosity),
     ),
     observationComponent(
       {
-        // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "53037-8",
         display: "Genetic disease sequence variation interpretation",
       },
-      {
-        system: "http://loinc.org",
-        code: "LA26332-9",
-        display: variant.classification,
-      },
+      codedValue(loincSelect.classification, variant.classification),
     ),
     observationComponent(
       {
-        // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "79742-3",
         display: "Inheritance pattern based on family history",
       },
-      {
-        system: "http://loinc.org",
-        code: "LA24640-7",
-        display: variant.inheritanceMethod,
-      },
+      codedValue(loincSelect.inheritance, variant.inheritanceMethod),
     ),
     observationComponent(
       {
-        // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "48005-3",
         display: "Amino acid change (pHGVS)",
@@ -319,7 +304,6 @@ export const variantAndId = (
     ),
     observationComponent(
       {
-        // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://loinc.org",
         code: "48004-6",
         display: "DNA change (c.HGVS)",
