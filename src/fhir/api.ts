@@ -57,6 +57,7 @@ export const createBundle = (form: FormValues) => {
   const serviceRequest = serviceRequestAndId(form.sample, patient.id, plan.id, reporter.id, specimen.id);
   const report = reportAndId(
     form.result,
+    form.sample,
     patient.id,
     reporter.id,
     authoriser.id,

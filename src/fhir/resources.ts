@@ -485,6 +485,7 @@ export const serviceRequestAndId = (
 
 export const reportAndId = (
   result: ReportDetailSchema,
+  sample: SampleSchema,
   patientId: string,
   reporterId: string,
   authoriserId: string,
@@ -504,14 +505,7 @@ export const reportAndId = (
   report.result = resultIds.map((resultId) => reference("Observation", resultId));
   report.resultsInterpreter = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
   report.code = {
-    coding: [
-      {
-        // harcoded for now, but will pull this through
-        system: "http://snomed.info/sct",
-        code: "82511000000108",
-        display: "Early onset or syndromic epilepsy",
-      },
-    ],
+    coding: [codedValue(diseases, sample.reasonForTest)],
   };
   report.conclusion = result.clinicalConclusion;
 
