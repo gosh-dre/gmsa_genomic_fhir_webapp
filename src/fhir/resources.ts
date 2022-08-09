@@ -241,7 +241,6 @@ export const interpretationAndId = (
       ],
     },
   ];
-  obs.effectiveDateTime = result.authorisingDate.toString();
   obs.valueString = result.resultSummary;
   const identifier = `${specimenBarcode}$overall-interpretation`;
   obs.identifier = [{ value: identifier, id: "{specimenBarcode}$overall-interpretation" }];
@@ -507,8 +506,8 @@ export const reportAndId = (
 ): ResourceAndId => {
   const report = new DiagnosticReport();
   report.id = uuidv4();
-  // waiting for confirmation on where authorisation and issued dates are being stored
-  report.effectiveDateTime = result.reportingDate.toString();
+  report.issued = result.reportingDate.toString();
+  report.effectiveDateTime = result.authorisingDate.toString();
   report.resourceType = "DiagnosticReport";
   report.status = DiagnosticReport.StatusEnum.Final;
   report.subject = reference("Patient", patientId);
@@ -516,7 +515,6 @@ export const reportAndId = (
   report.performer = [reference("Organization", organisationId)];
   report.result = resultIds.map((resultId) => reference("Observation", resultId));
   report.resultsInterpreter = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
-  // waiting for confirmation of change of coding system to snomed-ct
   report.code = {
     coding: [
       {
