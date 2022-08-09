@@ -23,8 +23,7 @@ export const initialValues: FormValues = {
   },
   sample: {
     specimenCode: "19RG-183G0127",
-    // will need codes here too - but probably best to load all possible codes and then query
-    specimenType: "Venus blood specimen",
+    specimenType: "122555007",
     collectionDateTime: "04/06/2019 12:00",
     receivedDateTime: "04/06/2019 15:00",
     reasonForTestCode: "230387008",

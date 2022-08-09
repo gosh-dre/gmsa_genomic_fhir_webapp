@@ -12,8 +12,7 @@ describe("FHIR resource for development", () => {
   test("ServiceRequest", () => {
     const form: SampleSchema = {
       specimenCode: "19RG-183G0127",
-      // will need codes here too - but probably best to load all possible codes and then query
-      specimenType: "Venus blood specimen",
+      specimenType: "122555007",
       receivedDateTime: "04/06/2019",
       collectionDateTime: "04/06/2019",
       reasonForTestCode: "230387008",

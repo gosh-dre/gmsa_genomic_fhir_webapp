@@ -18,7 +18,7 @@ type DropDown = {
 const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
   const dummyValue = "Always the same";
   const form = screen.getByRole("form");
-  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|date|address|gender).)*$/i);
+  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|date|address|gender|specimen type).)*$/i);
 
   if (!dropDowns) {
     textInputs.forEach((input) => {
@@ -84,6 +84,10 @@ async function setDummyAndNext(withDates: boolean, dropDowns?: DropDown[]) {
   });
 }
 
+const setSample = () => {
+  return setDummyAndNext(true, [{ field: /specimen type/i, value: "122555007" }]);
+};
+
 async function setVariantFields() {
   await act(async () => {
     userEvent.click(screen.getByText(/add a variant/i));
@@ -119,7 +123,7 @@ describe("Report form", () => {
 
     // Act
     await setLabAndPatient();
-    await setDummyAndNext(true);
+    await setSample();
     await setVariantFields();
     await setDummyAndNext(true);
     await act(async () => {
@@ -142,7 +146,7 @@ describe("Report form", () => {
 
     // Act
     await setLabAndPatient();
-    await setDummyAndNext(true);
+    await setSample();
     await setNoVariant();
     await setDummyAndNext(true);
     await act(async () => {

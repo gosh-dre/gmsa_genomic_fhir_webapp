@@ -28,6 +28,7 @@ import {
 } from "./resource_helpers";
 import { parseDateTime } from "../utils/dateTime";
 import { codedValue, loincSelect } from "../code_systems/loincCodes";
+import { sampleTypes } from "../code_systems/snomedCodes";
 
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
@@ -90,7 +91,7 @@ export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
   org.type = [
     {
       coding: [
-        // custom code, raising to see if useful
+        // custom code
         {
           system: "http://term.hl7.org/CodeSystem/org-id-types",
           code: "gosh-org",
@@ -168,13 +169,7 @@ export const specimenAndId = (sample: SampleSchema, patientId: string): Resource
   }
   specimen.identifier = [{ value: sample.specimenCode, id: "specimen id" }];
   specimen.type = {
-    coding: [
-      {
-        system: "http://snomed.info/sct",
-        code: "122555007",
-        display: "Venus blood specimen",
-      },
-    ],
+    coding: [codedValue(sampleTypes, sample.specimenType)],
   };
   specimen.subject = reference("Patient", patientId);
 
@@ -416,7 +411,7 @@ export const furtherTestingAndId = (report: ReportDetailSchema, patientId: strin
   task.status = Task.StatusEnum.Requested;
   task.intent = Task.IntentEnum.Plan;
   task.code = {
-    // harcoded for now but should be set from form, allowing multiple selections from the coding system
+    // TODO harcoded for now but should be set from form, allowing multiple selections from the coding system
     // coding system: LL1037-2
     coding: [
       {
