@@ -61,7 +61,7 @@ async function setLabAndPatient() {
   });
 
   await act(async () => {
-    clearAndType(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
+    userEvent.selectOptions(screen.getByLabelText(/gender/i), Patient.GenderEnum.Female);
   });
 
   await act(async () => {
@@ -84,7 +84,7 @@ async function setVariantFields() {
     userEvent.click(screen.getByText(/add a variant/i));
   });
   await act(async () => {
-    setDummyAndNext(false, variantDropDowns);
+    await setDummyAndNext(false, variantDropDowns);
   });
 }
 
