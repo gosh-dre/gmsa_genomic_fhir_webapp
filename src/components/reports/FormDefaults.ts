@@ -61,6 +61,7 @@ export const initialValues: FormValues = {
     authorisingDate: "2021-04-25",
     authorisingScientist: "Lucy Jones",
     authorisingScientistTitle: "Consultant Clinical Scientist",
+    followUp: "LA14020-4",
     furtherTesting:
       "Testing of Donald Duck's parents is recommended to determine whether the GNAO1 " +
       "c.119G>T p.(Gly40Val) likely pathogenic variant has arisen de novo and to assess the recurrence risk. " +
@@ -111,6 +112,7 @@ export const noValues: FormValues = {
     resultSummary: "",
     clinicalConclusion: "",
     citation: "",
+    followUp: "",
     furtherTesting: "",
     testMethodology: "",
     authorisingDate: "",

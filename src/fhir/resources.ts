@@ -410,17 +410,11 @@ export const furtherTestingAndId = (report: ReportDetailSchema, patientId: strin
   task.resourceType = "Task";
   task.status = Task.StatusEnum.Requested;
   task.intent = Task.IntentEnum.Plan;
-  task.code = {
-    // TODO harcoded for now but should be set from form, allowing multiple selections from the coding system
-    // coding system: LL1037-2
-    coding: [
-      {
-        system: "http://loinc.org",
-        code: "LA14020-4",
-        display: "Genetic counseling recommended",
-      },
-    ],
-  };
+  if (report.followUp) {
+    task.code = {
+      coding: [codedValue(loincSelect.followUp, report.followUp)],
+    };
+  }
   task.description = report.furtherTesting;
   task.for = reference("Patient", patientId);
   return { id: task.id, resource: task };
