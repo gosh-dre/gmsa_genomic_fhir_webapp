@@ -44,9 +44,14 @@ const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
 
   if (withDates) {
     within(form)
-      .getAllByLabelText(/date/i)
+      .queryAllByLabelText(/date/i)
       .forEach((input) => {
         clearAndType(input, "2019-01-01");
+      });
+    within(form)
+      .queryAllByLabelText(/datetime/i)
+      .forEach((input) => {
+        clearAndType(input, "01/01/2019");
       });
   }
 };

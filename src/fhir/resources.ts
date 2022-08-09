@@ -26,6 +26,7 @@ import {
   observationComponent,
   reference,
 } from "./resource_helpers";
+import { parseDateTime } from "../utils/dateTime";
 import { codedValue, loincSelect } from "../code_systems/loincCodes";
 
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
@@ -151,8 +152,8 @@ export const specimenAndId = (sample: SampleSchema, patientId: string): Resource
   const specimen = new Specimen();
   specimen.id = uuidv4();
   specimen.resourceType = "Specimen";
-  specimen.receivedTime = sample.receivedDateTime;
-  specimen.collection = { collectedDateTime: sample.collectionDateTime.toString() };
+  specimen.receivedTime = parseDateTime(sample.receivedDateTime).toDate();
+  specimen.collection = { collectedDateTime: sample.collectionDateTime };
   specimen.identifier = [{ value: sample.specimenCode, id: "specimenId" }];
   specimen.type = {
     coding: [

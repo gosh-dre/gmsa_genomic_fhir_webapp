@@ -17,7 +17,7 @@ export const initialValues: FormValues = {
     mrn: "969977",
     firstName: "Donald",
     lastName: "Duck",
-    dateOfBirth: new Date("2012-03-04"),
+    dateOfBirth: "2012-03-04",
     gender: Patient.GenderEnum.Male,
     familyNumber: "Z409929",
   },
@@ -25,8 +25,8 @@ export const initialValues: FormValues = {
     specimenCode: "19RG-183G0127",
     // will need codes here too - but probably best to load all possible codes and then query
     specimenType: "Venus blood specimen",
-    collectionDateTime: new Date("2019-06-04 12:00:00"),
-    receivedDateTime: new Date("2019-06-04 15:00:00"),
+    collectionDateTime: "04/06/2019 12:00",
+    receivedDateTime: "04/06/2019 15:00",
     reasonForTestCode: "230387008",
     reasonForTestText:
       "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +
@@ -59,7 +59,7 @@ export const initialValues: FormValues = {
       "c.119G>T p.(Gly40Val) likely pathogenic variant that has been confirmed by Sanger sequence analysis " +
       "(see technical information below).",
     citation: "(1) Neul et al Am J Med Genet B Neuropsychiatr Genet. 2019 Jan;180(1):55-67",
-    authorisingDate: new Date("2021-04-25"),
+    authorisingDate: "2021-04-25",
     authorisingScientist: "Lucy Jones",
     authorisingScientistTitle: "Consultant Clinical Scientist",
     furtherTesting:
@@ -67,7 +67,7 @@ export const initialValues: FormValues = {
       "c.119G>T p.(Gly40Val) likely pathogenic variant has arisen de novo and to assess the recurrence risk. " +
       "Please include clinical information for the parents. " +
       "A referral to their local clinical genetics service may be appropriate for this family.",
-    reportingDate: new Date("2021-04-25"),
+    reportingDate: "2021-04-25",
     reportingScientist: "Ana Pietra",
     reportingScientistTitle: "Clinical Scientist",
     testMethodology:
@@ -83,8 +83,6 @@ export const initialWithNoVariant = {
   variant: [],
 };
 
-const invalidDate = new Date("1970-01-01");
-
 export const noValues: FormValues = {
   address: {
     name: "",
@@ -97,15 +95,15 @@ export const noValues: FormValues = {
     mrn: "",
     firstName: "",
     lastName: "",
-    dateOfBirth: invalidDate,
+    dateOfBirth: "",
     gender: undefined,
     familyNumber: "",
   },
   sample: {
     specimenCode: "",
     specimenType: "",
-    collectionDateTime: invalidDate,
-    receivedDateTime: invalidDate,
+    collectionDateTime: "",
+    receivedDateTime: "",
     reasonForTestCode: "",
     reasonForTestText: "",
   },
@@ -116,10 +114,10 @@ export const noValues: FormValues = {
     citation: "",
     furtherTesting: "",
     testMethodology: "",
-    authorisingDate: invalidDate,
+    authorisingDate: "",
     authorisingScientist: "",
     authorisingScientistTitle: "",
-    reportingDate: invalidDate,
+    reportingDate: "",
     reportingScientist: "",
     reportingScientistTitle: "",
   },
