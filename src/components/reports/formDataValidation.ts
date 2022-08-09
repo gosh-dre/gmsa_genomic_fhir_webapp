@@ -1,12 +1,38 @@
 import * as Yup from "yup";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
-
-const today = new Date();
+import { parseDateTime, today } from "../../utils/dateTime";
+import moment from "moment";
 
 const optionalString = Yup.string().optional();
 const requiredString = Yup.string().required();
-const optionalDate = Yup.date().min("1900-01-01").max(today).optional();
-const requiredDate = Yup.date().min("1900-01-01").max(today).required();
+
+const date = Yup.string()
+  .test("valid-date", "Please enter a valid date", (value) => value === undefined || moment(value).isValid())
+  .test(
+    "past-date",
+    "Please enter a valid date in the past",
+    (value) => value === undefined || moment(value).isBefore(today),
+  );
+export const requiredDate = date.required();
+
+export const dateTime = Yup.string()
+  .test("valid-date", "Please enter a valid date in DD/MM/YYYY or date time in DD/MM/YYYY HH:mm (24 hour)", (value) => {
+    if (!value) {
+      return false;
+    }
+
+    return parseDateTime(value).isValid();
+  })
+  .test("past-date", "Please enter a valid date in the past", (value) => {
+    if (!value) {
+      return false;
+    }
+
+    return parseDateTime(value).isBefore(today);
+  });
+export const requiredDateTime = dateTime.required();
+const optionalDateTime = dateTime.optional();
+
 const boolField = Yup.boolean().default(false).nullable(false);
 
 export const patientSchema = Yup.object({
@@ -14,7 +40,9 @@ export const patientSchema = Yup.object({
   firstName: requiredString,
   lastName: requiredString,
   dateOfBirth: requiredDate,
-  gender: Yup.mixed<Patient.GenderEnum>().oneOf(Object.values(Patient.GenderEnum)),
+  gender: Yup.mixed<Patient.GenderEnum>()
+    .oneOf(Object.values(Patient.GenderEnum))
+    .test("required", "Please select an option", (value) => value !== undefined),
   familyNumber: requiredString,
 });
 
@@ -32,8 +60,8 @@ export type AddressSchema = Yup.InferType<typeof addressSchema>;
 
 export const sampleSchema = Yup.object({
   specimenCode: requiredString,
-  collectionDateTime: optionalDate,
-  receivedDateTime: requiredDate,
+  collectionDateTime: optionalDateTime,
+  receivedDateTime: requiredDateTime,
   specimenType: requiredString,
   reasonForTestCode: requiredString,
   reasonForTestText: optionalString,

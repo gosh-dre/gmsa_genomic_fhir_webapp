@@ -1,4 +1,5 @@
 import { FC, useState } from "react";
+import { Patient as FhirPatient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 
 import LabSelect from "../../UI/LabSelect";
 import FieldSet from "../FieldSet";
@@ -6,6 +7,10 @@ import FieldSet from "../FieldSet";
 interface Props {
   setFieldValue: (field: string, value: string | string[]) => void;
 }
+
+const genderOptions = Object.values(FhirPatient.GenderEnum).map((value) => {
+  return { code: value, display: value.toString() };
+});
 
 const Patient: FC<Props> = (props) => {
   const [selectedLab, setSelectedLab] = useState("please select a lab");
@@ -30,7 +35,7 @@ const Patient: FC<Props> = (props) => {
 
   return (
     <>
-      <h2>Reporting laboratory (later as a dropdown)</h2>
+      <h2>Reporting laboratory</h2>
 
       <LabSelect selectedLab={selectedLab} setSelectedLabHandler={setSelectedLabHandler} />
 
@@ -45,7 +50,7 @@ const Patient: FC<Props> = (props) => {
       <FieldSet label="First Name" name="patient.lastName" />
       <FieldSet label="Last Name" name="patient.firstName" />
       <FieldSet label="Date of Birth" name="patient.dateOfBirth" type="date" />
-      <FieldSet label="Gender" name="patient.gender" />
+      <FieldSet label="Gender" name="patient.gender" selectOptions={genderOptions} />
       <FieldSet label="Family Number" name="patient.familyNumber" />
     </>
   );

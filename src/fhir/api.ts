@@ -15,6 +15,7 @@ import {
   variantAndId,
 } from "./resources";
 import { VariantSchema } from "../components/reports/formDataValidation";
+import { loincResources } from "../code_systems/loincCodes";
 
 /**
  * Create a report bundle
@@ -78,6 +79,8 @@ export const createBundle = (form: FormValues) => {
       createEntry(plan.resource),
       createEntry(serviceRequest.resource),
       createEntry(report.resource),
+      // add value sets to bundle for API validation
+      ...loincResources.map((vs) => createEntry(vs.resource, vs.identifier)),
     ],
   };
 };

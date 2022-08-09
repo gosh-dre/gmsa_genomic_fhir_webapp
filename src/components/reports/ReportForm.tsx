@@ -45,6 +45,8 @@ type Props = {
   initialValues: FormValues;
 };
 
+type SetFieldValue = (field: string, value: any, shouldValidate?: boolean) => void;
+
 const ReportForm: FC<Props> = (props: Props) => {
   const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(0);
@@ -82,7 +84,7 @@ const ReportForm: FC<Props> = (props: Props) => {
     setFormStep(formStep - 1);
   };
 
-  const returnStepContent = (setFieldValue: any, values: FormValues) => {
+  const returnStepContent = (setFieldValue: SetFieldValue, values: FormValues) => {
     switch (formStep) {
       case 0:
         return <Patient setFieldValue={setFieldValue} />;
