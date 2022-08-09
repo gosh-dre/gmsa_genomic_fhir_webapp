@@ -3,13 +3,19 @@ import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 import { parseDateTime, today } from "../../utils/dateTime";
 import moment from "moment";
 
+const optionalString = Yup.string().optional();
 const requiredString = Yup.string().required();
-export const requiredDate = Yup.string()
-  .test("valid-date", "Please enter a valid date", (value) => moment(value).isValid())
-  .test("past-date", "Please enter a valid date in the past", (value) => moment(value).isBefore(today))
-  .required();
 
-export const requiredDateTime = Yup.string()
+const date = Yup.string()
+  .test("valid-date", "Please enter a valid date", (value) => value === undefined || moment(value).isValid())
+  .test(
+    "past-date",
+    "Please enter a valid date in the past",
+    (value) => value === undefined || moment(value).isBefore(today),
+  );
+export const requiredDate = date.required();
+
+export const dateTime = Yup.string()
   .test("valid-date", "Please enter a valid date in DD/MM/YYYY or date time in DD/MM/YYYY HH:mm (24 hour)", (value) => {
     if (!value) {
       return false;
@@ -23,8 +29,9 @@ export const requiredDateTime = Yup.string()
     }
 
     return parseDateTime(value).isBefore(today);
-  })
-  .required();
+  });
+export const requiredDateTime = dateTime.required();
+const optionalDateTime = dateTime.optional();
 
 const boolField = Yup.boolean().default(false).nullable(false);
 
@@ -53,18 +60,18 @@ export type AddressSchema = Yup.InferType<typeof addressSchema>;
 
 export const sampleSchema = Yup.object({
   specimenCode: requiredString,
-  collectionDateTime: requiredDateTime,
+  collectionDateTime: optionalDateTime,
   receivedDateTime: requiredDateTime,
   specimenType: requiredString,
   reasonForTestCode: requiredString,
-  reasonForTestText: requiredString,
+  reasonForTestText: optionalString,
 });
 
 export type SampleSchema = Yup.InferType<typeof sampleSchema>;
 
 const variantSchema = Yup.object({
   gene: requiredString,
-  geneInformation: requiredString,
+  geneInformation: optionalString,
   transcript: requiredString,
   genomicHGVS: requiredString,
   proteinHGVS: requiredString,
@@ -91,7 +98,7 @@ export const reportDetailSchema = Yup.object({
   furtherTesting: requiredString,
   testMethodology: requiredString,
   clinicalConclusion: requiredString,
-  citation: requiredString,
+  citation: optionalString,
 });
 
 export type ReportDetailSchema = Yup.InferType<typeof reportDetailSchema>;

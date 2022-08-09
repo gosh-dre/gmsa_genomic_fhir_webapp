@@ -90,13 +90,14 @@ export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
   org.type = [
     {
       coding: [
+        // custom code, raising to see if useful
         {
-          system: "http://terminology.hl7.org/CodeSystem/organization-type",
-          code: "prov",
-          display: "Healthcare Provider",
+          system: "http://term.hl7.org/CodeSystem/org-id-types",
+          code: "gosh-org",
+          display: "NHS UK Healthcare Provider",
         },
       ],
-      text: "Healthcare Provider",
+      text: "NHS UK Healthcare Provider",
     },
   ];
   org.name = form.name;
@@ -115,32 +116,41 @@ export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
 
 export const practitionersAndIds = (result: ReportDetailSchema) => {
   return {
-    authoriser: practitionerAndId(result.authorisingScientist, result.authorisingScientistTitle),
-    reporter: practitionerAndId(result.reportingScientist, result.reportingScientistTitle),
+    authoriser: practitionerAndId(result.authorisingScientist, result.authorisingScientistTitle, "auth"),
+    reporter: practitionerAndId(result.reportingScientist, result.reportingScientistTitle, "report"),
   };
 };
 
+type ScientistRole = "auth" | "report";
+
 /**
  * Create a practitioner from limited data.
+ *
+ * If the same scientist reports and authorises reports, then each role will create a separate practitioner.
  * @param fullName the first word will be the firstName, remaining words will be lastName
- * @param title role or job title within the laboratory
+ * @param title job title within the laboratory
+ * @param role role in the reporting process
  */
-const practitionerAndId = (fullName: string, title: string): ResourceAndIds => {
+const practitionerAndId = (fullName: string, title: string, role: ScientistRole): ResourceAndIds => {
   const nameSplit = fullName.split(/\s/g);
   const firstName = nameSplit[0];
   const lastName = nameSplit.slice(1).join(" ");
   const practitioner = new Practitioner();
+
+  let roleText = "Reported By";
+  if (role === "auth") {
+    roleText = "Authorized By";
+  }
 
   practitioner.id = uuidv4();
   practitioner.resourceType = "Practitioner";
   practitioner.active = true;
   const identifier = fullName.toLowerCase().replaceAll(/\s/g, "");
   practitioner.identifier = [{ value: identifier }];
-  practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official }];
-  // suggested shorter form for role
+  practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official, text: roleText }];
   practitioner.qualification = [{ code: { text: title } }];
 
-  return { identifier: `${fullName} ${title}`, id: practitioner.id, resource: practitioner };
+  return { identifier: `${fullName}_${role}`, id: practitioner.id, resource: practitioner };
 };
 
 /**
@@ -153,8 +163,10 @@ export const specimenAndId = (sample: SampleSchema, patientId: string): Resource
   specimen.id = uuidv4();
   specimen.resourceType = "Specimen";
   specimen.receivedTime = parseDateTime(sample.receivedDateTime).toDate();
-  specimen.collection = { collectedDateTime: sample.collectionDateTime };
-  specimen.identifier = [{ value: sample.specimenCode, id: "specimenId" }];
+  if (sample.collectionDateTime !== undefined) {
+    specimen.collection = { collectedDateTime: sample.collectionDateTime };
+  }
+  specimen.identifier = [{ value: sample.specimenCode, id: "specimen id" }];
   specimen.type = {
     coding: [
       {
@@ -218,13 +230,13 @@ export const interpretationAndId = (
   );
 
   obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/overall-interpretation"] };
-  obs.interpretation = [
+  obs.category = [
     {
       coding: [
         {
-          system: "http://loinc.org",
-          code: "LA6576-8",
-          display: result.clinicalConclusion,
+          system: "http://terminology.hl7.org/obs-category",
+          code: "laboratory",
+          display: "Laboratory",
         },
       ],
     },
@@ -350,11 +362,14 @@ export const variantAndId = (
       authorString: "comments",
       text: variant.comment,
     },
-    {
+  ];
+  if (variant.geneInformation !== undefined) {
+    obs.note.push({
       authorString: "gene information",
       text: variant.geneInformation,
-    },
-  ];
+    });
+  }
+
   const identifier = `${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`;
   obs.identifier = [{ value: identifier, id: "{specimenBarcode}${transcript}:{genomicHGVS}" }];
 
@@ -370,16 +385,9 @@ export const planDefinitionAndId = (
   plan.id = uuidv4();
   plan.resourceType = "PlanDefinition";
   plan.status = PlanDefinition.StatusEnum.Active;
-  plan.type = {
-    coding: [
-      {
-        system: "http://terminology.hl7.org/CodeSystem/plan-definition-type",
-        code: "protocol",
-        display: "Protocol",
-      },
-    ],
-  };
-  plan.description = sample.reasonForTestText;
+  if (sample.reasonForTestText !== undefined) {
+    plan.description = sample.reasonForTestText;
+  }
   plan.action = [
     {
       prefix: "1",
@@ -387,12 +395,15 @@ export const planDefinitionAndId = (
       title: "Test Method",
     },
   ];
-  plan.relatedArtifact = [
-    {
-      type: RelatedArtifact.TypeEnum.Citation,
-      citation: report.citation,
-    },
-  ];
+
+  if (report.citation !== undefined) {
+    plan.relatedArtifact = [
+      {
+        type: RelatedArtifact.TypeEnum.Citation,
+        citation: report.citation,
+      },
+    ];
+  }
   plan.subjectReference = reference("Patient", patientId);
 
   return { id: plan.id, resource: plan };
@@ -478,19 +489,7 @@ export const serviceRequestAndId = (
       text: sample.reasonForTestText,
     },
   ];
-  request.reasonCode = [
-    {
-      coding: [
-        {
-          // hardcoded for now, but have issue to pull this through from clinical APIs
-          system: "http://snomed.info/sct",
-          code: sample.reasonForTestCode,
-          display: "Reason for recommending early-onset benign childhood occipita epilepsy",
-        },
-      ],
-      text: sample.reasonForTestText,
-    },
-  ];
+
   request.specimen = [reference("Specimen", specimenId)];
 
   return { id: request.id, resource: request };
@@ -507,8 +506,8 @@ export const reportAndId = (
 ): ResourceAndId => {
   const report = new DiagnosticReport();
   report.id = uuidv4();
-  report.effectiveDateTime = result.authorisingDate.toString();
   report.issued = result.reportingDate.toString();
+  report.effectiveDateTime = result.authorisingDate.toString();
   report.resourceType = "DiagnosticReport";
   report.status = DiagnosticReport.StatusEnum.Final;
   report.subject = reference("Patient", patientId);
@@ -516,13 +515,12 @@ export const reportAndId = (
   report.performer = [reference("Organization", organisationId)];
   report.result = resultIds.map((resultId) => reference("Observation", resultId));
   report.resultsInterpreter = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
-  // waiting for confirmation of change of coding system to snomed-ct
   report.code = {
     coding: [
       {
         // harcoded for now, but will pull this through
-        system: "http://loinc.org",
-        code: "81247-9",
+        system: "http://snomed.info/sct",
+        code: "82511000000108",
         display: "Early onset or syndromic epilepsy",
       },
     ],
