@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 import FieldSet from "../FieldSet";
-import { sampleTypes } from "../../../code_systems/snomedCodes";
+import { diseases, sampleTypes } from "../../../code_systems/snomedCodes";
 
 const Sample: FC = () => {
   return (
@@ -12,7 +12,7 @@ const Sample: FC = () => {
       <FieldSet name="sample.collectionDateTime" label="Sample collected datetime" />
       <FieldSet name="sample.receivedDateTime" label="Sample received datetime" />
       <FieldSet name="sample.reasonForTestText" label="Reason for test" />
-      <FieldSet name="sample.reasonForTestCode" label="Test reason code" />
+      <FieldSet name="sample.reasonForTest" label="Test reason" selectOptions={diseases} />
     </>
   );
 };

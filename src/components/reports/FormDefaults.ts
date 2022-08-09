@@ -26,7 +26,7 @@ export const initialValues: FormValues = {
     specimenType: "122555007",
     collectionDateTime: "04/06/2019 12:00",
     receivedDateTime: "04/06/2019 15:00",
-    reasonForTestCode: "230387008",
+    reasonForTest: "230387008",
     reasonForTestText:
       "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +
       "An SLC2A1 variant is suspected.",
@@ -103,7 +103,7 @@ export const noValues: FormValues = {
     specimenType: "",
     collectionDateTime: "",
     receivedDateTime: "",
-    reasonForTestCode: "",
+    reasonForTest: "",
     reasonForTestText: "",
   },
   variant: [],
