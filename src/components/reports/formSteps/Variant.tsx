@@ -33,20 +33,27 @@ const Variant: FC<Props> = (props) => {
   const [genes, setGenes] = useState<Coding[]>([]);
 
   useEffect(() => {
+    // only update gene options while the component is mounted
+    let mounted = true;
+
     const updateGenes = async () => {
       const response = await fetch(
         "https://clinicaltables.nlm.nih.gov/api/genes/v4/search?terms=GNA&df=symbol&q=symbol:GNAO*",
       );
       const body = await response.json();
-
-      const hgncs = body.at(1) as string[];
-      const symbols = body.at(3) as string[];
-      const options = hgncs.map((hgnc, index) => {
-        return { code: hgnc, display: symbols[index], system: "http://www.genenames.org/geneId" };
-      });
-      setGenes(options);
+      if (mounted) {
+        const hgncs = body.at(1) as string[];
+        const symbols = body.at(3) as string[];
+        const options = hgncs.map((hgnc, index) => {
+          return { code: hgnc, display: symbols[index], system: "http://www.genenames.org/geneId" };
+        });
+        setGenes(options);
+      }
     };
     updateGenes().then();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
