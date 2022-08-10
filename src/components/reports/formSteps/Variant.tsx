@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { ChangeEventHandler, FC, useEffect, useState } from "react";
 import { FieldArray } from "formik";
 import { v4 as uuidv4 } from "uuid";
 
@@ -31,14 +31,23 @@ const Variant: FC<Props> = (props) => {
   const { values } = props;
 
   const [genes, setGenes] = useState<Coding[]>([]);
+  const [geneSearch, setGeneSearch] = useState("");
+
+  const geneChangeHandler: ChangeEventHandler<HTMLInputElement> = (event) => {
+    console.debug("running gene handler");
+    setGeneSearch(event.target.value);
+  };
 
   useEffect(() => {
     // only update gene options while the component is mounted
     let mounted = true;
 
     const updateGenes = async () => {
+      if (!geneSearch) {
+        return;
+      }
       const response = await fetch(
-        "https://clinicaltables.nlm.nih.gov/api/genes/v4/search?terms=GNA&df=symbol&q=symbol:GNAO*",
+        `https://clinicaltables.nlm.nih.gov/api/genes/v4/search?terms=${geneSearch}&df=symbol&q=symbol:${geneSearch}*`,
       );
       const body = await response.json();
       if (mounted) {
@@ -54,7 +63,7 @@ const Variant: FC<Props> = (props) => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [geneSearch]);
 
   return (
     <>
@@ -68,6 +77,8 @@ const Variant: FC<Props> = (props) => {
               values.variant.length > 0 &&
               values.variant.map((variant: any, index: number) => (
                 <div key={index}>
+                  <label>Search for genes symbols:</label>
+                  <input id="gene_search" onChange={geneChangeHandler} value={geneSearch}></input>
                   <FieldSet name={`variant[${index}].gene`} label="Gene Symbol" selectOptions={genes} />
                   <FieldSet as="textarea" name={`variant[${index}].geneInformation`} label="Gene Information" />
                   <FieldSet name={`variant[${index}].transcript`} label="Transcript" />
