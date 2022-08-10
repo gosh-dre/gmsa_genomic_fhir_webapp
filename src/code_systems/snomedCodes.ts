@@ -34,4 +34,10 @@ export const diseases: Coding[] = [
     code: "398036000",
     display: "Familial hypercholesterolemia",
   },
+  // top level SNOMED CT term for cancer
+  {
+    system: "http://snomed.info/sct",
+    code: "363346000",
+    display: "Malignant neoplastic disease",
+  },
 ];
