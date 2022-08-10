@@ -331,9 +331,8 @@ export const variantAndId = (
     ),
     observationComponent(
       {
-        // code hard-coded for now but this will be addressed when linking in with clinical coding
         system: "http://www.genenames.org/geneId",
-        code: "HGNC:4389",
+        code: variant.gene,
       },
       variant.gene,
     ),

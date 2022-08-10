@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { FieldArray } from "formik";
 import { v4 as uuidv4 } from "uuid";
 
@@ -6,6 +6,8 @@ import { FormValues } from "../ReportForm";
 import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
 import { loincSelect } from "../../../code_systems/loincCodes";
+import fetch from "node-fetch";
+import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 interface Props {
   values: FormValues;
@@ -28,6 +30,25 @@ const emptyVariant = {
 const Variant: FC<Props> = (props) => {
   const { values } = props;
 
+  const [genes, setGenes] = useState<Coding[]>([]);
+
+  useEffect(() => {
+    const updateGenes = async () => {
+      const response = await fetch(
+        "https://clinicaltables.nlm.nih.gov/api/genes/v4/search?terms=GNA&df=symbol&q=symbol:GNAO*",
+      );
+      const body = await response.json();
+
+      const hgncs = body.at(1) as string[];
+      const symbols = body.at(3) as string[];
+      const options = hgncs.map((hgnc, index) => {
+        return { code: hgnc, display: symbols[index], system: "http://www.genenames.org/geneId" };
+      });
+      setGenes(options);
+    };
+    updateGenes().then();
+  }, []);
+
   return (
     <>
       <h2>Variant</h2>
@@ -40,7 +61,7 @@ const Variant: FC<Props> = (props) => {
               values.variant.length > 0 &&
               values.variant.map((variant: any, index: number) => (
                 <div key={index}>
-                  <FieldSet name={`variant[${index}].gene`} label="Gene Symbol" />
+                  <FieldSet name={`variant[${index}].gene`} label="Gene Symbol" selectOptions={genes} />
                   <FieldSet as="textarea" name={`variant[${index}].geneInformation`} label="Gene Information" />
                   <FieldSet name={`variant[${index}].transcript`} label="Transcript" />
                   <FieldSet name={`variant[${index}].genomicHGVS`} label="Genomic HGVS" />
