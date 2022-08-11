@@ -18,7 +18,9 @@ type DropDown = {
 const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
   const dummyValue = "Always the same";
   const form = screen.getByRole("form");
-  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|date|address|gender|specimen type).)*$/i);
+  const textInputs = within(form).getAllByLabelText(
+    /^((?!resultOutput|date|address|gender|specimen type|follow up).)*$/i,
+  );
 
   if (!dropDowns) {
     textInputs.forEach((input) => {
@@ -106,6 +108,11 @@ async function setNoVariant() {
   });
 }
 
+const setReportFields = async () => {
+  const dropDowns = [{ field: /Follow up/i, value: "Genetic counseling recommended" }];
+  await setDummyAndNext(true, dropDowns);
+};
+
 jest.setTimeout(20000);
 
 const variantDropDowns = [
@@ -128,7 +135,7 @@ describe("Report form", () => {
     await setLabAndPatient();
     await setSample();
     await setVariantFields();
-    await setDummyAndNext(true);
+    await setReportFields();
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });
@@ -151,7 +158,7 @@ describe("Report form", () => {
     await setLabAndPatient();
     await setSample();
     await setNoVariant();
-    await setDummyAndNext(true);
+    await setReportFields();
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });
