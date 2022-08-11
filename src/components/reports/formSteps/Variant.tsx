@@ -6,7 +6,6 @@ import { FormValues } from "../ReportForm";
 import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
 import { codedValue, loincSelect } from "../../../code_systems/loincCodes";
-import fetch from "node-fetch";
 import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 interface Props {
@@ -56,7 +55,7 @@ const Variant: FC<Props> = (props) => {
     let mounted = true;
 
     const updateGenes = async () => {
-      if (!geneQuery) {
+      if (geneQuery.trim() === "") {
         return;
       }
       const response = await fetch(
@@ -65,7 +64,10 @@ const Variant: FC<Props> = (props) => {
       const body = await response.json();
       if (mounted) {
         const hgncs = body.at(1) as string[];
-        const symbols = body.at(3) as string[];
+        const symbols = body.at(3).at(0) as string[];
+        if (!hgncs) {
+          return;
+        }
         const options = hgncs.map((hgnc, index) => {
           return { code: hgnc, display: symbols[index], system: "http://www.genenames.org/geneId" };
         });
@@ -90,16 +92,18 @@ const Variant: FC<Props> = (props) => {
               values.variant.length > 0 &&
               values.variant.map((variant: any, index: number) => (
                 <div key={index}>
-                  <label>Search for genes symbols:</label>
-                  <input id="gene_search" onChange={geneChangeHandler} value={geneQuery}></input>
+                  <label htmlFor="gene_search">Search for genes symbols:</label>
+                  <input id="gene_search" name="gene_search" onChange={geneChangeHandler} value={geneQuery}></input>
                   <FieldSet
                     name={`variant[${index}].gene`}
                     label="Gene Symbol"
                     selectOptions={allGenes}
                     onChange={(e) => {
-                      setFieldValue(e.currentTarget.name, e.currentTarget.value);
-                      const currentSelection = codedValue(hgncGenes, e.currentTarget.value);
-                      if (!selectedGenes.includes(currentSelection)) {
+                      const currentValue = e.currentTarget.value;
+                      setFieldValue(e.currentTarget.name, currentValue);
+                      const currentSelection = codedValue(hgncGenes, currentValue);
+                      const selectedHgncs = selectedGenes.map((coding) => coding.code);
+                      if (!selectedHgncs.includes(currentValue)) {
                         setSelectedGenes([...selectedGenes, currentSelection]);
                       }
                     }}
@@ -152,5 +156,4 @@ const Variant: FC<Props> = (props) => {
     </>
   );
 };
-
 export default Variant;

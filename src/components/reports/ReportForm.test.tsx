@@ -19,7 +19,7 @@ const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
   const dummyValue = "Always the same";
   const form = screen.getByRole("form");
   const textInputs = within(form).getAllByLabelText(
-    /^((?!resultOutput|date|address|gender|specimen type|follow up).)*$/i,
+    /^((?!resultOutput|date|address|gender|specimen type|search|gene symbol|follow up).)*$/i,
   );
 
   if (!dropDowns) {
@@ -98,6 +98,26 @@ async function setVariantFields() {
     userEvent.click(screen.getByText(/add a variant/i));
   });
   await act(async () => {
+    const searchInput = screen.getByLabelText(/search/i);
+    await userEvent.clear(searchInput);
+    await userEvent.type(searchInput, "GNAO");
+  });
+
+  await act(async () => {
+    const symbolSelect = screen.getAllByLabelText(/^Gene Symbol$/i, {}).at(-1);
+    if (symbolSelect) {
+      await userEvent.click(symbolSelect);
+      await userEvent.selectOptions(symbolSelect, "GNAO1");
+    }
+  });
+
+  const variantDropDowns = [
+    { field: /Zygosity/i, value: "Homozygous" },
+    { field: /Inhertiance Method/i, value: "Autosomal dominant" },
+    { field: /Classification$/i, value: "Pathogenic" },
+  ];
+
+  await act(async () => {
     await setDummyAndNext(false, variantDropDowns);
   });
 }
@@ -114,12 +134,6 @@ const setReportFields = async () => {
 };
 
 jest.setTimeout(20000);
-
-const variantDropDowns = [
-  { field: /Zygosity/i, value: "Homozygous" },
-  { field: /Inhertiance Method/i, value: "Autosomal dominant" },
-  { field: /Classification$/i, value: "Pathogenic" },
-];
 
 describe("Report form", () => {
   /**
