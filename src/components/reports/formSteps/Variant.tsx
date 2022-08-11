@@ -5,12 +5,13 @@ import { v4 as uuidv4 } from "uuid";
 import { FormValues } from "../ReportForm";
 import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
-import { loincSelect } from "../../../code_systems/loincCodes";
+import { codedValue, loincSelect } from "../../../code_systems/loincCodes";
 import fetch from "node-fetch";
 import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 interface Props {
   values: FormValues;
+  setFieldValue: (field: string, value: string | string[]) => void;
 }
 
 const emptyVariant = {
@@ -27,15 +28,27 @@ const emptyVariant = {
   comment: "",
 };
 
-const Variant: FC<Props> = (props) => {
-  const { values } = props;
+const mergeByHgncId = (hgncGenes: Coding[], selectedGenes: Coding[]) => {
+  const allGenes = [...hgncGenes];
+  for (const selectedGene of selectedGenes) {
+    const hgncCodes = hgncGenes.map((coding) => coding.code);
+    if (!hgncCodes.includes(selectedGene.code)) {
+      allGenes.push(selectedGene);
+    }
+  }
+  return allGenes;
+};
 
-  const [genes, setGenes] = useState<Coding[]>([]);
-  const [geneSearch, setGeneSearch] = useState("");
+const Variant: FC<Props> = (props) => {
+  const { values, setFieldValue } = props;
+
+  const [geneQuery, setGeneQuery] = useState("");
+  const [hgncGenes, setHgncGenes] = useState<Coding[]>([]);
+  const [selectedGenes, setSelectedGenes] = useState<Coding[]>([]);
+  const allGenes = mergeByHgncId(hgncGenes, selectedGenes);
 
   const geneChangeHandler: ChangeEventHandler<HTMLInputElement> = (event) => {
-    console.debug("running gene handler");
-    setGeneSearch(event.target.value);
+    setGeneQuery(event.target.value);
   };
 
   useEffect(() => {
@@ -43,11 +56,11 @@ const Variant: FC<Props> = (props) => {
     let mounted = true;
 
     const updateGenes = async () => {
-      if (!geneSearch) {
+      if (!geneQuery) {
         return;
       }
       const response = await fetch(
-        `https://clinicaltables.nlm.nih.gov/api/genes/v4/search?terms=${geneSearch}&df=symbol&q=symbol:${geneSearch}*`,
+        `https://clinicaltables.nlm.nih.gov/api/genes/v4/search?terms=${geneQuery}&df=symbol&q=symbol:${geneQuery}*`,
       );
       const body = await response.json();
       if (mounted) {
@@ -56,14 +69,14 @@ const Variant: FC<Props> = (props) => {
         const options = hgncs.map((hgnc, index) => {
           return { code: hgnc, display: symbols[index], system: "http://www.genenames.org/geneId" };
         });
-        setGenes(options);
+        setHgncGenes(options);
       }
     };
     updateGenes().then();
     return () => {
       mounted = false;
     };
-  }, [geneSearch]);
+  }, [geneQuery, setHgncGenes]);
 
   return (
     <>
@@ -78,8 +91,19 @@ const Variant: FC<Props> = (props) => {
               values.variant.map((variant: any, index: number) => (
                 <div key={index}>
                   <label>Search for genes symbols:</label>
-                  <input id="gene_search" onChange={geneChangeHandler} value={geneSearch}></input>
-                  <FieldSet name={`variant[${index}].gene`} label="Gene Symbol" selectOptions={genes} />
+                  <input id="gene_search" onChange={geneChangeHandler} value={geneQuery}></input>
+                  <FieldSet
+                    name={`variant[${index}].gene`}
+                    label="Gene Symbol"
+                    selectOptions={allGenes}
+                    onChange={(e) => {
+                      setFieldValue(e.currentTarget.name, e.currentTarget.value);
+                      const currentSelection = codedValue(hgncGenes, e.currentTarget.value);
+                      if (!selectedGenes.includes(currentSelection)) {
+                        setSelectedGenes([...selectedGenes, currentSelection]);
+                      }
+                    }}
+                  />
                   <FieldSet as="textarea" name={`variant[${index}].geneInformation`} label="Gene Information" />
                   <FieldSet name={`variant[${index}].transcript`} label="Transcript" />
                   <FieldSet name={`variant[${index}].genomicHGVS`} label="Genomic HGVS" />

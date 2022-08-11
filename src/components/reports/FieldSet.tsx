@@ -1,5 +1,5 @@
 import { ErrorMessage, Field } from "formik";
-import { FC } from "react";
+import { ChangeEventHandler, FC } from "react";
 import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 type Props = {
@@ -8,6 +8,8 @@ type Props = {
   type?: string;
   as?: string;
   selectOptions?: Coding[];
+  disabled?: boolean;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
 const FieldSet: FC<Props> = ({ name, label, selectOptions, ...rest }) => {

@@ -91,7 +91,7 @@ const ReportForm: FC<Props> = (props: Props) => {
       case 1:
         return <Sample />;
       case 2:
-        return <Variant values={values} />;
+        return <Variant values={values} setFieldValue={setFieldValue} />;
       case 3:
         return <Report />;
       case 4:
