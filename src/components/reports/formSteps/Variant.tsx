@@ -64,12 +64,12 @@ const Variant: FC<Props> = (props) => {
       const body = await response.json();
       if (mounted) {
         const hgncs = body.at(1) as string[];
-        const symbols = body.at(3).at(0) as string[];
+        const symbols = body.at(3) as string[];
         if (!hgncs) {
           return;
         }
         const options = hgncs.map((hgnc, index) => {
-          return { code: hgnc, display: symbols[index], system: "http://www.genenames.org/geneId" };
+          return { code: hgnc, display: symbols[index].at(0), system: "http://www.genenames.org/geneId" };
         });
         setHgncGenes(options);
       }

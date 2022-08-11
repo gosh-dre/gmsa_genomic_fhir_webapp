@@ -6,7 +6,6 @@ import Variant from "./Variant";
 import { render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import userEvent from "@testing-library/user-event";
-import { enableFetchMocks } from "jest-fetch-mock";
 
 /**
  * Slimmed down formik form for testing the variant page alone
@@ -50,22 +49,7 @@ const addVariantWithGene = async (geneSearch: string, geneSymbol: string) => {
   });
 };
 
-enableFetchMocks();
-
 describe("Variant", () => {
-  beforeEach(() => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponse((request: Request) => {
-      let requestData: (number | string[] | string[][] | null)[] = [0, [], null, []];
-      if (request.url.includes("TW")) {
-        requestData = [2, ["TWO", "TWENTY"], null, [["TWO_CODE", "TWENTY_CODE"]]];
-      } else if (request.url.includes("ONE")) {
-        requestData = [1, ["ONE"], null, [["ONE_CODE"]]];
-      }
-      return Promise.resolve(JSON.stringify(requestData));
-    });
-  });
-
   /**
    * Given the variant page has been rendered and 2 variants with the same gene, 1 variant with another gene
    * When a final variant is added with an existing gene

@@ -97,17 +97,18 @@ async function setVariantFields() {
   await act(async () => {
     userEvent.click(screen.getByText(/add a variant/i));
   });
+  const geneSymbol = "GNAO1";
   await act(async () => {
     const searchInput = screen.getByLabelText(/search/i);
     await userEvent.clear(searchInput);
-    await userEvent.type(searchInput, "GNAO");
+    await userEvent.type(searchInput, geneSymbol);
   });
 
   await act(async () => {
     const symbolSelect = screen.getAllByLabelText(/^Gene Symbol$/i, {}).at(-1);
     if (symbolSelect) {
       await userEvent.click(symbolSelect);
-      await userEvent.selectOptions(symbolSelect, "GNAO1");
+      await userEvent.selectOptions(symbolSelect, geneSymbol);
     }
   });
 
