@@ -1,4 +1,4 @@
-import { ChangeEventHandler, FC, useEffect, useState } from "react";
+import React, { ChangeEventHandler, FC, useEffect, useState } from "react";
 import { FieldArray } from "formik";
 import { v4 as uuidv4 } from "uuid";
 
@@ -7,10 +7,12 @@ import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
 import { codedValue, loincSelect } from "../../../code_systems/loincCodes";
 import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import geneCoding from "../../../code_systems/hgnc";
 
 interface Props {
   values: FormValues;
   setFieldValue: (field: string, value: string | string[]) => void;
+  setReportFormGenes: React.Dispatch<React.SetStateAction<Coding[]>>;
 }
 
 const emptyVariant = {
@@ -39,12 +41,13 @@ const mergeByHgncId = (hgncGenes: Coding[], selectedGenes: Coding[]) => {
 };
 
 const Variant: FC<Props> = (props) => {
-  const { values, setFieldValue } = props;
+  const { values, setFieldValue, setReportFormGenes } = props;
 
   const [geneQuery, setGeneQuery] = useState("");
   const [hgncGenes, setHgncGenes] = useState<Coding[]>([]);
   const [selectedGenes, setSelectedGenes] = useState<Coding[]>([]);
   const allGenes = mergeByHgncId(hgncGenes, selectedGenes);
+  setReportFormGenes(selectedGenes);
 
   const geneChangeHandler: ChangeEventHandler<HTMLInputElement> = (event) => {
     setGeneQuery(event.target.value);
@@ -69,7 +72,8 @@ const Variant: FC<Props> = (props) => {
           return;
         }
         const options = hgncs.map((hgnc, index) => {
-          return { code: hgnc, display: symbols[index].at(0), system: "http://www.genenames.org/geneId" };
+          const symbol = symbols[index].at(0);
+          return geneCoding(hgnc, symbol);
         });
         setHgncGenes(options);
       }

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Form, Formik } from "formik";
 import { noValues } from "../FormDefaults";
 import Card from "../../UI/Card";
@@ -6,12 +6,15 @@ import Variant from "./Variant";
 import { render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import userEvent from "@testing-library/user-event";
+import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 /**
  * Slimmed down formik form for testing the variant page alone
  * @constructor
  */
 const TestVariant: FC = () => {
+  const [reportFormGenes, setReportFormGenes] = useState<Coding[]>([]);
+
   return (
     <Card>
       <Formik
@@ -22,10 +25,13 @@ const TestVariant: FC = () => {
       >
         {({ setFieldValue, values }) => (
           <Form role="form" autoComplete="off">
-            <Variant values={values} setFieldValue={setFieldValue} />;
+            <Variant values={values} setFieldValue={setFieldValue} setReportFormGenes={setReportFormGenes} />;
           </Form>
         )}
       </Formik>
+      {reportFormGenes && (
+        <textarea id="genes" role="alert" rows={80} cols={100} defaultValue={JSON.stringify(reportFormGenes)} />
+      )}
     </Card>
   );
 };
@@ -71,5 +77,19 @@ describe("Variant", () => {
     expect(finalSelect).toContainHTML("TWENTY");
     const optionCount = finalSelect?.innerHTML.match(/<option/g)?.length;
     expect(optionCount).toEqual(3);
+  });
+
+  /**
+   * Given variant page has been rendered within a component that will display any genes set by the Variant component
+   * When a gene has been selected
+   * Then the parent component will render the gene selected
+   */
+  test("Variant sets the selected gene of parent via props", async () => {
+    render(<TestVariant />);
+
+    await addVariantWithGene("TW", "TWENTY");
+
+    const genes = screen.getByRole("alert");
+    expect(genes).toBeInTheDocument();
   });
 });

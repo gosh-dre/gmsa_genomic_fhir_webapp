@@ -7,6 +7,7 @@ import {
 } from "../components/reports/formDataValidation";
 import { v4 as uuidv4 } from "uuid";
 import {
+  Coding,
   DiagnosticReport,
   HumanName,
   Organization,
@@ -245,6 +246,7 @@ export const interpretationAndId = (
 
 export const variantAndId = (
   variant: VariantSchema,
+  reportedGenes: Coding[],
   patientId: string,
   specimenId: string,
   specimenBarcode: string,
@@ -262,6 +264,7 @@ export const variantAndId = (
     "Genetic variant assessment",
   );
   obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"] };
+  const geneComponent = codedValue(reportedGenes, variant.gene);
   obs.component = [
     observationComponent(
       {
@@ -329,12 +332,13 @@ export const variantAndId = (
       },
       variant.classificationEvidence,
     ),
+    // matching GOSH structure for gene to use text as the value
     observationComponent(
       {
-        system: "http://www.genenames.org/geneId",
-        code: variant.gene,
+        system: geneComponent.system,
+        code: geneComponent.code,
       },
-      variant.gene,
+      geneComponent.display as string,
     ),
     observationComponent(
       {

@@ -33,9 +33,9 @@ export const initialValues: FormValues = {
   },
   variant: [
     {
-      gene: "GNAO1",
+      gene: "HGNC:4389",
       geneInformation:
-        "NAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
+        "GNAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
         "or neurodevelopmental disorder with involuntary movements without epilepsy (MIM 617493). " +
         "Clinical features range from severe motor and cognitive impairment with marked choreoathetosis, " +
         "self-injurious behaviour and epileptic encephalopathy, to a milder course with moderate developmental delay, " +
