@@ -18,7 +18,9 @@ type DropDown = {
 const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
   const dummyValue = "Always the same";
   const form = screen.getByRole("form");
-  const textInputs = within(form).getAllByLabelText(/^((?!resultOutput|date|address|gender).)*$/i);
+  const textInputs = within(form).getAllByLabelText(
+    /^((?!resultOutput|date|address|gender|specimen type|search|gene symbol|follow up).)*$/i,
+  );
 
   if (!dropDowns) {
     textInputs.forEach((input) => {
@@ -84,10 +86,38 @@ async function setDummyAndNext(withDates: boolean, dropDowns?: DropDown[]) {
   });
 }
 
+const setSample = () => {
+  return setDummyAndNext(true, [
+    { field: /specimen type/i, value: "122555007" },
+    { field: /test reason/i, value: "230387008" },
+  ]);
+};
+
 async function setVariantFields() {
   await act(async () => {
     userEvent.click(screen.getByText(/add a variant/i));
   });
+  const geneSymbol = "GNAO1 (HGNC:4389)";
+  await act(async () => {
+    const searchInput = screen.getByLabelText(/search/i);
+    await userEvent.clear(searchInput);
+    await userEvent.type(searchInput, geneSymbol);
+  });
+
+  await act(async () => {
+    const symbolSelect = screen.getAllByLabelText(/^Gene Symbol$/i, {}).at(-1);
+    if (symbolSelect) {
+      await userEvent.click(symbolSelect);
+      await userEvent.selectOptions(symbolSelect, geneSymbol);
+    }
+  });
+
+  const variantDropDowns = [
+    { field: /Zygosity/i, value: "Homozygous (LA6705-3)" },
+    { field: /Inhertiance Method/i, value: "Autosomal dominant (LA24640-7)" },
+    { field: /Classification$/i, value: "Pathogenic (LA6668-3)" },
+  ];
+
   await act(async () => {
     await setDummyAndNext(false, variantDropDowns);
   });
@@ -99,13 +129,12 @@ async function setNoVariant() {
   });
 }
 
-jest.setTimeout(20000);
+const setReportFields = async () => {
+  const dropDowns = [{ field: /Follow up/i, value: "Genetic counseling recommended (LA14020-4)" }];
+  await setDummyAndNext(true, dropDowns);
+};
 
-const variantDropDowns = [
-  { field: /Zygosity/i, value: "Homozygous" },
-  { field: /Inhertiance Method/i, value: "Autosomal dominant" },
-  { field: /Classification$/i, value: "Pathogenic" },
-];
+jest.setTimeout(20000);
 
 describe("Report form", () => {
   /**
@@ -119,9 +148,9 @@ describe("Report form", () => {
 
     // Act
     await setLabAndPatient();
-    await setDummyAndNext(true);
+    await setSample();
     await setVariantFields();
-    await setDummyAndNext(true);
+    await setReportFields();
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });
@@ -142,9 +171,9 @@ describe("Report form", () => {
 
     // Act
     await setLabAndPatient();
-    await setDummyAndNext(true);
+    await setSample();
     await setNoVariant();
-    await setDummyAndNext(true);
+    await setReportFields();
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });

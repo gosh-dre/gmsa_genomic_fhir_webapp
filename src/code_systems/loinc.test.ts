@@ -1,11 +1,15 @@
 /**
  * May mock out API later but useful for testing during development
  */
+import "jest-fetch-mock";
 
 import { getSelectOptions, variantCodes } from "./loinc";
 import { loincCodes, loincSelect } from "./loincCodes";
 
 describe("LOINC", () => {
+  beforeEach(() => {
+    fetchMock.dontMock();
+  });
   /**
    * Given that the LOINC select options have been created from static file
    * When the LOINC api is queried and converted to select options

@@ -1,4 +1,4 @@
-import { Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { Coding, Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { FormValues } from "../components/reports/ReportForm";
 import {
   createNullVariantAndId,
@@ -20,17 +20,18 @@ import { loincResources } from "../code_systems/loincCodes";
 /**
  * Create a report bundle
  * @param form values from the front end form
+ * @param reportedGenes genes used in the report
  */
-export const bundleRequest = (form: FormValues) => {
+export const bundleRequest = (form: FormValues, reportedGenes: Coding[]) => {
   return {
     url: "/",
     method: "POST",
     headers: { "Content-Type": "application/fhir+json;charset=UTF-8" },
-    body: JSON.stringify(createBundle(form)),
+    body: JSON.stringify(createBundle(form, reportedGenes)),
   };
 };
 
-export const createBundle = (form: FormValues) => {
+export const createBundle = (form: FormValues, reportedGenes: Coding[]) => {
   const org = organisationAndId(form.address);
   const patient = patientAndId(form.patient, org.id);
   const specimen = specimenAndId(form.sample, patient.id);
@@ -40,7 +41,7 @@ export const createBundle = (form: FormValues) => {
   let variants: ResourceAndIds[];
   if (form.variant.length) {
     variants = form.variant.map((variant: VariantSchema) =>
-      variantAndId(variant, patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id),
+      variantAndId(variant, reportedGenes, patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id),
     );
   } else {
     variants = [createNullVariantAndId(patient.id, specimen.id, specimen.identifier, reporter.id, authoriser.id)];
@@ -57,6 +58,7 @@ export const createBundle = (form: FormValues) => {
   const serviceRequest = serviceRequestAndId(form.sample, patient.id, plan.id, reporter.id, specimen.id);
   const report = reportAndId(
     form.result,
+    form.sample,
     patient.id,
     reporter.id,
     authoriser.id,

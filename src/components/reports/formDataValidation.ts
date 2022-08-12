@@ -63,7 +63,7 @@ export const sampleSchema = Yup.object({
   collectionDateTime: optionalDateTime,
   receivedDateTime: requiredDateTime,
   specimenType: requiredString,
-  reasonForTestCode: requiredString,
+  reasonForTest: requiredString,
   reasonForTestText: optionalString,
 });
 
@@ -95,6 +95,7 @@ export const reportDetailSchema = Yup.object({
   authorisingScientist: requiredString,
   authorisingScientistTitle: requiredString,
   authorisingDate: requiredDate,
+  followUp: optionalString,
   furtherTesting: requiredString,
   testMethodology: requiredString,
   clinicalConclusion: requiredString,

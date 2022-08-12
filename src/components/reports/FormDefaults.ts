@@ -23,20 +23,19 @@ export const initialValues: FormValues = {
   },
   sample: {
     specimenCode: "19RG-183G0127",
-    // will need codes here too - but probably best to load all possible codes and then query
-    specimenType: "Venus blood specimen",
+    specimenType: "122555007",
     collectionDateTime: "04/06/2019 12:00",
     receivedDateTime: "04/06/2019 15:00",
-    reasonForTestCode: "230387008",
+    reasonForTest: "230387008",
     reasonForTestText:
       "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +
       "An SLC2A1 variant is suspected.",
   },
   variant: [
     {
-      gene: "GNAO1",
+      gene: "HGNC:4389",
       geneInformation:
-        "NAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
+        "GNAO1: Heterozygous pathogenic variants cause EIEE17 (MIM 615473) " +
         "or neurodevelopmental disorder with involuntary movements without epilepsy (MIM 617493). " +
         "Clinical features range from severe motor and cognitive impairment with marked choreoathetosis, " +
         "self-injurious behaviour and epileptic encephalopathy, to a milder course with moderate developmental delay, " +
@@ -62,6 +61,7 @@ export const initialValues: FormValues = {
     authorisingDate: "2021-04-25",
     authorisingScientist: "Lucy Jones",
     authorisingScientistTitle: "Consultant Clinical Scientist",
+    followUp: "LA14020-4",
     furtherTesting:
       "Testing of Donald Duck's parents is recommended to determine whether the GNAO1 " +
       "c.119G>T p.(Gly40Val) likely pathogenic variant has arisen de novo and to assess the recurrence risk. " +
@@ -104,7 +104,7 @@ export const noValues: FormValues = {
     specimenType: "",
     collectionDateTime: "",
     receivedDateTime: "",
-    reasonForTestCode: "",
+    reasonForTest: "",
     reasonForTestText: "",
   },
   variant: [],
@@ -112,6 +112,7 @@ export const noValues: FormValues = {
     resultSummary: "",
     clinicalConclusion: "",
     citation: "",
+    followUp: "",
     furtherTesting: "",
     testMethodology: "",
     authorisingDate: "",

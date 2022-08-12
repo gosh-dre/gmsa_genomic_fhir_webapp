@@ -2,8 +2,11 @@ import { Fhir } from "fhir/fhir";
 import { createBundle } from "./api";
 import { initialValues, initialWithNoVariant } from "../components/reports/FormDefaults";
 import { Observation } from "fhir/r4";
+import { geneCoding } from "../code_systems/hgnc";
 
 const fhir = new Fhir();
+
+const reportedGenes = [geneCoding("HGNC:4389", "GNA01")];
 
 describe("FHIR resources", () => {
   /**
@@ -12,7 +15,7 @@ describe("FHIR resources", () => {
    * Then the fhir library should pass validation of the bundle
    */
   test("Bundle with variants is valid", () => {
-    const bundle = createBundle(initialValues);
+    const bundle = createBundle(initialValues, reportedGenes);
 
     const output = fhir.validate(bundle);
     console.info("Validation output");
@@ -26,7 +29,7 @@ describe("FHIR resources", () => {
    * Then the fhir library should pass validation of the bundle and null variant entry
    */
   test("Bundle without variants", () => {
-    const bundle = createBundle(initialWithNoVariant);
+    const bundle = createBundle(initialWithNoVariant, []);
 
     // null variant entry
     const variantNotes = bundle.entry

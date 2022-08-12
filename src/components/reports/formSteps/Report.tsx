@@ -1,6 +1,7 @@
 import { FC } from "react";
 
 import FieldSet from "../FieldSet";
+import { loincSelect } from "../../../code_systems/loincCodes";
 
 const Report: FC = () => {
   return (
@@ -9,6 +10,7 @@ const Report: FC = () => {
       <FieldSet as="textarea" name="result.resultSummary" label="Result summary" />
       <FieldSet as="textarea" name="result.clinicalConclusion" label="Clinical Conclusion" />
       <FieldSet as="textarea" name="result.citation" label="Citation" />
+      <FieldSet name="result.followUp" label="Follow up" selectOptions={loincSelect.followUp} />
       <FieldSet as="textarea" name="result.furtherTesting" label="Further testing" />
       <FieldSet as="textarea" name="result.testMethodology" label="Test Methodology" />
       <FieldSet type="date" name="result.authorisingDate" label="Authorised date" />

@@ -7,6 +7,7 @@ import {
 } from "../components/reports/formDataValidation";
 import { v4 as uuidv4 } from "uuid";
 import {
+  Coding,
   DiagnosticReport,
   HumanName,
   Organization,
@@ -28,6 +29,7 @@ import {
 } from "./resource_helpers";
 import { parseDateTime } from "../utils/dateTime";
 import { codedValue, loincSelect } from "../code_systems/loincCodes";
+import { diseases, sampleTypes } from "../code_systems/snomedCodes";
 
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
@@ -90,7 +92,7 @@ export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
   org.type = [
     {
       coding: [
-        // custom code, raising to see if useful
+        // custom code
         {
           system: "http://term.hl7.org/CodeSystem/org-id-types",
           code: "gosh-org",
@@ -168,13 +170,7 @@ export const specimenAndId = (sample: SampleSchema, patientId: string): Resource
   }
   specimen.identifier = [{ value: sample.specimenCode, id: "specimen id" }];
   specimen.type = {
-    coding: [
-      {
-        system: "http://snomed.info/sct",
-        code: "122555007",
-        display: "Venus blood specimen",
-      },
-    ],
+    coding: [codedValue(sampleTypes, sample.specimenType)],
   };
   specimen.subject = reference("Patient", patientId);
 
@@ -250,6 +246,7 @@ export const interpretationAndId = (
 
 export const variantAndId = (
   variant: VariantSchema,
+  reportedGenes: Coding[],
   patientId: string,
   specimenId: string,
   specimenBarcode: string,
@@ -267,6 +264,7 @@ export const variantAndId = (
     "Genetic variant assessment",
   );
   obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"] };
+  const geneComponent = codedValue(reportedGenes, variant.gene);
   obs.component = [
     observationComponent(
       {
@@ -334,13 +332,13 @@ export const variantAndId = (
       },
       variant.classificationEvidence,
     ),
+    // matching GOSH structure for gene to use text as the value
     observationComponent(
       {
-        // code hard-coded for now but this will be addressed when linking in with clinical coding
-        system: "http://www.genenames.org/geneId",
-        code: "HGNC:4389",
+        system: geneComponent.system,
+        code: geneComponent.code,
       },
-      variant.gene,
+      geneComponent.display as string,
     ),
     observationComponent(
       {
@@ -415,17 +413,11 @@ export const furtherTestingAndId = (report: ReportDetailSchema, patientId: strin
   task.resourceType = "Task";
   task.status = Task.StatusEnum.Requested;
   task.intent = Task.IntentEnum.Plan;
-  task.code = {
-    // harcoded for now but should be set from form, allowing multiple selections from the coding system
-    // coding system: LL1037-2
-    coding: [
-      {
-        system: "http://loinc.org",
-        code: "LA14020-4",
-        display: "Genetic counseling recommended",
-      },
-    ],
-  };
+  if (report.followUp) {
+    task.code = {
+      coding: [codedValue(loincSelect.followUp, report.followUp)],
+    };
+  }
   task.description = report.furtherTesting;
   task.for = reference("Patient", patientId);
   return { id: task.id, resource: task };
@@ -478,14 +470,7 @@ export const serviceRequestAndId = (
   request.performer = [reference("Practitioner", practitionerId)];
   request.reasonCode = [
     {
-      coding: [
-        {
-          // hardcoded for now, but have issue to pull this through from clinical APIs
-          system: "http://snomed.info/sct",
-          code: sample.reasonForTestCode,
-          display: "Reason for recommending early-onset benign childhood occipita epilepsy",
-        },
-      ],
+      coding: [codedValue(diseases, sample.reasonForTest)],
       text: sample.reasonForTestText,
     },
   ];
@@ -497,6 +482,7 @@ export const serviceRequestAndId = (
 
 export const reportAndId = (
   result: ReportDetailSchema,
+  sample: SampleSchema,
   patientId: string,
   reporterId: string,
   authoriserId: string,
@@ -516,14 +502,7 @@ export const reportAndId = (
   report.result = resultIds.map((resultId) => reference("Observation", resultId));
   report.resultsInterpreter = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
   report.code = {
-    coding: [
-      {
-        // harcoded for now, but will pull this through
-        system: "http://snomed.info/sct",
-        code: "82511000000108",
-        display: "Early onset or syndromic epilepsy",
-      },
-    ],
+    coding: [codedValue(diseases, sample.reasonForTest)],
   };
   report.conclusion = result.clinicalConclusion;
 
