@@ -1,6 +1,7 @@
 import { Buffer } from "buffer";
 import fetch from "node-fetch";
-import { Coding, ValueSet, ValueSetConcept } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { ValueSet, ValueSetConcept } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { RequiredCoding } from "./types";
 
 const USERNAME = process.env.REACT_APP_LOINC_USERNAME;
 const PASSWORD = process.env.REACT_APP_LOINC_PASSWORD;
@@ -35,7 +36,7 @@ const getValueSetData = async (valueSet: string): Promise<ValueSet> => {
   return await response.json();
 };
 
-export const getSelectOptions = (valueSet: ValueSet): Coding[] => {
+export const getSelectOptions = (valueSet: ValueSet): RequiredCoding[] => {
   const unpacked = valueSet.compose?.include
     ?.flatMap((c) => c.concept)
     .filter(isConcept)
@@ -52,8 +53,8 @@ const isConcept = (concept: ValueSetConcept | undefined): concept is ValueSetCon
   return !!concept;
 };
 
-const makeLoincOption = (concept: ValueSetConcept): Coding => {
-  return <Coding>{
+const makeLoincOption = (concept: ValueSetConcept): RequiredCoding => {
+  return <RequiredCoding>{
     code: concept.code,
     display: concept.display || concept.code,
     system: "http://loinc.org",

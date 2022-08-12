@@ -1,6 +1,6 @@
-import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { RequiredCoding } from "./types";
 
-export const sampleTypes: Coding[] = [
+export const sampleTypes: RequiredCoding[] = [
   {
     system: "http://snomed.info/sct",
     code: "122555007",
@@ -8,7 +8,7 @@ export const sampleTypes: Coding[] = [
   },
 ];
 
-export const diseases: Coding[] = [
+export const diseases: RequiredCoding[] = [
   {
     system: "http://snomed.info/sct",
     code: "230387008",
