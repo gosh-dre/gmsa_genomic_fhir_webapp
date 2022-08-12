@@ -2,7 +2,7 @@ import { Fhir } from "fhir/fhir";
 import { createBundle } from "./api";
 import { initialValues, initialWithNoVariant } from "../components/reports/FormDefaults";
 import { Observation } from "fhir/r4";
-import geneCoding from "../code_systems/hgnc";
+import { geneCoding } from "../code_systems/hgnc";
 
 const fhir = new Fhir();
 

@@ -7,7 +7,7 @@ import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
 import { codedValue, loincSelect } from "../../../code_systems/loincCodes";
 import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import geneCoding from "../../../code_systems/hgnc";
+import { geneCoding, queryHgnc } from "../../../code_systems/hgnc";
 
 interface Props {
   values: FormValues;
@@ -58,25 +58,12 @@ const Variant: FC<Props> = (props) => {
     let mounted = true;
 
     const updateGenes = async () => {
-      if (geneQuery.trim() === "") {
+      const { hgncs, symbols } = await queryHgnc(geneQuery);
+      if (!mounted || !hgncs) {
         return;
       }
-      const response = await fetch(
-        `https://clinicaltables.nlm.nih.gov/api/genes/v4/search?terms=${geneQuery}&df=symbol&q=symbol:${geneQuery}*`,
-      );
-      const body = await response.json();
-      if (mounted) {
-        const hgncs = body.at(1) as string[];
-        const symbols = body.at(3) as string[];
-        if (!hgncs) {
-          return;
-        }
-        const options = hgncs.map((hgnc, index) => {
-          const symbol = symbols[index].at(0);
-          return geneCoding(hgnc, symbol);
-        });
-        setHgncGenes(options);
-      }
+      const options = hgncs.map((hgnc, index) => geneCoding(hgnc, symbols[index].at(0)));
+      setHgncGenes(options);
     };
     updateGenes().then();
     return () => {
