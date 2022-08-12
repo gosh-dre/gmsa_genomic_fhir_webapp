@@ -97,7 +97,7 @@ async function setVariantFields() {
   await act(async () => {
     userEvent.click(screen.getByText(/add a variant/i));
   });
-  const geneSymbol = "GNAO1";
+  const geneSymbol = "GNAO1 (HGNC:4389)";
   await act(async () => {
     const searchInput = screen.getByLabelText(/search/i);
     await userEvent.clear(searchInput);
@@ -113,9 +113,9 @@ async function setVariantFields() {
   });
 
   const variantDropDowns = [
-    { field: /Zygosity/i, value: "Homozygous" },
-    { field: /Inhertiance Method/i, value: "Autosomal dominant" },
-    { field: /Classification$/i, value: "Pathogenic" },
+    { field: /Zygosity/i, value: "Homozygous (LA6705-3)" },
+    { field: /Inhertiance Method/i, value: "Autosomal dominant (LA24640-7)" },
+    { field: /Classification$/i, value: "Pathogenic (LA6668-3)" },
   ];
 
   await act(async () => {
@@ -130,7 +130,7 @@ async function setNoVariant() {
 }
 
 const setReportFields = async () => {
-  const dropDowns = [{ field: /Follow up/i, value: "Genetic counseling recommended" }];
+  const dropDowns = [{ field: /Follow up/i, value: "Genetic counseling recommended (LA14020-4)" }];
   await setDummyAndNext(true, dropDowns);
 };
 
