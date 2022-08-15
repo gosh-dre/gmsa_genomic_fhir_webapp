@@ -166,7 +166,7 @@ export const specimenAndId = (sample: SampleSchema, patientId: string): Resource
   specimen.resourceType = "Specimen";
   specimen.receivedTime = parseDateTime(sample.receivedDateTime).toDate();
   if (sample.collectionDateTime !== undefined) {
-    specimen.collection = { collectedDateTime: sample.collectionDateTime };
+    specimen.collection = { collectedDateTime: parseDateTime(sample.collectionDateTime).toISOString() };
   }
   specimen.identifier = [{ value: sample.specimenCode, id: "specimen id" }];
   specimen.type = {
