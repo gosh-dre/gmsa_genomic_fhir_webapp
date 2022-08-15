@@ -9,7 +9,7 @@ interface Props {
 }
 
 const genderOptions = Object.values(FhirPatient.GenderEnum).map((value) => {
-  return { code: value, display: value.toString() };
+  return { code: value, display: value.toString(), system: "FhirPatient.GenderEnum" };
 });
 
 const Patient: FC<Props> = (props) => {

@@ -1,5 +1,11 @@
-export const geneCoding = (code: string, display?: string) => {
-  return { code: code, display: display, system: "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/" };
+import { RequiredCoding } from "./types";
+
+export const geneCoding = (code: string, display?: string): RequiredCoding => {
+  return {
+    code: code,
+    display: display || code,
+    system: "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+  };
 };
 
 export const queryHgnc = async (geneQuery: string) => {

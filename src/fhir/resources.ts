@@ -7,7 +7,6 @@ import {
 } from "../components/reports/formDataValidation";
 import { v4 as uuidv4 } from "uuid";
 import {
-  Coding,
   DiagnosticReport,
   HumanName,
   Organization,
@@ -30,6 +29,7 @@ import {
 import { parseDateTime } from "../utils/dateTime";
 import { codedValue, loincSelect } from "../code_systems/loincCodes";
 import { diseases, sampleTypes } from "../code_systems/snomedCodes";
+import { RequiredCoding } from "../code_systems/types";
 
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
@@ -246,7 +246,7 @@ export const interpretationAndId = (
 
 export const variantAndId = (
   variant: VariantSchema,
-  reportedGenes: Coding[],
+  reportedGenes: RequiredCoding[],
   patientId: string,
   specimenId: string,
   specimenBarcode: string,

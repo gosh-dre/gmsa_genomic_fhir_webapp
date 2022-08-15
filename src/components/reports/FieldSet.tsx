@@ -1,13 +1,13 @@
 import { ErrorMessage, Field } from "formik";
 import { ChangeEventHandler, FC } from "react";
-import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { RequiredCoding } from "../../code_systems/types";
 
 type Props = {
   name: string;
   label: string;
   type?: string;
   as?: string;
-  selectOptions?: Coding[];
+  selectOptions?: RequiredCoding[];
   disabled?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement>;
 };

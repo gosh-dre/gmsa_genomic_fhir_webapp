@@ -13,7 +13,7 @@ import Variant from "./formSteps/Variant";
 import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
 import FormStepBtn from "../UI/FormStepBtn";
-import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { RequiredCoding } from "../../code_systems/types";
 
 const PatientAndAddressValidation = Yup.object({
   address: addressSchema.required(),
@@ -51,7 +51,7 @@ type SetFieldValue = (field: string, value: any, shouldValidate?: boolean) => vo
 const ReportForm: FC<Props> = (props: Props) => {
   const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(0);
-  const [reportedGenes, setReportedGenes] = useState<Coding[]>([]);
+  const [reportedGenes, setReportedGenes] = useState<RequiredCoding[]>([]);
   const isLastStep = formStep === steps.length - 1;
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);

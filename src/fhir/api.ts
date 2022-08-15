@@ -1,4 +1,4 @@
-import { Coding, Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { FormValues } from "../components/reports/ReportForm";
 import {
   createNullVariantAndId,
@@ -16,13 +16,14 @@ import {
 } from "./resources";
 import { VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
+import { RequiredCoding } from "../code_systems/types";
 
 /**
  * Create a report bundle
  * @param form values from the front end form
  * @param reportedGenes genes used in the report
  */
-export const bundleRequest = (form: FormValues, reportedGenes: Coding[]) => {
+export const bundleRequest = (form: FormValues, reportedGenes: RequiredCoding[]) => {
   return {
     url: "/",
     method: "POST",
@@ -31,7 +32,7 @@ export const bundleRequest = (form: FormValues, reportedGenes: Coding[]) => {
   };
 };
 
-export const createBundle = (form: FormValues, reportedGenes: Coding[]) => {
+export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]) => {
   const org = organisationAndId(form.address);
   const patient = patientAndId(form.patient, org.id);
   const specimen = specimenAndId(form.sample, patient.id);

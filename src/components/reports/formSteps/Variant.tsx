@@ -6,13 +6,13 @@ import { FormValues } from "../ReportForm";
 import FieldSet from "../FieldSet";
 import classes from "./Variant.module.css";
 import { codedValue, loincSelect } from "../../../code_systems/loincCodes";
-import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { geneCoding, queryHgnc } from "../../../code_systems/hgnc";
+import { RequiredCoding } from "../../../code_systems/types";
 
 interface Props {
   values: FormValues;
   setFieldValue: (field: string, value: string | string[]) => void;
-  setReportFormGenes: React.Dispatch<React.SetStateAction<Coding[]>>;
+  setReportFormGenes: React.Dispatch<React.SetStateAction<RequiredCoding[]>>;
 }
 
 const emptyVariant = {
@@ -29,7 +29,7 @@ const emptyVariant = {
   comment: "",
 };
 
-const mergeByHgncId = (hgncGenes: Coding[], selectedGenes: Coding[]) => {
+const mergeByHgncId = (hgncGenes: RequiredCoding[], selectedGenes: RequiredCoding[]) => {
   const allGenes = [...hgncGenes];
   for (const selectedGene of selectedGenes) {
     const hgncCodes = hgncGenes.map((coding) => coding.code);
@@ -44,8 +44,8 @@ const Variant: FC<Props> = (props) => {
   const { values, setFieldValue, setReportFormGenes } = props;
 
   const [geneQuery, setGeneQuery] = useState("");
-  const [hgncGenes, setHgncGenes] = useState<Coding[]>([]);
-  const [selectedGenes, setSelectedGenes] = useState<Coding[]>([]);
+  const [hgncGenes, setHgncGenes] = useState<RequiredCoding[]>([]);
+  const [selectedGenes, setSelectedGenes] = useState<RequiredCoding[]>([]);
   const allGenes = mergeByHgncId(hgncGenes, selectedGenes);
   setReportFormGenes(selectedGenes);
 

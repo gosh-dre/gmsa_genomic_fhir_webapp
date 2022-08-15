@@ -6,14 +6,14 @@ import Variant from "./Variant";
 import { render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import userEvent from "@testing-library/user-event";
-import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { RequiredCoding } from "../../../code_systems/types";
 
 /**
  * Slimmed down formik form for testing the variant page alone
  * @constructor
  */
 const TestVariant: FC = () => {
-  const [reportFormGenes, setReportFormGenes] = useState<Coding[]>([]);
+  const [reportFormGenes, setReportFormGenes] = useState<RequiredCoding[]>([]);
 
   return (
     <Card>

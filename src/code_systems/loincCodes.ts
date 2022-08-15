@@ -1,7 +1,6 @@
-import { Coding, ValueSet } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { ValueSet } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { getSelectOptions } from "./loinc";
-
-export type LoincOption = { code: string; display: string; system: string };
+import { RequiredCoding } from "./types";
 
 type LoincCodes = {
   classification: ValueSet;
@@ -281,7 +280,10 @@ export const loincSelect = {
   followUp: getSelectOptions(loincCodes.followUp),
 };
 
-export const codedValue = (options: Coding[], id: string): Coding => {
+export const codedValue = (options: RequiredCoding[], id: string): RequiredCoding => {
   const codingValue = options.filter((opt) => opt.code === id).pop();
-  return codingValue as Coding;
+  if (!codingValue) {
+    throw new ReferenceError(`Could not find ${id} in coded values`);
+  }
+  return codingValue;
 };
