@@ -8,7 +8,7 @@ const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET;
 /**
  * Connects fhir back end for use in the rest of the application.
  *
- * In a real application this would be used after user login.
+ * In production, will redirect to organisation sign-in and then back to application
  * @constructor
  */
 const FhirAuthoriser: FC = () => {
