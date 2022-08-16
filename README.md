@@ -7,7 +7,7 @@ Prototype for FHIR genomics reports.
 
 ### Dependencies 
 
-The project is built using React and requires an up to date version of node and npm to be installed.
+The project is built using React and requires an up-to-date version of node and npm to be installed.
 These can be checked on the command line on unix systems:
 
 ```shell
@@ -39,6 +39,7 @@ cp env/dev.env .env
 ```
 
 This file will need to be edited to allow automated testing to determine if the LOINC api is returning different value sets.
+You may also want to edit other variables 
 
 ## Development services
 
