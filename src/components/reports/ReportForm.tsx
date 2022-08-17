@@ -55,6 +55,10 @@ const ReportForm: FC<Props> = (props: Props) => {
   const isLastStep = formStep === steps.length - 1;
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);
+  console.log("");
+  console.log(ctx.client?.getAuthorizationHeader());
+  console.log(ctx.client?.getIdToken());
+  console.log(ctx.client?.getState());
 
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     const bundle = bundleRequest(values, reportedGenes);

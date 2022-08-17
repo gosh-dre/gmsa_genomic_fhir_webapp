@@ -17,6 +17,7 @@ import {
 import { VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
 import { RequiredCoding } from "../code_systems/types";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Create a report bundle
@@ -68,6 +69,7 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]) 
     variants.map((variant) => variant.id),
   );
   return {
+    id: uuidv4(),
     resourceType: "Bundle",
     type: "transaction",
     entry: [
