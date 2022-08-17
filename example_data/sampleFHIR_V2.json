@@ -125,7 +125,8 @@
         },
         "identifier": [
           {
-            "value": "40057119"
+            "value": "40057119",
+            "system": "https://www.gosh.nhs.uk"
           },
           {
             "extension": [
@@ -166,6 +167,7 @@
         "identifier": [
           {
             "value": "20RG-114G00099",
+            "system": "https://www.gosh.nhs.uk",
             "id": "specimen id"
           }
         ],

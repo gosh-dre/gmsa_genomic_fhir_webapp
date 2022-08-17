@@ -22,6 +22,8 @@ import {
 import {
   createPatientObservation,
   generatedNarrative,
+  getSystemIdentifier,
+  goshIdentifier,
   makeGoshAssigner,
   observationComponent,
   reference,
@@ -56,8 +58,10 @@ export const patientAndId = (form: PatientSchema, organisationId: string): Resou
   patient.active = true;
   patient.gender = form.gender;
   patient.name = [{ family: form.lastName, given: [form.firstName] }];
+  const identifier = goshIdentifier(form.mrn, makeGoshAssigner("MRN"));
+
   patient.identifier = [
-    { value: form.mrn, ...makeGoshAssigner("MRN") },
+    identifier,
     // implementing GOSH's structure, they chose this to represent a family as it doesn't exist in the specification
     {
       extension: [
@@ -80,13 +84,14 @@ export const patientAndId = (form: PatientSchema, organisationId: string): Resou
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
   patient.managingOrganization = reference("Organization", organisationId);
-  return { identifier: form.mrn, id: patient.id, resource: patient };
+  return { identifier: getSystemIdentifier(identifier), id: patient.id, resource: patient };
 };
 
 export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
   const org = new Organization();
   org.id = uuidv4();
-  org.identifier = [{ value: GOSH_GENETICS_IDENTIFIER }];
+  const identifier = goshIdentifier(GOSH_GENETICS_IDENTIFIER);
+  org.identifier = [identifier];
   org.resourceType = "Organization";
   org.active = true;
   org.type = [
@@ -113,7 +118,7 @@ export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
   ];
   org.text = generatedNarrative(form.name);
 
-  return { identifier: GOSH_GENETICS_IDENTIFIER, id: org.id, resource: org };
+  return { identifier: getSystemIdentifier(identifier), id: org.id, resource: org };
 };
 
 export const practitionersAndIds = (result: ReportDetailSchema) => {
@@ -147,12 +152,12 @@ const practitionerAndId = (fullName: string, title: string, role: ScientistRole)
   practitioner.id = uuidv4();
   practitioner.resourceType = "Practitioner";
   practitioner.active = true;
-  const identifier = fullName.toLowerCase().replaceAll(/\s/g, "");
-  practitioner.identifier = [{ value: identifier }];
+  const identifier = goshIdentifier(`${fullName}_${role}`.replaceAll(/\s/g, ""));
+  practitioner.identifier = [identifier];
   practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official, text: roleText }];
   practitioner.qualification = [{ code: { text: title } }];
 
-  return { identifier: `${fullName}_${role}`, id: practitioner.id, resource: practitioner };
+  return { identifier: getSystemIdentifier(identifier), id: practitioner.id, resource: practitioner };
 };
 
 /**
@@ -168,13 +173,14 @@ export const specimenAndId = (sample: SampleSchema, patientId: string): Resource
   if (sample.collectionDateTime !== undefined) {
     specimen.collection = { collectedDateTime: sample.collectionDateTime };
   }
-  specimen.identifier = [{ value: sample.specimenCode, id: "specimen id" }];
+  const identifier = goshIdentifier(sample.specimenCode, { id: "specimen id" });
+  specimen.identifier = [identifier];
   specimen.type = {
     coding: [codedValue(sampleTypes, sample.specimenType)],
   };
   specimen.subject = reference("Patient", patientId);
 
-  return { identifier: sample.specimenCode, id: specimen.id, resource: specimen };
+  return { identifier: getSystemIdentifier(identifier), id: specimen.id, resource: specimen };
 };
 
 export const createNullVariantAndId = (
@@ -200,10 +206,10 @@ export const createNullVariantAndId = (
       text: "No variants reported",
     },
   ];
-  const identifier = `${specimenBarcode}$null:null`;
-  obs.identifier = [{ value: identifier, id: "specimenBarcode$transcript:genomicHGVS" }];
+  const identifier = goshIdentifier(`${specimenBarcode}$null:null`, { id: "specimenBarcode$transcript:genomicHGVS" });
+  obs.identifier = [identifier];
 
-  return { identifier: identifier, id: obsId, resource: obs };
+  return { identifier: getSystemIdentifier(identifier), id: obsId, resource: obs };
 };
 
 export const interpretationAndId = (
@@ -238,10 +244,12 @@ export const interpretationAndId = (
     },
   ];
   obs.valueString = result.resultSummary;
-  const identifier = `${specimenBarcode}$overall-interpretation`;
-  obs.identifier = [{ value: identifier, id: "{specimenBarcode}$overall-interpretation" }];
+  const identifier = goshIdentifier(`${specimenBarcode}$overall-interpretation`, {
+    id: "{specimenBarcode}$overall-interpretation",
+  });
+  obs.identifier = [identifier];
 
-  return { identifier: identifier, id: obsId, resource: obs };
+  return { identifier: getSystemIdentifier(identifier), id: obsId, resource: obs };
 };
 
 export const variantAndId = (
@@ -368,10 +376,10 @@ export const variantAndId = (
     });
   }
 
-  const identifier = `${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`;
-  obs.identifier = [{ value: identifier, id: "{specimenBarcode}${transcript}:{genomicHGVS}" }];
+  const identifier = goshIdentifier(`${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`);
+  obs.identifier = [identifier];
 
-  return { identifier: identifier, id: obsId, resource: obs };
+  return { identifier: getSystemIdentifier(identifier), id: obsId, resource: obs };
 };
 
 export const planDefinitionAndId = (
