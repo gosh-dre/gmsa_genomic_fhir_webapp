@@ -12,6 +12,7 @@ const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET;
  * @constructor
  */
 const FhirAuthoriser: FC = () => {
+
   useEffect(() => {
     SMART.authorize({
       iss: FHIR_URL,
@@ -22,6 +23,7 @@ const FhirAuthoriser: FC = () => {
   }, []);
 
   return <p>Connecting to FHIR back end...</p>;
+
 };
 
 export default FhirAuthoriser;
