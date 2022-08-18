@@ -2,6 +2,7 @@ import Layout from "./components/layout/Layout";
 import { Route, Routes } from "react-router-dom";
 import NewReport from "./pages/NewReport";
 import FhirAuthoriser from "./components/fhir/FhirAuthoriser";
+import AuthRedirect from "./components/fhir/AuthRedirect";
 
 function App() {
   return (
@@ -9,8 +10,8 @@ function App() {
       <Routes>
         <Route path="/" element={<FhirAuthoriser />} />
         <Route path="/add_report" element={<NewReport />} />
-        {/* Oauth setup with new report url so redirect this to the existing page */}
-        <Route path="/recv_redirect" element={<NewReport />} />
+        {/* Oauth2 setup currently only works with this url */}
+        <Route path="/recv_redirect" element={<AuthRedirect />} />
       </Routes>
     </Layout>
   );
