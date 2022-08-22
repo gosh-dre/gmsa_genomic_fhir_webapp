@@ -40,4 +40,29 @@ export const diseases: RequiredCoding[] = [
     code: "363346000",
     display: "Malignant neoplastic disease",
   },
+  {
+    system: "http://snomed.info/sct",
+    code: "432328008",
+    display: "Neuroblastoma",
+  },
+  {
+    system: "http://snomed.info/sct",
+    code: "771233008",
+    display: "Inflammatory myofibroblastic tumor",
+  },
+  {
+    system: "http://snomed.info/sct",
+    code: "253062001",
+    display: "Central nervous system tumor morphology",
+  },
+  {
+    system: "http://snomed.info/sct",
+    code: "255032005",
+    display: "Medullary thyroid carcinoma",
+  },
+  {
+    system: "http://snomed.info/sct",
+    code: "702785000",
+    display: "Large cell anaplastic lymphoma T cell and Null cell type",
+  },
 ];
