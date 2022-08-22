@@ -15,8 +15,7 @@ const FhirAuthoriser: FC = () => {
   useEffect(() => {
     SMART.authorize({
       iss: FHIR_URL,
-      // temporarily using as this is what the synthetic FHIR server has been setup with
-      redirectUri: "./recv_redirect",
+      redirectUri: "./new_report",
       clientId: CLIENT_ID,
       clientSecret: CLIENT_SECRET,
     }).then();
