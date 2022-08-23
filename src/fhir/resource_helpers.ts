@@ -27,8 +27,19 @@ export const goshIdentifier = (value: string, otherFields?: Identifier) => {
   return identifier(value, "https://www.gosh.nhs.uk", usedFields);
 };
 
+/**
+ * Create identifier with a system and any other fields
+ *
+ * Needs to strip out anything with a "|" from the value because this can happen when you're specifying an
+ * identifier system in a query
+ * @param value identifier value, if it has a "|" character then anything before this will be removed
+ * @param system identifier system
+ * @param otherFields other fields to add to the identifier
+ */
 export const identifier = (value: string, system: Uri, otherFields: Identifier) => {
-  return { ...otherFields, value: value, system: system };
+  const systemStripped = value.replace(/.*\|/, "");
+
+  return { ...otherFields, value: systemStripped, system: system };
 };
 
 export const getSystemIdentifier = (systemId: SystemIdentifier) => {
