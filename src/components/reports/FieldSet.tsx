@@ -12,6 +12,14 @@ type Props = {
   onChange?: ChangeEventHandler<HTMLInputElement>;
 };
 
+/**
+ * Field Set component to wrap around Formik input fields.
+ * @param name html id and name of the field
+ * @param label label to display to the user
+ * @param selectOptions if present, will display as a select drop-down with these options
+ * @param rest any other props to pass though to Formik
+ * @constructor
+ */
 const FieldSet: FC<Props> = ({ name, label, selectOptions, ...rest }) => {
   let field: JSX.Element = <Field id={name} name={name} {...rest} />;
 
