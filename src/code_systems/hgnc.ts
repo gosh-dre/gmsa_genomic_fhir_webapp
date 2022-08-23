@@ -8,6 +8,10 @@ export const geneCoding = (code: string, display?: string): RequiredCoding => {
   };
 };
 
+/**
+ * Query REST API for gene names and codes.
+ * @param geneQuery query string for gene, requires a match at the start of the gene symbol
+ */
 export const queryHgnc = async (geneQuery: string) => {
   if (geneQuery.trim() === "") {
     return { hgncs: [], symbols: [] };
