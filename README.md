@@ -32,7 +32,7 @@ npm install
 ## Configuration
 
 From the root of the project, copy the test env file to the root directory so that the application can use the correct environmental variables. 
-The `.evn` file is ignored by git so won't be accidentally committed.  
+The `.env` file is ignored by git so won't be accidentally committed.  
 
 ```shell
 cp env/dev.env .env 
