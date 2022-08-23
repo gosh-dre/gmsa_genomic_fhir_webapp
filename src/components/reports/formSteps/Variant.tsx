@@ -47,7 +47,10 @@ const Variant: FC<Props> = (props) => {
   const [hgncGenes, setHgncGenes] = useState<RequiredCoding[]>([]);
   const [selectedGenes, setSelectedGenes] = useState<RequiredCoding[]>([]);
   const allGenes = mergeByHgncId(hgncGenes, selectedGenes);
-  setReportFormGenes(selectedGenes);
+
+  useEffect(() => {
+    setReportFormGenes(selectedGenes);
+  }, [selectedGenes]);
 
   const geneChangeHandler: ChangeEventHandler<HTMLInputElement> = (event) => {
     setGeneQuery(event.target.value);
