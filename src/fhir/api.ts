@@ -71,9 +71,9 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]) 
   return {
     id: uuidv4(),
     resourceType: "Bundle",
-    type: "transaction",
+    type: "batch",
     entry: [
-      createEntry(patient.resource, form.patient.mrn),
+      createEntry(patient.resource, patient.identifier),
       createEntry(org.resource, org.identifier),
       createEntry(specimen.resource, specimen.identifier),
       createEntry(authoriser.resource),
@@ -105,7 +105,6 @@ const createEntry = (resource: Resource, identifier?: string) => {
 
   return {
     resource: resource,
-    resourceType: resource.resourceType,
     request: requestInfo,
   };
 };

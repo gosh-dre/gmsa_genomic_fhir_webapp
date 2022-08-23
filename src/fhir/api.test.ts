@@ -33,7 +33,7 @@ describe("FHIR resources", () => {
 
     // null variant entry
     const variantNotes = bundle.entry
-      .filter((entry) => entry.resourceType === "Observation")
+      .filter((entry) => entry.resource.resourceType === "Observation")
       .map((entry) => entry.resource as Observation)
       .filter((obs) =>
         obs.meta?.profile?.includes("http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/Variant"),
