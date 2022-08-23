@@ -1,10 +1,14 @@
-import { requiredDate, requiredDateTime } from "./formDataValidation";
+import { optionalDateTime, requiredDate, requiredDateTime } from "./formDataValidation";
 import * as Yup from "yup";
 import { ValidationError } from "yup";
 
-const testSchema = Yup.object({
+const requiredSchema = Yup.object({
   requiredDate: requiredDate,
   requiredDateTime: requiredDateTime,
+}).required();
+
+const optionalSchema = Yup.object({
+  optionalDateTime: optionalDateTime,
 }).required();
 
 const validDate = "2020-01-01";
@@ -15,9 +19,9 @@ describe("Custom form validation", () => {
   test.each([
     ["dates", validDate, validLocalDate],
     ["date and datetime", validDate, validDateTime],
-  ])("Valid '%s' pass validation", async (description: string, date: string, datetime: string) => {
+  ])("Required '%s' pass validation", async (description: string, date: string, datetime: string) => {
     const model = { requiredDate: date, requiredDateTime: datetime };
-    const validation = await testSchema.validate(model);
+    const validation = await requiredSchema.validate(model);
     expect(validation).toBeTruthy();
   });
 
@@ -26,14 +30,26 @@ describe("Custom form validation", () => {
     ["invalid datetime format", validDate, "2020-20-01 12:00"],
     ["datetime missing digit", validDate, "1/01/1900 12:00"],
     ["datetime missing all zeros", validDate, "1/1/19 12"],
+    ["undefined", undefined, undefined],
+    ["empty", "", ""],
+    ["datetime missing all zeros", validDate, "1/1/19 12"],
     ["future date", "2100-01-01", validLocalDate],
     ["future datetime", validDate, "01/01/2100 12:00"],
-  ])("'%s' fails validation", async (description: string, date: string, datetime: string) => {
+  ])("Required '%s' fails validation", async (description: string, date?: string, datetime?: string) => {
     const validateModel = async () => {
       const model = { requiredDate: date, requiredDateTime: datetime };
-      await testSchema.validate(model);
+      await requiredSchema.validate(model);
     };
 
     await expect(validateModel).rejects.toThrow(ValidationError);
+  });
+
+  test.each([
+    ["empty", ""],
+    ["undefined", undefined],
+  ])("Optional '%s' pass validation", async (description: string, datetime?: string) => {
+    const model = { optionalDateTime: datetime };
+    const validation = await optionalSchema.validate(model);
+    expect(validation).toBeTruthy();
   });
 });

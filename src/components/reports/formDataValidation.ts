@@ -7,31 +7,19 @@ const optionalString = Yup.string().optional();
 const requiredString = Yup.string().required();
 
 const date = Yup.string()
-  .test("valid-date", "Please enter a valid date", (value) => value === undefined || moment(value).isValid())
-  .test(
-    "past-date",
-    "Please enter a valid date in the past",
-    (value) => value === undefined || moment(value).isBefore(today),
-  );
+  .test("valid-date", "Please enter a valid date", (value) => !value || moment(value).isValid())
+  .test("past-date", "Please enter a valid date in the past", (value) => !value || moment(value).isBefore(today));
 export const requiredDate = date.required();
 
 export const dateTime = Yup.string()
   .test("valid-date", "Please enter a valid date in DD/MM/YYYY or date time in DD/MM/YYYY HH:mm (24 hour)", (value) => {
-    if (!value) {
-      return false;
-    }
-
-    return parseDateTime(value).isValid();
+    return !value || parseDateTime(value).isValid();
   })
   .test("past-date", "Please enter a valid date in the past", (value) => {
-    if (!value) {
-      return false;
-    }
-
-    return parseDateTime(value).isBefore(today);
+    return !value || parseDateTime(value).isBefore(today);
   });
 export const requiredDateTime = dateTime.required();
-const optionalDateTime = dateTime.optional();
+export const optionalDateTime = dateTime.optional();
 
 const boolField = Yup.boolean().default(false).nullable(false);
 
