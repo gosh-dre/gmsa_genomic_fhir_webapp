@@ -38,11 +38,11 @@ const FieldSet: FC<Props> = ({ name, label, selectOptions, ...rest }) => {
   }
 
   return (
-    <span>
+    <>
       <label htmlFor={name}>{label}</label>
       {field}
-      <ErrorMessage name={name} component="p" className="error-text" />
-    </span>
+      <ErrorMessage name={name} component="span" className="error-text" />
+    </>
   );
 };
 
