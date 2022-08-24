@@ -8,7 +8,9 @@
         "resourceType": "DiagnosticReport",
         "id": "a425799a-a905-d750-7e1e-a9c573581a81",
         "meta": {
-          "profile": ["http://hl7.org/fhir/StructureDefinition/genomicreport"]
+          "profile": [
+            "http://hl7.org/fhir/StructureDefinition/genomicreport"
+          ]
         },
         "status": "final",
         "code": {
@@ -87,7 +89,10 @@
         "name": "Great Ormond Street Hospital for Children NHS Foundation Trust",
         "address": [
           {
-            "line": "Level 4 Barclays House, 37 Queens Square",
+            "line": [
+              "Level 4 Barclays House",
+              "37 Queens Square"
+            ],
             "city": "London",
             "postalCode": "WC1N 3BH",
             "country": "United Kingdom"
@@ -108,7 +113,9 @@
         "name": [
           {
             "family": "Manager",
-            "given": ["General"]
+            "given": [
+              "General"
+            ]
           }
         ],
         "gender": "female",
@@ -191,7 +198,9 @@
           {
             "use": "official",
             "family": "Nephrology",
-            "given": ["Clinics"],
+            "given": [
+              "Clinics"
+            ],
             "text": "Authorized By"
           }
         ],
@@ -223,7 +232,9 @@
           {
             "use": "official",
             "family": "Quality",
-            "given": ["Activity"],
+            "given": [
+              "Activity"
+            ],
             "text": "Reported By"
           }
         ],
@@ -261,7 +272,9 @@
           ]
         },
         "meta": {
-          "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"]
+          "profile": [
+            "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"
+          ]
         },
         "subject": {
           "type": "Patient",
@@ -462,7 +475,9 @@
           ]
         },
         "meta": {
-          "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"]
+          "profile": [
+            "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"
+          ]
         },
         "subject": {
           "type": "Patient",
@@ -663,7 +678,9 @@
           ]
         },
         "meta": {
-          "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"]
+          "profile": [
+            "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"
+          ]
         },
         "subject": {
           "type": "Patient",
@@ -864,7 +881,9 @@
           ]
         },
         "meta": {
-          "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"]
+          "profile": [
+            "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"
+          ]
         },
         "subject": {
           "type": "Patient",
@@ -1055,7 +1074,9 @@
         "resourceType": "Task",
         "id": "5f3f5638-3870-1a14-b490-b6081dfc8352",
         "meta": {
-          "profile": ["http://hl7.org/fhir/StructureDefinition/task-rec-followup"]
+          "profile": [
+            "http://hl7.org/fhir/StructureDefinition/task-rec-followup"
+          ]
         },
         "status": "requested",
         "intent": "plan",
@@ -1086,7 +1107,9 @@
         "id": "6d16ee18-5521-16dd-2ba4-b180cb69ca38",
         "status": "final",
         "meta": {
-          "profile": ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/overall-interpretation"]
+          "profile": [
+            "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/overall-interpretation"
+          ]
         },
         "code": {
           "coding": [
@@ -1135,7 +1158,9 @@
         "resourceType": "ServiceRequest",
         "id": "c87a7463-19c1-6a0d-0feb-d845d0dfae43",
         "meta": {
-          "profile": ["http://hl7.org/fhir/StructureDefinition/servicerequest"]
+          "profile": [
+            "http://hl7.org/fhir/StructureDefinition/servicerequest"
+          ]
         },
         "status": "active",
         "intent": "order",
