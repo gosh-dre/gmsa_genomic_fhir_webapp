@@ -84,7 +84,6 @@ export const patientAndId = (form: PatientSchema, organisationId: string): Resou
 };
 
 export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
-  console.log(form);
   const org = new Organization();
   org.id = uuidv4();
   org.identifier = [{ value: GOSH_GENETICS_IDENTIFIER }];
