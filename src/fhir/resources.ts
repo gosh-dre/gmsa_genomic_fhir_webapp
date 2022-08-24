@@ -105,7 +105,7 @@ export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
   org.name = form.name;
   org.address = [
     {
-      line: [form.streetAddress],
+      line: [form.streetAddress], // array type to conform with FHIR requirements
       city: form.city,
       postalCode: form.postCode,
       country: form.country,
