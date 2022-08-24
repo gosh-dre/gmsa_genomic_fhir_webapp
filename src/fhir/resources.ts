@@ -76,7 +76,7 @@ export const patientAndId = (form: PatientSchema, organisationId: string): Resou
       ],
     },
   ];
-  patient.birthDate = form.dateOfBirth.toString();
+  patient.birthDate = form.dateOfBirth;
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
   patient.managingOrganization = reference("Organization", organisationId);
@@ -164,9 +164,9 @@ export const specimenAndId = (sample: SampleSchema, patientId: string): Resource
   const specimen = new Specimen();
   specimen.id = uuidv4();
   specimen.resourceType = "Specimen";
-  specimen.receivedTime = parseDateTime(sample.receivedDateTime).toDate();
+  specimen.receivedTime = parseDateTime(sample.receivedDateTime).toJSDate();
   if (sample.collectionDateTime !== undefined) {
-    specimen.collection = { collectedDateTime: sample.collectionDateTime };
+    specimen.collection = { collectedDateTime: parseDateTime(sample.collectionDateTime).toISO() };
   }
   specimen.identifier = [{ value: sample.specimenCode, id: "specimen id" }];
   specimen.type = {
@@ -492,8 +492,8 @@ export const reportAndId = (
 ): ResourceAndId => {
   const report = new DiagnosticReport();
   report.id = uuidv4();
-  report.issued = result.reportingDate.toString();
-  report.effectiveDateTime = result.authorisingDate.toString();
+  report.issued = result.reportingDate;
+  report.effectiveDateTime = result.authorisingDate;
   report.resourceType = "DiagnosticReport";
   report.status = DiagnosticReport.StatusEnum.Final;
   report.subject = reference("Patient", patientId);

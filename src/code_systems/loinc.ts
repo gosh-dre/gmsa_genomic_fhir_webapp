@@ -36,6 +36,10 @@ const getValueSetData = async (valueSet: string): Promise<ValueSet> => {
   return await response.json();
 };
 
+/**
+ * Parse ValueSet to output the FHIR Coding objects that are available
+ * @param valueSet FHIR ValueSet
+ */
 export const getSelectOptions = (valueSet: ValueSet): RequiredCoding[] => {
   const unpacked = valueSet.compose?.include
     ?.flatMap((c) => c.concept)

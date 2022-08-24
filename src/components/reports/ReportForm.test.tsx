@@ -31,7 +31,7 @@ const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
       try {
         clearAndType(input, dummyValue);
       } catch (e) {
-        // swallow error if this is a drop-down field
+        // swallow error if this is a drop-down field and we're trying to clear it - otherwise rethrow
         const result = (e as Error).message;
         if (!result.includes("clear currently only supports input and textarea elements")) {
           throw e;

@@ -1,37 +1,29 @@
 import * as Yup from "yup";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 import { parseDateTime, today } from "../../utils/dateTime";
-import moment from "moment";
+import { DateTime, Interval } from "luxon";
 
 const optionalString = Yup.string().optional();
 const requiredString = Yup.string().required("This is a required field");
 
 const date = Yup.string()
-  .test("valid-date", "Please enter a valid date", (value) => value === undefined || moment(value).isValid())
+  .test("valid-date", "Please enter a valid date", (value) => !value || DateTime.fromISO(value).isValid)
   .test(
     "past-date",
     "Please enter a valid date in the past",
-    (value) => value === undefined || moment(value).isBefore(today),
+    (value) => !value || Interval.fromDateTimes(DateTime.fromISO(value), today).isValid,
   );
 export const requiredDate = date.required("This is a required field");
 
 export const dateTime = Yup.string()
   .test("valid-date", "Please enter a valid date in DD/MM/YYYY or date time in DD/MM/YYYY HH:mm (24 hour)", (value) => {
-    if (!value) {
-      return false;
-    }
-
-    return parseDateTime(value).isValid();
+    return !value || parseDateTime(value).isValid;
   })
   .test("past-date", "Please enter a valid date in the past", (value) => {
-    if (!value) {
-      return false;
-    }
-
-    return parseDateTime(value).isBefore(today);
+    return !value || Interval.fromDateTimes(parseDateTime(value), today).isValid;
   });
 export const requiredDateTime = dateTime.required();
-const optionalDateTime = dateTime.optional();
+export const optionalDateTime = dateTime.optional();
 
 const boolField = Yup.boolean().default(false).nullable(false);
 

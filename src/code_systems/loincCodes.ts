@@ -9,6 +9,9 @@ type LoincCodes = {
   followUp: ValueSet;
 };
 
+/**
+ * Combined FHIR ValueSet response for loinc codes to be used in form drop-downs.
+ */
 export const loincCodes: LoincCodes = {
   classification: {
     resourceType: "ValueSet",
@@ -273,6 +276,11 @@ export const loincResources = Object.values(loincCodes).map((vs) => {
   return { resource: vs, identifier: identifier };
 });
 
+/**
+ * LOINC codes for form drop-downs.
+ *
+ * Hardcoded to ensure that we control when changes are rolled out to LOINC codes.
+ */
 export const loincSelect = {
   classification: getSelectOptions(loincCodes.classification),
   inheritance: getSelectOptions(loincCodes.inheritance),
@@ -280,6 +288,11 @@ export const loincSelect = {
   followUp: getSelectOptions(loincCodes.followUp),
 };
 
+/**
+ * Function to extract entire FHIR Coding object from an array of possible objects.
+ * @param options all drop down options
+ * @param id code from the FHIR Coding object
+ */
 export const codedValue = (options: RequiredCoding[], id: string): RequiredCoding => {
   const codingValue = options.filter((opt) => opt.code === id).pop();
   if (!codingValue) {

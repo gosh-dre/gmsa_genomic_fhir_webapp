@@ -1,16 +1,16 @@
-import moment from "moment";
+import { DateTime } from "luxon";
 
-export const today = moment().startOf("day");
+export const today = DateTime.now().startOf("day");
 
 /**
  * Get format string for local date or local datetime with minute precision.
  * @param value date or datetime string
  */
 export const dateOrDatetimeFormat = (value: string) => {
-  let format = "DD/MM/YYYY HH:mm";
+  let format = "dd/MM/yyyy HH:mm";
 
   if (value.length === 10) {
-    format = "DD/MM/YYYY";
+    format = "dd/MM/yyyy";
   }
   return format;
 };
@@ -20,5 +20,5 @@ export const dateOrDatetimeFormat = (value: string) => {
  * @param value date or datetime string
  */
 export const parseDateTime = (value: string) => {
-  return moment(value, dateOrDatetimeFormat(value), true);
+  return DateTime.fromFormat(value, dateOrDatetimeFormat(value));
 };
