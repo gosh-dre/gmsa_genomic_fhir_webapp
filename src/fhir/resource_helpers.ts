@@ -6,44 +6,26 @@ import {
   ObservationComponent,
   Reference,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import { Uri } from "@smile-cdr/fhirts/src/FHIR-R4/classes/uri";
 
-export const reference = (refType: string, identifierQuery: string): Reference => {
-  return { reference: `${refType}?identifier=${identifierQuery}`, type: refType };
+export const reference = (refType: string, identifier: string): Reference => {
+  return { reference: `${refType}?identifier=${identifier}`, type: refType };
 };
-
-type SystemIdentifier = { value: string; system: Uri };
 
 export const makeGoshAssigner = (valueType: string) => {
   return { use: Identifier.UseEnum.Official, assigner: { display: `GOSH ${valueType}` } };
 };
 
-export const goshIdentifier = (value: string, otherFields?: Identifier) => {
-  let usedFields: Identifier = {};
-
-  if (otherFields) {
-    usedFields = otherFields;
-  }
-  return identifier(value, "https://www.gosh.nhs.uk", usedFields);
-};
-
 /**
- * Create identifier with a system and any other fields
+ * Create identifier with a value and any other fields
  *
- * Needs to strip out anything with a "|" from the value because this can happen when you're specifying an
- * identifier system in a query
- * @param value identifier value, if it has a "|" character then anything before this will be removed
- * @param system identifier system
+ * @param value identifier value
  * @param otherFields other fields to add to the identifier
  */
-export const identifier = (value: string, system: Uri, otherFields: Identifier) => {
-  const systemStripped = value.replace(/.*\|/, "");
-
-  return { ...otherFields, value: systemStripped, system: system };
-};
-
-export const getSystemIdentifier = (systemId: SystemIdentifier) => {
-  return `${systemId.system}|${systemId.value}`;
+export const createIdentifier = (value: string, otherFields?: Identifier) => {
+  if (otherFields) {
+    return { ...otherFields, value: value };
+  }
+  return { value: value };
 };
 
 export function generatedNarrative(...parts: string[]) {
@@ -57,18 +39,18 @@ export function generatedNarrative(...parts: string[]) {
  * Create minimal patient observation for FHIR bundle.
  *
  * Used for both variant observations and overall interpretation
- * @param patientQuery to link the resource with
- * @param specimenQuery to link the resource with
- * @param reporterQuery to link the resource with
- * @param authoriserQuery to link the resource with
+ * @param patientIdentifier to link the resource with
+ * @param specimenIdentifier to link the resource with
+ * @param reporterIdentifier to link the resource with
+ * @param authoriserIdentifier to link the resource with
  * @param loincCode code in LOINC system
  * @param loincDisplay display in LOINC system
  */
 export function createPatientObservation(
-  patientQuery: string,
-  specimenQuery: string,
-  reporterQuery: string,
-  authoriserQuery: string,
+  patientIdentifier: string,
+  specimenIdentifier: string,
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
   loincCode: string,
   loincDisplay: string,
 ) {
@@ -84,9 +66,9 @@ export function createPatientObservation(
       },
     ],
   };
-  obs.subject = reference("Patient", patientQuery);
-  obs.specimen = reference("Specimen", specimenQuery);
-  obs.performer = [reference("Practitioner", reporterQuery), reference("Practitioner", authoriserQuery)];
+  obs.subject = reference("Patient", patientIdentifier);
+  obs.specimen = reference("Specimen", specimenIdentifier);
+  obs.performer = [reference("Practitioner", reporterIdentifier), reference("Practitioner", authoriserIdentifier)];
   return obs;
 }
 

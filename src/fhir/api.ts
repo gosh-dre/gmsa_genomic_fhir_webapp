@@ -1,18 +1,18 @@
 import { Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { FormValues } from "../components/reports/ReportForm";
 import {
-  createNullVariantAndQuery,
+  createNullVariantAndIdentifier,
   furtherTestingAndId,
-  interpretationAndQuery,
-  organisationAndQuery,
-  patientAndQuery,
+  interpretationAndIdentifier,
+  organisationAndIdentifier,
+  patientAndIdentifier,
   planDefinitionAndId,
   practitionersAndQueries,
   reportAndId,
-  ResourceAndQuery,
+  ResourceAndIdentifier,
   serviceRequestAndId,
-  specimenAndQuery,
-  variantAndQuery,
+  specimenAndIdentifier,
+  variantAndIdentifier,
 } from "./resources";
 import { VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
@@ -34,62 +34,74 @@ export const bundleRequest = (form: FormValues, reportedGenes: RequiredCoding[])
 };
 
 export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]) => {
-  const org = organisationAndQuery(form.address);
-  const patient = patientAndQuery(form.patient, org.query);
-  const specimen = specimenAndQuery(form.sample, patient.query);
-  const furtherTesting = furtherTestingAndId(form.result, patient.query);
-  const plan = planDefinitionAndId(form.sample, form.result, patient.query);
+  const org = organisationAndIdentifier(form.address);
+  const patient = patientAndIdentifier(form.patient, org.identifier);
+  const specimen = specimenAndIdentifier(form.sample, patient.identifier);
+  const furtherTesting = furtherTestingAndId(form.result, patient.identifier);
+  const plan = planDefinitionAndId(form.sample, form.result, patient.identifier);
   const { authoriser, reporter } = practitionersAndQueries(form.result);
-  let variants: ResourceAndQuery[];
+  let variants: ResourceAndIdentifier[];
   if (form.variant.length) {
     variants = form.variant.map((variant: VariantSchema) =>
-      variantAndQuery(
+      variantAndIdentifier(
         variant,
         reportedGenes,
-        patient.query,
-        specimen.query,
-        specimen.query,
-        reporter.query,
-        authoriser.query,
+        patient.identifier,
+        specimen.identifier,
+        specimen.identifier,
+        reporter.identifier,
+        authoriser.identifier,
       ),
     );
   } else {
     variants = [
-      createNullVariantAndQuery(patient.query, specimen.query, specimen.query, reporter.query, authoriser.query),
+      createNullVariantAndIdentifier(
+        patient.identifier,
+        specimen.identifier,
+        specimen.identifier,
+        reporter.identifier,
+        authoriser.identifier,
+      ),
     ];
   }
 
-  const overallInterpretation = interpretationAndQuery(
+  const overallInterpretation = interpretationAndIdentifier(
     form.result,
-    patient.query,
-    specimen.query,
-    specimen.query,
-    reporter.query,
-    authoriser.query,
+    patient.identifier,
+    specimen.identifier,
+    specimen.identifier,
+    reporter.identifier,
+    authoriser.identifier,
   );
-  const serviceRequest = serviceRequestAndId(form.sample, patient.query, plan.id, reporter.query, specimen.query);
+  const serviceRequest = serviceRequestAndId(
+    form.sample,
+    patient.identifier,
+    plan.id,
+    reporter.identifier,
+    specimen.identifier,
+  );
   const report = reportAndId(
     form.result,
     form.sample,
-    patient.query,
-    reporter.query,
-    authoriser.query,
-    org.query,
-    specimen.query,
-    variants.map((variant) => variant.query),
+    patient.identifier,
+    reporter.identifier,
+    authoriser.identifier,
+    org.identifier,
+    specimen.identifier,
+    variants.map((variant) => variant.identifier),
   );
   return {
     id: uuidv4(),
     resourceType: "Bundle",
     type: "batch",
     entry: [
-      createEntry(patient.resource, patient.query),
-      createEntry(org.resource, org.query),
-      createEntry(specimen.resource, specimen.query),
+      createEntry(patient.resource, patient.identifier),
+      createEntry(org.resource, org.identifier),
+      createEntry(specimen.resource, specimen.identifier),
       createEntry(authoriser.resource),
       createEntry(reporter.resource),
-      createEntry(overallInterpretation.resource, overallInterpretation.query),
-      ...variants.map((variant) => createEntry(variant.resource, variant.query)),
+      createEntry(overallInterpretation.resource, overallInterpretation.identifier),
+      ...variants.map((variant) => createEntry(variant.resource, variant.identifier)),
       createEntry(furtherTesting.resource),
       createEntry(plan.resource),
       createEntry(serviceRequest.resource),
@@ -105,7 +117,7 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]) 
  *
  * If identifier is given then the method will update or create, otherwise only create.
  * @param resource resource to send
- * @param identifier identifier used to query on (update if exists or create if not)
+ * @param identifier identifier used to identifier on (update if exists or create if not)
  */
 const createEntry = (resource: Resource, identifier?: string) => {
   let requestInfo = { method: "POST", url: resource.resourceType };

@@ -20,10 +20,9 @@ import {
   Task,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import {
+  createIdentifier,
   createPatientObservation,
   generatedNarrative,
-  getSystemIdentifier,
-  goshIdentifier,
   makeGoshAssigner,
   observationComponent,
   reference,
@@ -36,11 +35,11 @@ import { RequiredCoding } from "../code_systems/types";
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
 /**
- * Resource and reference query to the resource.
+ * Resource and reference identifier to the resource.
  */
-export type ResourceAndQuery = {
+export type ResourceAndIdentifier = {
   resource: Resource;
-  query: string;
+  identifier: string;
 };
 
 type ResourceAndId = {
@@ -51,14 +50,14 @@ type ResourceAndId = {
 /**
  * Create a FHIR patient object from form data
  * @param form patient data
- * @param organisationQuery used to link resource
+ * @param organisationIdentifier used to link resource
  */
-export const patientAndQuery = (form: PatientSchema, organisationQuery: string): ResourceAndQuery => {
+export const patientAndIdentifier = (form: PatientSchema, organisationIdentifier: string): ResourceAndIdentifier => {
   const patient = new Patient();
   patient.active = true;
   patient.gender = form.gender;
   patient.name = [{ family: form.lastName, given: [form.firstName] }];
-  const identifier = goshIdentifier(form.mrn, makeGoshAssigner("MRN"));
+  const identifier = createIdentifier(form.mrn, makeGoshAssigner("MRN"));
 
   patient.identifier = [
     identifier,
@@ -83,13 +82,13 @@ export const patientAndQuery = (form: PatientSchema, organisationQuery: string):
   patient.birthDate = form.dateOfBirth;
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
-  patient.managingOrganization = reference("Organization", organisationQuery);
-  return { query: getSystemIdentifier(identifier), resource: patient };
+  patient.managingOrganization = reference("Organization", organisationIdentifier);
+  return { identifier: identifier.value, resource: patient };
 };
 
-export const organisationAndQuery = (form: AddressSchema): ResourceAndQuery => {
+export const organisationAndIdentifier = (form: AddressSchema): ResourceAndIdentifier => {
   const org = new Organization();
-  const identifier = goshIdentifier(GOSH_GENETICS_IDENTIFIER);
+  const identifier = createIdentifier(GOSH_GENETICS_IDENTIFIER);
   org.identifier = [identifier];
   org.resourceType = "Organization";
   org.active = true;
@@ -117,13 +116,13 @@ export const organisationAndQuery = (form: AddressSchema): ResourceAndQuery => {
   ];
   org.text = generatedNarrative(form.name);
 
-  return { query: getSystemIdentifier(identifier), resource: org };
+  return { identifier: identifier.value, resource: org };
 };
 
 export const practitionersAndQueries = (result: ReportDetailSchema) => {
   return {
-    authoriser: practitionerAndQuery(result.authorisingScientist, result.authorisingScientistTitle, "auth"),
-    reporter: practitionerAndQuery(result.reportingScientist, result.reportingScientistTitle, "report"),
+    authoriser: practitionerAndIdentifier(result.authorisingScientist, result.authorisingScientistTitle, "auth"),
+    reporter: practitionerAndIdentifier(result.reportingScientist, result.reportingScientistTitle, "report"),
   };
 };
 
@@ -137,7 +136,7 @@ type ScientistRole = "auth" | "report";
  * @param title job title within the laboratory
  * @param role role in the reporting process
  */
-const practitionerAndQuery = (fullName: string, title: string, role: ScientistRole): ResourceAndQuery => {
+const practitionerAndIdentifier = (fullName: string, title: string, role: ScientistRole): ResourceAndIdentifier => {
   const nameSplit = fullName.split(/\s/g);
   const firstName = nameSplit[0];
   const lastName = nameSplit.slice(1).join(" ");
@@ -151,48 +150,48 @@ const practitionerAndQuery = (fullName: string, title: string, role: ScientistRo
   practitioner.resourceType = "Practitioner";
   practitioner.active = true;
   const normalisedIdentifier = `${fullName}_${role}`.replaceAll(/\s/g, "").toLowerCase();
-  const identifier = goshIdentifier(normalisedIdentifier);
+  const identifier = createIdentifier(normalisedIdentifier);
   practitioner.identifier = [identifier];
   practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official, text: roleText }];
   practitioner.qualification = [{ code: { text: title } }];
 
-  return { query: getSystemIdentifier(identifier), resource: practitioner };
+  return { identifier: identifier.value, resource: practitioner };
 };
 
 /**
  * Create specimen resource from form data and link it to the patient.
  * @param sample form data
- * @param patientQuery used to link resource
+ * @param patientIdentifier used to link resource
  */
-export const specimenAndQuery = (sample: SampleSchema, patientQuery: string): ResourceAndQuery => {
+export const specimenAndIdentifier = (sample: SampleSchema, patientIdentifier: string): ResourceAndIdentifier => {
   const specimen = new Specimen();
   specimen.resourceType = "Specimen";
   specimen.receivedTime = parseDateTime(sample.receivedDateTime).toJSDate();
   if (sample.collectionDateTime !== undefined) {
     specimen.collection = { collectedDateTime: parseDateTime(sample.collectionDateTime).toISO() };
   }
-  const identifier = goshIdentifier(sample.specimenCode, { id: "specimen id" });
+  const identifier = createIdentifier(sample.specimenCode, { id: "specimen id" });
   specimen.identifier = [identifier];
   specimen.type = {
     coding: [codedValue(sampleTypes, sample.specimenType)],
   };
-  specimen.subject = reference("Patient", patientQuery);
+  specimen.subject = reference("Patient", patientIdentifier);
 
-  return { query: getSystemIdentifier(identifier), resource: specimen };
+  return { identifier: identifier.value, resource: specimen };
 };
 
-export const createNullVariantAndQuery = (
-  patientQuery: string,
-  specimenQuery: string,
+export const createNullVariantAndIdentifier = (
+  patientIdentifier: string,
+  specimenIdentifier: string,
   specimenBarcode: string,
-  reporterQuery: string,
-  authoriserQuery: string,
-): ResourceAndQuery => {
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
+): ResourceAndIdentifier => {
   const obs = createPatientObservation(
-    patientQuery,
-    specimenQuery,
-    reporterQuery,
-    authoriserQuery,
+    patientIdentifier,
+    specimenIdentifier,
+    reporterIdentifier,
+    authoriserIdentifier,
     "69548-6",
     "Genetic variant assessment",
   );
@@ -202,25 +201,25 @@ export const createNullVariantAndQuery = (
       text: "No variants reported",
     },
   ];
-  const identifier = goshIdentifier(`${specimenBarcode}$null:null`, { id: "specimenBarcode$transcript:genomicHGVS" });
+  const identifier = createIdentifier(`${specimenBarcode}$null:null`, { id: "specimenBarcode$transcript:genomicHGVS" });
   obs.identifier = [identifier];
 
-  return { query: getSystemIdentifier(identifier), resource: obs };
+  return { identifier: identifier.value, resource: obs };
 };
 
-export const interpretationAndQuery = (
+export const interpretationAndIdentifier = (
   result: ReportDetailSchema,
-  patientQuery: string,
-  specimenQuery: string,
+  patientIdentifier: string,
+  specimenIdentifier: string,
   specimenBarcode: string,
-  reporterQuery: string,
-  authoriserQuery: string,
-): ResourceAndQuery => {
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
+): ResourceAndIdentifier => {
   const obs = createPatientObservation(
-    patientQuery,
-    specimenQuery,
-    reporterQuery,
-    authoriserQuery,
+    patientIdentifier,
+    specimenIdentifier,
+    reporterIdentifier,
+    authoriserIdentifier,
     "51968-6",
     "Genetic disease analysis overall interpretation",
   );
@@ -238,28 +237,28 @@ export const interpretationAndQuery = (
     },
   ];
   obs.valueString = result.resultSummary;
-  const identifier = goshIdentifier(`${specimenBarcode}$overall-interpretation`, {
+  const identifier = createIdentifier(`${specimenBarcode}$overall-interpretation`, {
     id: "{specimenBarcode}$overall-interpretation",
   });
   obs.identifier = [identifier];
 
-  return { query: getSystemIdentifier(identifier), resource: obs };
+  return { identifier: identifier.value, resource: obs };
 };
 
-export const variantAndQuery = (
+export const variantAndIdentifier = (
   variant: VariantSchema,
   reportedGenes: RequiredCoding[],
-  patientQuery: string,
-  specimenQuery: string,
+  patientIdentifier: string,
+  specimenIdentifier: string,
   specimenBarcode: string,
-  reporterQuery: string,
-  authoriserQuery: string,
-): ResourceAndQuery => {
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
+): ResourceAndIdentifier => {
   const obs = createPatientObservation(
-    patientQuery,
-    specimenQuery,
-    reporterQuery,
-    authoriserQuery,
+    patientIdentifier,
+    specimenIdentifier,
+    reporterIdentifier,
+    authoriserIdentifier,
     "69548-6",
     "Genetic variant assessment",
   );
@@ -368,16 +367,16 @@ export const variantAndQuery = (
     });
   }
 
-  const identifier = goshIdentifier(`${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`);
+  const identifier = createIdentifier(`${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`);
   obs.identifier = [identifier];
 
-  return { query: getSystemIdentifier(identifier), resource: obs };
+  return { identifier: identifier.value, resource: obs };
 };
 
 export const planDefinitionAndId = (
   sample: SampleSchema,
   report: ReportDetailSchema,
-  patientQuery: string,
+  patientIdentifier: string,
 ): ResourceAndId => {
   const plan = new PlanDefinition();
   plan.id = uuidv4();
@@ -402,12 +401,12 @@ export const planDefinitionAndId = (
       },
     ];
   }
-  plan.subjectReference = reference("Patient", patientQuery);
+  plan.subjectReference = reference("Patient", patientIdentifier);
 
   return { id: plan.id, resource: plan };
 };
 
-export const furtherTestingAndId = (report: ReportDetailSchema, patientQuery: string): ResourceAndId => {
+export const furtherTestingAndId = (report: ReportDetailSchema, patientIdentifier: string): ResourceAndId => {
   const task = new Task();
   task.id = uuidv4();
   task.resourceType = "Task";
@@ -419,24 +418,24 @@ export const furtherTestingAndId = (report: ReportDetailSchema, patientQuery: st
     };
   }
   task.description = report.furtherTesting;
-  task.for = reference("Patient", patientQuery);
+  task.for = reference("Patient", patientIdentifier);
   return { id: task.id, resource: task };
 };
 
 /**
  * Create a service request resource from form data and dependent references.
  * @param sample form data for sample
- * @param patientQuery to link the resource
+ * @param patientIdentifier to link the resource
  * @param planId id for PlanDefinition
- * @param practitionerQuery to link the resource for the reporting scientist
- * @param specimenQuery to link the resource
+ * @param practitionerIdentifier to link the resource for the reporting scientist
+ * @param specimenIdentifier to link the resource
  */
 export const serviceRequestAndId = (
   sample: SampleSchema,
-  patientQuery: string,
+  patientIdentifier: string,
   planId: string,
-  practitionerQuery: string,
-  specimenQuery: string,
+  practitionerIdentifier: string,
+  specimenIdentifier: string,
 ): ResourceAndId => {
   const request = new ServiceRequest();
   request.resourceType = "ServiceRequest";
@@ -457,7 +456,7 @@ export const serviceRequestAndId = (
       ],
     },
   ];
-  request.subject = reference("Patient", patientQuery);
+  request.subject = reference("Patient", patientIdentifier);
   request.performerType = {
     coding: [
       {
@@ -467,7 +466,7 @@ export const serviceRequestAndId = (
       },
     ],
   };
-  request.performer = [reference("Practitioner", practitionerQuery)];
+  request.performer = [reference("Practitioner", practitionerIdentifier)];
   request.reasonCode = [
     {
       coding: [codedValue(diseases, sample.reasonForTest)],
@@ -475,7 +474,7 @@ export const serviceRequestAndId = (
     },
   ];
 
-  request.specimen = [reference("Specimen", specimenQuery)];
+  request.specimen = [reference("Specimen", specimenIdentifier)];
 
   return { id: request.id, resource: request };
 };
@@ -483,11 +482,11 @@ export const serviceRequestAndId = (
 export const reportAndId = (
   result: ReportDetailSchema,
   sample: SampleSchema,
-  patientQuery: string,
-  reporterQuery: string,
-  authoriserQuery: string,
-  organisationQuery: string,
-  specimenQuery: string,
+  patientIdentifier: string,
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
+  organisationIdentifier: string,
+  specimenIdentifier: string,
   resultIds: string[],
 ): ResourceAndId => {
   const report = new DiagnosticReport();
@@ -496,11 +495,14 @@ export const reportAndId = (
   report.effectiveDateTime = result.authorisingDate;
   report.resourceType = "DiagnosticReport";
   report.status = DiagnosticReport.StatusEnum.Final;
-  report.subject = reference("Patient", patientQuery);
-  report.specimen = [reference("Specimen", specimenQuery)];
-  report.performer = [reference("Organization", organisationQuery)];
+  report.subject = reference("Patient", patientIdentifier);
+  report.specimen = [reference("Specimen", specimenIdentifier)];
+  report.performer = [reference("Organization", organisationIdentifier)];
   report.result = resultIds.map((resultId) => reference("Observation", resultId));
-  report.resultsInterpreter = [reference("Practitioner", reporterQuery), reference("Practitioner", authoriserQuery)];
+  report.resultsInterpreter = [
+    reference("Practitioner", reporterIdentifier),
+    reference("Practitioner", authoriserIdentifier),
+  ];
   report.code = {
     coding: [codedValue(diseases, sample.reasonForTest)],
   };
