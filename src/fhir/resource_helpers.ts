@@ -57,7 +57,6 @@ export function generatedNarrative(...parts: string[]) {
  * Create minimal patient observation for FHIR bundle.
  *
  * Used for both variant observations and overall interpretation
- * @param obsId Id for the observation
  * @param patientQuery to link the resource with
  * @param specimenQuery to link the resource with
  * @param reporterQuery to link the resource with
@@ -66,7 +65,6 @@ export function generatedNarrative(...parts: string[]) {
  * @param loincDisplay display in LOINC system
  */
 export function createPatientObservation(
-  obsId: string,
   patientQuery: string,
   specimenQuery: string,
   reporterQuery: string,
@@ -75,7 +73,6 @@ export function createPatientObservation(
   loincDisplay: string,
 ) {
   const obs = new Observation();
-  obs.id = obsId;
   obs.resourceType = "Observation";
   obs.status = Observation.StatusEnum.Final;
   obs.code = {

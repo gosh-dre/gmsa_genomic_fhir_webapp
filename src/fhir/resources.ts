@@ -55,7 +55,6 @@ type ResourceAndId = {
  */
 export const patientAndQuery = (form: PatientSchema, organisationQuery: string): ResourceAndQuery => {
   const patient = new Patient();
-  patient.id = uuidv4();
   patient.active = true;
   patient.gender = form.gender;
   patient.name = [{ family: form.lastName, given: [form.firstName] }];
@@ -90,7 +89,6 @@ export const patientAndQuery = (form: PatientSchema, organisationQuery: string):
 
 export const organisationAndQuery = (form: AddressSchema): ResourceAndQuery => {
   const org = new Organization();
-  org.id = uuidv4();
   const identifier = goshIdentifier(GOSH_GENETICS_IDENTIFIER);
   org.identifier = [identifier];
   org.resourceType = "Organization";
@@ -143,14 +141,13 @@ const practitionerAndQuery = (fullName: string, title: string, role: ScientistRo
   const nameSplit = fullName.split(/\s/g);
   const firstName = nameSplit[0];
   const lastName = nameSplit.slice(1).join(" ");
-  const practitioner = new Practitioner();
 
   let roleText = "Reported By";
   if (role === "auth") {
     roleText = "Authorized By";
   }
 
-  practitioner.id = uuidv4();
+  const practitioner = new Practitioner();
   practitioner.resourceType = "Practitioner";
   practitioner.active = true;
   const normalisedIdentifier = `${fullName}_${role}`.replaceAll(/\s/g, "").toLowerCase();
@@ -169,7 +166,6 @@ const practitionerAndQuery = (fullName: string, title: string, role: ScientistRo
  */
 export const specimenAndQuery = (sample: SampleSchema, patientQuery: string): ResourceAndQuery => {
   const specimen = new Specimen();
-  specimen.id = uuidv4();
   specimen.resourceType = "Specimen";
   specimen.receivedTime = parseDateTime(sample.receivedDateTime).toJSDate();
   if (sample.collectionDateTime !== undefined) {
@@ -193,7 +189,6 @@ export const createNullVariantAndQuery = (
   authoriserQuery: string,
 ): ResourceAndQuery => {
   const obs = createPatientObservation(
-    uuidv4(),
     patientQuery,
     specimenQuery,
     reporterQuery,
@@ -221,9 +216,7 @@ export const interpretationAndQuery = (
   reporterQuery: string,
   authoriserQuery: string,
 ): ResourceAndQuery => {
-  const obsId = uuidv4();
   const obs = createPatientObservation(
-    obsId,
     patientQuery,
     specimenQuery,
     reporterQuery,
@@ -262,9 +255,7 @@ export const variantAndQuery = (
   reporterQuery: string,
   authoriserQuery: string,
 ): ResourceAndQuery => {
-  const obsId = uuidv4();
   const obs = createPatientObservation(
-    obsId,
     patientQuery,
     specimenQuery,
     reporterQuery,
