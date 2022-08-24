@@ -8,8 +8,8 @@ import {
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { Uri } from "@smile-cdr/fhirts/src/FHIR-R4/classes/uri";
 
-export const reference = (refType: string, id: string): Reference => {
-  return { reference: `${refType}/${id}`, type: refType };
+export const reference = (refType: string, identifierQuery: string): Reference => {
+  return { reference: `${refType}?identifier=${identifierQuery}`, type: refType };
 };
 
 type SystemIdentifier = { value: string; system: Uri };
@@ -58,19 +58,19 @@ export function generatedNarrative(...parts: string[]) {
  *
  * Used for both variant observations and overall interpretation
  * @param obsId Id for the observation
- * @param patientId patient Id
- * @param specimenId specimen Id
- * @param reporterId reporter Id
- * @param authoriserId authoriser Id
+ * @param patientQuery to link the resource with
+ * @param specimenQuery to link the resource with
+ * @param reporterQuery to link the resource with
+ * @param authoriserQuery to link the resource with
  * @param loincCode code in LOINC system
  * @param loincDisplay display in LOINC system
  */
 export function createPatientObservation(
   obsId: string,
-  patientId: string,
-  specimenId: string,
-  reporterId: string,
-  authoriserId: string,
+  patientQuery: string,
+  specimenQuery: string,
+  reporterQuery: string,
+  authoriserQuery: string,
   loincCode: string,
   loincDisplay: string,
 ) {
@@ -87,9 +87,9 @@ export function createPatientObservation(
       },
     ],
   };
-  obs.subject = reference("Patient", patientId);
-  obs.specimen = reference("Specimen", specimenId);
-  obs.performer = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
+  obs.subject = reference("Patient", patientQuery);
+  obs.specimen = reference("Specimen", specimenQuery);
+  obs.performer = [reference("Practitioner", reporterQuery), reference("Practitioner", authoriserQuery)];
   return obs;
 }
 
