@@ -4,7 +4,7 @@ import { parseDateTime, today } from "../../utils/dateTime";
 import { DateTime, Interval } from "luxon";
 
 const optionalString = Yup.string().optional();
-const requiredString = Yup.string().required();
+const requiredString = Yup.string().required("This is a required field");
 
 const date = Yup.string()
   .test("valid-date", "Please enter a valid date", (value) => !value || DateTime.fromISO(value).isValid)
@@ -13,7 +13,7 @@ const date = Yup.string()
     "Please enter a valid date in the past",
     (value) => !value || Interval.fromDateTimes(DateTime.fromISO(value), today).isValid,
   );
-export const requiredDate = date.required();
+export const requiredDate = date.required("This is a required field");
 
 export const dateTime = Yup.string()
   .test("valid-date", "Please enter a valid date in DD/MM/YYYY or date time in DD/MM/YYYY HH:mm (24 hour)", (value) => {
@@ -42,7 +42,7 @@ export type PatientSchema = Yup.InferType<typeof patientSchema>;
 
 export const addressSchema = Yup.object({
   name: requiredString,
-  streetAddress: Yup.array().of(Yup.string().required()).required(),
+  streetAddress: requiredString,
   city: requiredString,
   postCode: requiredString,
   country: requiredString,

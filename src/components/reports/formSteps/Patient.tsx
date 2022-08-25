@@ -5,7 +5,7 @@ import LabSelect from "../../UI/LabSelect";
 import FieldSet from "../FieldSet";
 
 interface Props {
-  setFieldValue: (field: string, value: string | string[]) => void;
+  setFieldValue: (field: string, value: string) => void;
 }
 
 const genderOptions = Object.values(FhirPatient.GenderEnum).map((value) => {
@@ -20,11 +20,10 @@ const Patient: FC<Props> = (props) => {
   const setSelectedLabHandler = (lab: string) => {
     if (lab === "gosh") {
       setFieldValue("address.name", "London North Genomic Laboratory Hub");
-      setFieldValue("address.streetAddress", [
-        "Great Ormond Street Hospital for Children NHS Foundation Trust",
-        "Levels 4-6 Barclay House",
-        "37 Queen Square",
-      ]);
+      setFieldValue(
+        "address.streetAddress",
+        "Great Ormond Street Hospital for Children NHS Foundation Trust, Levels 4-6 Barclay House, 37 Queen Square",
+      );
       setFieldValue("address.city", "London");
       setFieldValue("address.postCode", "WC1N 3BH");
       setFieldValue("address.country", "UK");

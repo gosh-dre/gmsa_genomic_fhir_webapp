@@ -105,7 +105,7 @@ export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
   org.name = form.name;
   org.address = [
     {
-      line: form.streetAddress,
+      line: form["streetAddress"].split(","), // split the string to maintain Array type and conform with FHIR schema
       city: form.city,
       postalCode: form.postCode,
       country: form.country,
