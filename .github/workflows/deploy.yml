@@ -1,0 +1,20 @@
+name: Deploy to github pages
+
+on:
+  # only try to run when test actions have completed on main
+  workflow_run:
+    workflows: [ "Tests" ]
+    branches: [ main ]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: test-env
+    # only run steps if the workflow didn't fail
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        run: npm deploy
