@@ -2,10 +2,17 @@
 
 Prototype for FHIR genomics reports.
 
+> **Note**
+> If you have a Great Ormond St. Hospital account and have been granted access to the
+> Aridhia synthetic FHIR server you can view the current version of the application on
+> [the GitHub.io page](https://gosh-dre.github.io/gmsa_genomic_fhir_webapp/#/).
 
-## Running a development version 
+> **Warning**
+> This is only for testing, and no clinical data should be entered
 
-### Dependencies 
+## Running a development version
+
+### Dependencies
 
 The project is built using React and requires an up-to-date version of node and npm to be installed.
 These can be checked on the command line on unix systems:
@@ -13,16 +20,17 @@ These can be checked on the command line on unix systems:
 ```shell
 node -v
 ```
+
 | v17.4.0
 
 ```shell
 npm -v
 ```
+
 | 8.3.1
 
-
-
 To setup a local version clone the repository and install the npm dependencies
+
 ```shell
 git clone git@github.com:gosh-dre/gmsa_genomic_fhir_webapp.git
 cd gmsa_genomic_fhir_webapp
@@ -31,15 +39,17 @@ npm install
 
 ## Configuration
 
-From the root of the project, copy the test env file to the root directory so that the application can use the correct environmental variables. 
-The `.env` file is ignored by git so won't be accidentally committed.  
+From the root of the project, copy the test env file to the root directory so that the application can use the correct
+environmental variables.
+The `.env` file is ignored by git so won't be accidentally committed.
 
 ```shell
 cp env/dev.env .env 
 ```
 
-This file will need to be edited to allow automated testing to determine if the LOINC api is returning different value sets.
-You may also want to edit other variables 
+This file will need to be edited to allow automated testing to determine if the LOINC api is returning different value
+sets.
+You may also want to edit other variables
 
 ## Development services
 
@@ -53,7 +63,6 @@ docker compose -f docker-compose.dev.yml up -d
     ⠿ Network fhir-report_default      Created                                                                                                                                                                                           0.1s
     ⠿ Container fhir-report-fhir-db-1  Started                                                                                                                                                                                           0.7s
     ⠿ Container fhir-report-fhir-1     Started                                                                                                                                                                                           0.8s
-
 
 The status of the services using `ps`
 
