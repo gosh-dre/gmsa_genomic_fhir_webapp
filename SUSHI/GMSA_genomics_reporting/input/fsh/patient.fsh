@@ -1,6 +1,6 @@
-Profile: GenomicsReport
+Profile: GenomicsPatient
 Parent: Patient
-Id: GenomicReportPatient
+Id: GenomicsPatient
 Description: "Patient for genomics report"
 * name 1..* MS
 * active = true
@@ -12,7 +12,7 @@ Description: "Patient for genomics report"
 * managingOrganization only Reference(Organization)
 
 Instance: JamesPond
-InstanceOf: GenomicsReport
+InstanceOf: GenomicsPatient
 Description: "An example of a patient"
 * name
   * given[0] = "James"
@@ -26,7 +26,7 @@ Description: "An example of a patient"
 * identifier[+].system = GoshPatientIdentifiers#gosh-family-number
 * identifier[=].value = "Z60791509"
 * birthDate = "2016-06-01"
-* managingOrganization = Reference(TestOrg)
+* managingOrganization = Reference(GoshOrganization)
 
 // define local CodeSystem and from that ValueSets
 CodeSystem:  GoshPatientIdentifiers
