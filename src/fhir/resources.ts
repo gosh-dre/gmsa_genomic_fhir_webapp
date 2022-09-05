@@ -151,7 +151,7 @@ const practitionerAndId = (fullName: string, title: string, role: ScientistRole)
   practitioner.identifier = [{ value: identifier }];
   practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official, text: roleText }];
   practitioner.qualification = [{ code: { text: title } }];
-
+  // TODO: add issuer
   return { identifier: `${fullName}_${role}`, id: practitioner.id, resource: practitioner };
 };
 
