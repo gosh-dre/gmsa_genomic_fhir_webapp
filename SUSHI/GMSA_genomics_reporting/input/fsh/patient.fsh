@@ -4,11 +4,11 @@ Id: GenomicsPatient
 Description: "Patient for genomics report"
 * name 1..* MS
 * active = true
-* gender MS
+* gender 1..1 MS
 * identifier 1..* MS
 * identifier.system from GoshPatientIdentifiers
-* identifier.value MS
-* birthDate MS
+* identifier.value 1..1 MS
+* birthDate 1..1 MS
 * managingOrganization only Reference(Organization)
 
 Instance: JamesPond

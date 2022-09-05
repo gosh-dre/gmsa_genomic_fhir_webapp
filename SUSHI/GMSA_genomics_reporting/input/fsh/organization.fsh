@@ -3,12 +3,12 @@ Parent: Organization
 Id: GenomicsOrganization
 Description: "Organization for genomics report"
 * active = true
-* name MS
+* name 1..1 MS
 * address 1..1 MS
 * address.line 1..* MS
-* address.city MS
-* address.postalCode MS
-* address.country MS
+* address.city 1..1 MS
+* address.postalCode 1..1 MS
+* address.country 1..1 MS
 
 Instance: GoshOrganization
 InstanceOf: GenomicsOrganization
