@@ -7,8 +7,44 @@ import { geneCoding } from "../code_systems/hgnc";
 const fhir = new Fhir();
 
 const reportedGenes = [geneCoding("HGNC:4389", "GNA01")];
+const FHIR_URL = process.env.REACT_APP_FHIR_URL;
 
 describe("FHIR resources", () => {
+  test("fhir setup empty", async () => {
+    // Check that the api has no data in it before bundles are created
+    // i.e before a user inputs data - check database has nothing in it
+
+    const response = await fetch(`${FHIR_URL}/Patient`);
+    if (!response.ok) {
+      console.error(response.status);
+    }
+    const data = await response.json();
+    expect(data).toEqual([0, [], null, []]);
+  });
+
+  test("bundle creates patient", async () => {
+    const bundle = createBundle(initialValues, reportedGenes);
+    console.log(JSON.stringify(bundle.entry[0]));
+    const createPatient = await fetch(`${FHIR_URL}/`, {
+      method: "POST",
+      body: JSON.stringify(bundle),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!createPatient.ok) {
+      console.error(createPatient.body);
+    }
+    const postData = await createPatient.json();
+    console.log(postData);
+
+    const response = await fetch(`${FHIR_URL}/Patient`);
+    if (!response.ok) {
+      console.error(response.status);
+    }
+    const data = response.body;
+    expect(data).not.toEqual([0, [], null, []]);
+  });
   /**
    * Given that form data has been correctly populated
    * When a FHIR bundle is created
