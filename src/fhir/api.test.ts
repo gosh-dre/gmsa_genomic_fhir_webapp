@@ -7,19 +7,31 @@ import { geneCoding } from "../code_systems/hgnc";
 const fhir = new Fhir();
 
 const reportedGenes = [geneCoding("HGNC:4389", "GNA01")];
-const FHIR_URL = process.env.REACT_APP_FHIR_URL;
+const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
+
+const getPatients = async () => {
+  const url = `${FHIR_URL}/Patient`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    console.error(response.statusText);
+    console.error(response.body);
+    throw new Error(response.statusText);
+  }
+  return await response.json();
+};
 
 describe("FHIR resources", () => {
+  beforeEach(() => {
+    fetchMock.dontMock();
+  });
+
   test("fhir setup empty", async () => {
     // Check that the api has no data in it before bundles are created
     // i.e before a user inputs data - check database has nothing in it
 
-    const response = await fetch(`${FHIR_URL}/Patient`);
-    if (!response.ok) {
-      console.error(response.status);
-    }
-    const data = await response.json();
-    expect(data).toEqual([0, [], null, []]);
+    const patientData = await getPatients();
+    expect("total" in patientData).toBeTruthy();
+    expect(patientData["total"]).toEqual(0);
   });
 
   test("bundle creates patient", async () => {
@@ -38,12 +50,8 @@ describe("FHIR resources", () => {
     const postData = await createPatient.json();
     console.log(postData);
 
-    const response = await fetch(`${FHIR_URL}/Patient`);
-    if (!response.ok) {
-      console.error(response.status);
-    }
-    const data = response.body;
-    expect(data).not.toEqual([0, [], null, []]);
+    const patientData = await getPatients();
+    expect(patientData["total"]).toEqual(1);
   });
   /**
    * Given that form data has been correctly populated
