@@ -31,7 +31,7 @@ export const createIdentifier = (value: string, otherFields?: Identifier) => {
 export function generatedNarrative(...parts: string[]) {
   return {
     status: Narrative.StatusEnum.Generated,
-    div: `<div xmlns=\\"http://www.w3.org/1999/xhtml\\">${parts.join(" ")} from FHIR genomics app</div>`,
+    div: `<div xmlns="http://www.w3.org/1999/xhtml">${parts.join(" ")} from FHIR genomics app</div>`,
   };
 }
 
