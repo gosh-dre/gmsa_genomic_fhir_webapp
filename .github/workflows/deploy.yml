@@ -1,10 +1,10 @@
 name: Deploy to github pages
 
 on:
-  # only try to run when test actions have completed on main
+  # only try to run when test actions have completed on main or deploy_github for testing
   workflow_run:
     workflows: [ "Tests" ]
-    branches: [ main ]
+    branches: [ main, deploy_github ]
     types:
       - completed
 
@@ -25,4 +25,8 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
+      - name: Setup mock git user
+        run: |
+          git config --global user.email "gmsa@fhir.com"
+          git config --global user.name "Unused account"
       - run: npm run deploy
