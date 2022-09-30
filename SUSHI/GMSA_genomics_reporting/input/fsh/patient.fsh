@@ -41,7 +41,7 @@ Description:  "Patient-level identifiers at GOSH"
 ValueSet: GoshPatientIdentifiers
 Title: "GOSH patient identifiers"
 Description:  "Patient-level identifiers at GOSH"
-* $NhsNaming#nhs-number
+* $NHS_NAMING#nhs-number
 * GoshPatientIdentifiers#gosh-mrn
 * GoshPatientIdentifiers#gosh-family-number
 

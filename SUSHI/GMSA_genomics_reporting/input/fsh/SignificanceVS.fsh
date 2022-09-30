@@ -1,5 +1,3 @@
-Alias: $LOINC = http://loinc.org
-
 ValueSet : SignificanceVS
 Id: gosh-significance-valueset
 Title: "The codes for clinical significance in genomic report"

@@ -1,5 +1,3 @@
-Alias: $LOINC = http://loinc.org
-
 ValueSet : InheritanceVS
 Id: gosh-inheritance-valueset
 Title: "The codes for inheritance based on family history in genomic report"
@@ -7,7 +5,7 @@ Description: "Values for inheritance based on family history in genomic report f
 * ^status = #draft
 * include codes from valueset $LOINC
 * include codes from system $LOINC where concept is-a #79742-3
-* include codes from system http://loinc.org
+* include codes from system $LOINC
 * $LOINC#LA24640-7 "Autosomal dominant"
 * $LOINC#LA24641-5 "Autosomal recessive"
 * $LOINC#LA24722-3 "Family history is unknown or not recorded"
