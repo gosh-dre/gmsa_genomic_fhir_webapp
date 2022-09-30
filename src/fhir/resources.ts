@@ -20,6 +20,7 @@ import {
   Task,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import {
+  createIdentifier,
   createPatientObservation,
   generatedNarrative,
   makeGoshAssigner,
@@ -34,30 +35,32 @@ import { RequiredCoding } from "../code_systems/types";
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
 /**
- * Resource and reference ID for referring to the resource within a bundle.
+ * Resource and reference identifier to the resource.
  */
+export type ResourceAndIdentifier = {
+  resource: Resource;
+  identifier: string;
+};
+
 type ResourceAndId = {
   resource: Resource;
   id: string;
 };
 
-export type ResourceAndIds = ResourceAndId & {
-  identifier: string;
-};
-
 /**
  * Create a FHIR patient object from form data
  * @param form patient data
- * @param organisationId uuid for the organisation
+ * @param organisationIdentifier used to link resource
  */
-export const patientAndId = (form: PatientSchema, organisationId: string): ResourceAndIds => {
+export const patientAndIdentifier = (form: PatientSchema, organisationIdentifier: string): ResourceAndIdentifier => {
   const patient = new Patient();
-  patient.id = uuidv4();
   patient.active = true;
   patient.gender = form.gender;
   patient.name = [{ family: form.lastName, given: [form.firstName] }];
+  const identifier = createIdentifier(form.mrn, makeGoshAssigner("MRN"));
+
   patient.identifier = [
-    { value: form.mrn, ...makeGoshAssigner("MRN") },
+    identifier,
     // implementing GOSH's structure, they chose this to represent a family as it doesn't exist in the specification
     {
       extension: [
@@ -79,14 +82,14 @@ export const patientAndId = (form: PatientSchema, organisationId: string): Resou
   patient.birthDate = form.dateOfBirth;
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
-  patient.managingOrganization = reference("Organization", organisationId);
-  return { identifier: form.mrn, id: patient.id, resource: patient };
+  patient.managingOrganization = reference("Organization", organisationIdentifier);
+  return { identifier: identifier.value, resource: patient };
 };
 
-export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
+export const organisationAndIdentifier = (form: AddressSchema): ResourceAndIdentifier => {
   const org = new Organization();
-  org.id = uuidv4();
-  org.identifier = [{ value: GOSH_GENETICS_IDENTIFIER }];
+  const identifier = createIdentifier(GOSH_GENETICS_IDENTIFIER);
+  org.identifier = [identifier];
   org.resourceType = "Organization";
   org.active = true;
   org.type = [
@@ -113,13 +116,13 @@ export const organisationAndId = (form: AddressSchema): ResourceAndIds => {
   ];
   org.text = generatedNarrative(form.name);
 
-  return { identifier: GOSH_GENETICS_IDENTIFIER, id: org.id, resource: org };
+  return { identifier: identifier.value, resource: org };
 };
 
-export const practitionersAndIds = (result: ReportDetailSchema) => {
+export const practitionersAndQueries = (result: ReportDetailSchema) => {
   return {
-    authoriser: practitionerAndId(result.authorisingScientist, result.authorisingScientistTitle, "auth"),
-    reporter: practitionerAndId(result.reportingScientist, result.reportingScientistTitle, "report"),
+    authoriser: practitionerAndIdentifier(result.authorisingScientist, result.authorisingScientistTitle, "auth"),
+    reporter: practitionerAndIdentifier(result.reportingScientist, result.reportingScientistTitle, "report"),
   };
 };
 
@@ -133,64 +136,62 @@ type ScientistRole = "auth" | "report";
  * @param title job title within the laboratory
  * @param role role in the reporting process
  */
-const practitionerAndId = (fullName: string, title: string, role: ScientistRole): ResourceAndIds => {
+const practitionerAndIdentifier = (fullName: string, title: string, role: ScientistRole): ResourceAndIdentifier => {
   const nameSplit = fullName.split(/\s/g);
   const firstName = nameSplit[0];
   const lastName = nameSplit.slice(1).join(" ");
-  const practitioner = new Practitioner();
 
   let roleText = "Reported By";
   if (role === "auth") {
     roleText = "Authorized By";
   }
 
-  practitioner.id = uuidv4();
+  const practitioner = new Practitioner();
   practitioner.resourceType = "Practitioner";
   practitioner.active = true;
-  const identifier = fullName.toLowerCase().replaceAll(/\s/g, "");
-  practitioner.identifier = [{ value: identifier }];
+  const normalisedIdentifier = `${fullName}_${role}`.replaceAll(/\s/g, "").toLowerCase();
+  const identifier = createIdentifier(normalisedIdentifier);
+  practitioner.identifier = [identifier];
   practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official, text: roleText }];
   practitioner.qualification = [{ code: { text: title } }];
 
-  return { identifier: `${fullName}_${role}`, id: practitioner.id, resource: practitioner };
+  return { identifier: identifier.value, resource: practitioner };
 };
 
 /**
  * Create specimen resource from form data and link it to the patient.
  * @param sample form data
- * @param patientId to link the specimen with
+ * @param patientIdentifier used to link resource
  */
-export const specimenAndId = (sample: SampleSchema, patientId: string): ResourceAndIds => {
+export const specimenAndIdentifier = (sample: SampleSchema, patientIdentifier: string): ResourceAndIdentifier => {
   const specimen = new Specimen();
-  specimen.id = uuidv4();
   specimen.resourceType = "Specimen";
   specimen.receivedTime = parseDateTime(sample.receivedDateTime).toJSDate();
   if (sample.collectionDateTime !== undefined) {
     specimen.collection = { collectedDateTime: parseDateTime(sample.collectionDateTime).toISO() };
   }
-  specimen.identifier = [{ value: sample.specimenCode, id: "specimen id" }];
+  const identifier = createIdentifier(sample.specimenCode, { id: "specimen id" });
+  specimen.identifier = [identifier];
   specimen.type = {
     coding: [codedValue(sampleTypes, sample.specimenType)],
   };
-  specimen.subject = reference("Patient", patientId);
+  specimen.subject = reference("Patient", patientIdentifier);
 
-  return { identifier: sample.specimenCode, id: specimen.id, resource: specimen };
+  return { identifier: identifier.value, resource: specimen };
 };
 
-export const createNullVariantAndId = (
-  patientId: string,
-  specimenId: string,
+export const createNullVariantAndIdentifier = (
+  patientIdentifier: string,
+  specimenIdentifier: string,
   specimenBarcode: string,
-  reporterId: string,
-  authoriserId: string,
-): ResourceAndIds => {
-  const obsId = uuidv4();
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
+): ResourceAndIdentifier => {
   const obs = createPatientObservation(
-    obsId,
-    patientId,
-    specimenId,
-    reporterId,
-    authoriserId,
+    patientIdentifier,
+    specimenIdentifier,
+    reporterIdentifier,
+    authoriserIdentifier,
     "69548-6",
     "Genetic variant assessment",
   );
@@ -200,27 +201,25 @@ export const createNullVariantAndId = (
       text: "No variants reported",
     },
   ];
-  const identifier = `${specimenBarcode}$null:null`;
-  obs.identifier = [{ value: identifier, id: "specimenBarcode$transcript:genomicHGVS" }];
+  const identifier = createIdentifier(`${specimenBarcode}$null:null`, { id: "specimenBarcode$transcript:genomicHGVS" });
+  obs.identifier = [identifier];
 
-  return { identifier: identifier, id: obsId, resource: obs };
+  return { identifier: identifier.value, resource: obs };
 };
 
-export const interpretationAndId = (
+export const interpretationAndIdentifier = (
   result: ReportDetailSchema,
-  patientId: string,
-  specimenId: string,
+  patientIdentifier: string,
+  specimenIdentifier: string,
   specimenBarcode: string,
-  reporterId: string,
-  authoriserId: string,
-): ResourceAndIds => {
-  const obsId = uuidv4();
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
+): ResourceAndIdentifier => {
   const obs = createPatientObservation(
-    obsId,
-    patientId,
-    specimenId,
-    reporterId,
-    authoriserId,
+    patientIdentifier,
+    specimenIdentifier,
+    reporterIdentifier,
+    authoriserIdentifier,
     "51968-6",
     "Genetic disease analysis overall interpretation",
   );
@@ -238,28 +237,28 @@ export const interpretationAndId = (
     },
   ];
   obs.valueString = result.resultSummary;
-  const identifier = `${specimenBarcode}$overall-interpretation`;
-  obs.identifier = [{ value: identifier, id: "{specimenBarcode}$overall-interpretation" }];
+  const identifier = createIdentifier(`${specimenBarcode}$overall-interpretation`, {
+    id: "{specimenBarcode}$overall-interpretation",
+  });
+  obs.identifier = [identifier];
 
-  return { identifier: identifier, id: obsId, resource: obs };
+  return { identifier: identifier.value, resource: obs };
 };
 
-export const variantAndId = (
+export const variantAndIdentifier = (
   variant: VariantSchema,
   reportedGenes: RequiredCoding[],
-  patientId: string,
-  specimenId: string,
+  patientIdentifier: string,
+  specimenIdentifier: string,
   specimenBarcode: string,
-  reporterId: string,
-  authoriserId: string,
-): ResourceAndIds => {
-  const obsId = uuidv4();
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
+): ResourceAndIdentifier => {
   const obs = createPatientObservation(
-    obsId,
-    patientId,
-    specimenId,
-    reporterId,
-    authoriserId,
+    patientIdentifier,
+    specimenIdentifier,
+    reporterIdentifier,
+    authoriserIdentifier,
     "69548-6",
     "Genetic variant assessment",
   );
@@ -368,16 +367,16 @@ export const variantAndId = (
     });
   }
 
-  const identifier = `${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`;
-  obs.identifier = [{ value: identifier, id: "{specimenBarcode}${transcript}:{genomicHGVS}" }];
+  const identifier = createIdentifier(`${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`);
+  obs.identifier = [identifier];
 
-  return { identifier: identifier, id: obsId, resource: obs };
+  return { identifier: identifier.value, resource: obs };
 };
 
 export const planDefinitionAndId = (
   sample: SampleSchema,
   report: ReportDetailSchema,
-  patientId: string,
+  patientIdentifier: string,
 ): ResourceAndId => {
   const plan = new PlanDefinition();
   plan.id = uuidv4();
@@ -402,12 +401,12 @@ export const planDefinitionAndId = (
       },
     ];
   }
-  plan.subjectReference = reference("Patient", patientId);
+  plan.subjectReference = reference("Patient", patientIdentifier);
 
   return { id: plan.id, resource: plan };
 };
 
-export const furtherTestingAndId = (report: ReportDetailSchema, patientId: string): ResourceAndId => {
+export const furtherTestingAndId = (report: ReportDetailSchema, patientIdentifier: string): ResourceAndId => {
   const task = new Task();
   task.id = uuidv4();
   task.resourceType = "Task";
@@ -419,24 +418,24 @@ export const furtherTestingAndId = (report: ReportDetailSchema, patientId: strin
     };
   }
   task.description = report.furtherTesting;
-  task.for = reference("Patient", patientId);
+  task.for = reference("Patient", patientIdentifier);
   return { id: task.id, resource: task };
 };
 
 /**
  * Create a service request resource from form data and dependent references.
  * @param sample form data for sample
- * @param patientId id for Patient
+ * @param patientIdentifier to link the resource
  * @param planId id for PlanDefinition
- * @param practitionerId Practitioner Id for the reporting scientist
- * @param specimenId
+ * @param practitionerIdentifier to link the resource for the reporting scientist
+ * @param specimenIdentifier to link the resource
  */
 export const serviceRequestAndId = (
   sample: SampleSchema,
-  patientId: string,
+  patientIdentifier: string,
   planId: string,
-  practitionerId: string,
-  specimenId: string,
+  practitionerIdentifier: string,
+  specimenIdentifier: string,
 ): ResourceAndId => {
   const request = new ServiceRequest();
   request.resourceType = "ServiceRequest";
@@ -457,7 +456,7 @@ export const serviceRequestAndId = (
       ],
     },
   ];
-  request.subject = reference("Patient", patientId);
+  request.subject = reference("Patient", patientIdentifier);
   request.performerType = {
     coding: [
       {
@@ -467,7 +466,7 @@ export const serviceRequestAndId = (
       },
     ],
   };
-  request.performer = [reference("Practitioner", practitionerId)];
+  request.performer = [reference("Practitioner", practitionerIdentifier)];
   request.reasonCode = [
     {
       coding: [codedValue(diseases, sample.reasonForTest)],
@@ -475,7 +474,7 @@ export const serviceRequestAndId = (
     },
   ];
 
-  request.specimen = [reference("Specimen", specimenId)];
+  request.specimen = [reference("Specimen", specimenIdentifier)];
 
   return { id: request.id, resource: request };
 };
@@ -483,11 +482,11 @@ export const serviceRequestAndId = (
 export const reportAndId = (
   result: ReportDetailSchema,
   sample: SampleSchema,
-  patientId: string,
-  reporterId: string,
-  authoriserId: string,
-  organisationId: string,
-  specimenId: string,
+  patientIdentifier: string,
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
+  organisationIdentifier: string,
+  specimenIdentifier: string,
   resultIds: string[],
 ): ResourceAndId => {
   const report = new DiagnosticReport();
@@ -496,11 +495,14 @@ export const reportAndId = (
   report.effectiveDateTime = result.authorisingDate;
   report.resourceType = "DiagnosticReport";
   report.status = DiagnosticReport.StatusEnum.Final;
-  report.subject = reference("Patient", patientId);
-  report.specimen = [reference("Specimen", specimenId)];
-  report.performer = [reference("Organization", organisationId)];
+  report.subject = reference("Patient", patientIdentifier);
+  report.specimen = [reference("Specimen", specimenIdentifier)];
+  report.performer = [reference("Organization", organisationIdentifier)];
   report.result = resultIds.map((resultId) => reference("Observation", resultId));
-  report.resultsInterpreter = [reference("Practitioner", reporterId), reference("Practitioner", authoriserId)];
+  report.resultsInterpreter = [
+    reference("Practitioner", reporterIdentifier),
+    reference("Practitioner", authoriserIdentifier),
+  ];
   report.code = {
     coding: [codedValue(diseases, sample.reasonForTest)],
   };

@@ -8,7 +8,7 @@ function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<FhirAuthoriser />} />
-        <Route path="/add_report" element={<NewReport />} />
+        <Route path="/new_report" element={<NewReport />} />
       </Routes>
     </Layout>
   );
