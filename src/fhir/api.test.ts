@@ -21,22 +21,38 @@ const getPatients = async () => {
 };
 
 describe("FHIR resources", () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     fetchMock.dontMock();
+    const patientData = await getPatients();
+    if (!("entry" in patientData)) {
+      return;
+    }
+    // loop through all patients to delete; patientData with numerous entries
+    const id = patientData.entry[0].resource.id;
+    const response = await fetch(`${FHIR_URL}/Patient/${id}?_cascade=delete`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      console.log(response.statusText);
+      console.log(response.body);
+    }
+    const check = await response.json();
+    console.log(check);
+    await new Promise((r) => setTimeout(r, 500));
   });
 
-  test("fhir setup empty", async () => {
-    // Check that the api has no data in it before bundles are created
-    // i.e before a user inputs data - check database has nothing in it
+  test("clear database on setup", async () => {
+    /**
+     * Before doing tests on the database, we want to clear all its data
+     */
 
-    const patientData = await getPatients();
-    expect("total" in patientData).toBeTruthy();
-    expect(patientData["total"]).toEqual(0);
+    const postDelete = await getPatients();
+    expect("entry" in postDelete).toBeFalsy();
   });
 
   test("bundle creates patient", async () => {
     const bundle = createBundle(initialValues, reportedGenes);
-    console.log(JSON.stringify(bundle.entry[0]));
+
     const createPatient = await fetch(`${FHIR_URL}/`, {
       method: "POST",
       body: JSON.stringify(bundle),
@@ -44,15 +60,15 @@ describe("FHIR resources", () => {
         "Content-Type": "application/json",
       },
     });
-    if (!createPatient.ok) {
-      console.error(createPatient.body);
-    }
-    const postData = await createPatient.json();
-    console.log(postData);
 
+    if (!createPatient.ok) console.error(createPatient.body);
+    const check = await createPatient.json();
+    console.log(check);
     const patientData = await getPatients();
-    expect(patientData["total"]).toEqual(1);
+    expect("entry" in patientData).toBeTruthy();
+    expect(patientData.entry[0].resource.identifier[0].value).toEqual(initialValues.patient.mrn);
   });
+
   /**
    * Given that form data has been correctly populated
    * When a FHIR bundle is created
@@ -63,7 +79,7 @@ describe("FHIR resources", () => {
 
     const output = fhir.validate(bundle);
     console.info("Validation output");
-    console.info(JSON.stringify(output.messages, null, 2));
+    // console.info(JSON.stringify(output.messages, null, 2));
     expect(output.valid).toBeTruthy();
   });
 
@@ -90,7 +106,7 @@ describe("FHIR resources", () => {
     // fhir validation
     const output = fhir.validate(bundle);
     console.info("Validation output");
-    console.info(JSON.stringify(output.messages, null, 2));
+    // console.info(JSON.stringify(output.messages, null, 2));
     expect(output.valid).toBeTruthy();
   });
 });
