@@ -1,4 +1,4 @@
-import { FC, useContext, useRef, useState } from "react";
+import { FC, useContext, useRef, useState, useEffect } from "react";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import * as Yup from "yup";
 import { FhirContext } from "../fhir/FhirContext";
@@ -14,6 +14,7 @@ import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
 import FormStepBtn from "../UI/FormStepBtn";
 import { RequiredCoding } from "../../code_systems/types";
+import ErrorModal from '../UI/ErrorModal';
 
 const PatientAndAddressValidation = Yup.object({
   address: addressSchema.required(),
@@ -49,12 +50,17 @@ type Props = {
 type SetFieldValue = (field: string, value: any, shouldValidate?: boolean) => void;
 
 const ReportForm: FC<Props> = (props: Props) => {
+  const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(0);
   const [reportedGenes, setReportedGenes] = useState<RequiredCoding[]>([]);
   const isLastStep = formStep === steps.length - 1;
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);
+
+	useEffect(() => {
+		setError('test')
+	}, []);
 
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     const bundle = bundleRequest(values, reportedGenes);
@@ -64,7 +70,9 @@ const ReportForm: FC<Props> = (props: Props) => {
     ctx.client
       ?.request(bundle)
       .then((response) => console.debug("Bundle submitted", bundle, response))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error)
+      });
     actions.setSubmitting(false);
   };
 
@@ -104,6 +112,9 @@ const ReportForm: FC<Props> = (props: Props) => {
   };
 
   return (
+    <>
+    <ErrorModal error={error} onClear={() => setError(null)} />
+    
     <Card>
       <h1>Add a new report</h1>
 
@@ -128,6 +139,7 @@ const ReportForm: FC<Props> = (props: Props) => {
       </Formik>
       {result !== "" && <textarea id="resultOutput" role="alert" rows={80} cols={100} defaultValue={result} />}
     </Card>
+    </>
   );
 };
 
