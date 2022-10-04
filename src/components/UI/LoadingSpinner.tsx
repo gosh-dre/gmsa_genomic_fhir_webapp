@@ -4,7 +4,7 @@ import classes from "./LoadingSpinner.module.css"
 
 interface Props {
 	asOverlay: boolean;
-	message: string;
+	message?: string;
 }
 
 const LoadingSpinner: FC<Props> = (props) => {
