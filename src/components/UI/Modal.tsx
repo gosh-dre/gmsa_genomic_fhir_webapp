@@ -7,12 +7,13 @@ import classes from "./Modal.module.css";
 interface ModalOverlayProps {
 	className?: string;
 	headerClass?: string;
-	header?: string;
+	header: string;
 	onSubmit?: () => void | undefined;
 	contentClass?: string;
 	footerClass?: string;
 	footer?: ReactElement;
 	children: ReactElement;
+	isError: boolean;
 }
 
 interface ModalProps extends ModalOverlayProps {
@@ -21,9 +22,13 @@ interface ModalProps extends ModalOverlayProps {
 }
 
 const ModalOverlay: FC<ModalOverlayProps> = (props:ModalOverlayProps) => {
+
+
+	const errorClass = props.isError ? 'error' : 'info';
+
 	const content = (
 		<div className={`${classes.modal} ${classes[`${props.className}`]}`}>
-			<header className={`${classes.modal__header} ${props.headerClass}`}>
+			<header className={`${classes.modal__header} ${props.headerClass} ${classes[`${errorClass}`]}`}>
 				<h2>{props.header}</h2>
 			</header>
 			<form

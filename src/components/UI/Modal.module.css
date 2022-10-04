@@ -29,7 +29,7 @@
 	padding: 1rem 0.5rem;
 }
 
-.modalBtn {
+.modal__btn {
 	color: white;
 	text-align: center;
 	padding: 0.5rem;
@@ -37,6 +37,10 @@
 	background-color: rgb(110, 44, 186);
 	width: 100px;
 	cursor: pointer;
+}
+
+.error {
+	background: rgb(204, 92, 92);
 }
 
 @media (min-width: 768px) {

@@ -14,7 +14,7 @@ import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
 import FormStepBtn from "../UI/FormStepBtn";
 import { RequiredCoding } from "../../code_systems/types";
-import ErrorModal from '../UI/ErrorModal';
+import ModalWrapper from '../UI/ModalWrapper';
 
 const PatientAndAddressValidation = Yup.object({
   address: addressSchema.required(),
@@ -50,7 +50,7 @@ type Props = {
 type SetFieldValue = (field: string, value: any, shouldValidate?: boolean) => void;
 
 const ReportForm: FC<Props> = (props: Props) => {
-  const [error, setError] = useState<string | null>(null);
+  const [modalMessage, setModalMessage] = useState<string | null>(null);
   const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(0);
   const [reportedGenes, setReportedGenes] = useState<RequiredCoding[]>([]);
@@ -61,7 +61,7 @@ const ReportForm: FC<Props> = (props: Props) => {
 	useEffect(() => {
     
 
-      setError('test')
+      setModalMessage('test')
     
 	}, []);
 
@@ -116,7 +116,7 @@ const ReportForm: FC<Props> = (props: Props) => {
 
   return (
     <>
-    <ErrorModal error={error} header={'Error'} onClear={() => setError(null)} />
+    <ModalWrapper isError={false} modalMessage={modalMessage} onClear={() => setModalMessage(null)} />
     
     <Card>
       <h1>Add a new report</h1>
