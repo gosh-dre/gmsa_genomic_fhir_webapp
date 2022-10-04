@@ -59,13 +59,6 @@ const ReportForm: FC<Props> = (props: Props) => {
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);
 
-  useEffect(() => {
-    setModal({
-      message: "Something went wrong submitting the bundle. Please try again later.",
-      isError: true,
-    });
-  }, []);
-
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     const bundle = bundleRequest(values, reportedGenes);
 
