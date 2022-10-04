@@ -37,6 +37,7 @@
   background-color: rgb(110, 44, 186);
   width: 100px;
   cursor: pointer;
+  border: none;
 }
 
 .error {
