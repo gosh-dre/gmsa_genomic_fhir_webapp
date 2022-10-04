@@ -1,7 +1,5 @@
 import { FC } from "react";
 
-// import "./LoadingSpinner.css";
-
 import classes from "./LoadingSpinner.module.css"
 
 interface Props {
