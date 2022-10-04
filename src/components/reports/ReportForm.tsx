@@ -58,13 +58,6 @@ const ReportForm: FC<Props> = (props: Props) => {
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);
 
-	useEffect(() => {
-    
-
-      setModalMessage('test')
-    
-	}, []);
-
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     const bundle = bundleRequest(values, reportedGenes);
 
@@ -74,6 +67,7 @@ const ReportForm: FC<Props> = (props: Props) => {
       ?.request(bundle)
       .then((response) => console.debug("Bundle submitted", bundle, response))
       .catch((error) => {
+        setModalMessage(error)
         console.error(error)
       });
     actions.setSubmitting(false);
