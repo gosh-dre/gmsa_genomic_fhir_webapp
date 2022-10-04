@@ -1,6 +1,5 @@
-import React, { CSSProperties, FC, ReactElement } from "react";
+import React, { FC, ReactElement } from "react";
 import ReactDOM from "react-dom";
-import { CSSTransition } from "react-transition-group";
 
 import Backdrop from "./Backdrop";
 import classes from "./Modal.module.css";
@@ -48,16 +47,12 @@ const ModalOverlay: FC<ModalOverlayProps> = (props:ModalOverlayProps) => {
 const Modal: FC<ModalProps> = (props) => {
 	return (
 		<>
-			{props.show && <Backdrop onClick={props.onCancel} />}
-			<CSSTransition
-				in={props.show}
-				mountOnEnter
-				unmountOnExit
-				timeout={200}
-				classNames="modal"
-			>
-				<ModalOverlay {...props} />
-			</CSSTransition>
+			{props.show && 
+				<>
+					<Backdrop onClick={props.onCancel} /> 
+					<ModalOverlay {...props} />
+				</>
+			}
 		</>
 	);
 };
