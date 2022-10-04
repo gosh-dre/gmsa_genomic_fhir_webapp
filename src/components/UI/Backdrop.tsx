@@ -8,10 +8,12 @@ interface Props {
 }
 
 const Backdrop: FC<Props> = (props:Props) => {
-	return ReactDOM.createPortal(
+	const backdropElement: HTMLElement | null = document.getElementById("backdrop-hook");
+
+	return backdropElement ? ReactDOM.createPortal(
 		<div className={classes.backdrop} onClick={props.onClick}></div>,
-		document.getElementById("backdrop-hook")!
-	);
+		backdropElement
+    ) : null;
 };
 
 export default Backdrop;
