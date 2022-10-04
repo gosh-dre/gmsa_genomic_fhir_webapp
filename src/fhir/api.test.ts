@@ -20,25 +20,51 @@ const getPatients = async () => {
   return await response.json();
 };
 
-describe("FHIR resources", () => {
-  beforeEach(async () => {
-    fetchMock.dontMock();
-    const patientData = await getPatients();
-    if (!("entry" in patientData)) {
-      return;
+const check = async (response: any) => {
+  // would like to figure out which type response should be
+  const r = await response.json();
+  console.log(r);
+};
+
+const deletePatients = async (patientId?: string) => {
+  /**
+   * This method can take a string to delete a particular patient's records
+   * or it can accept a bundle with a number of entries from which
+   * it will extract the ID(s) and delete the patient(s)
+   */
+  const baseURL = `${FHIR_URL}/Patient`;
+  const patientData = await getPatients();
+  if (!("entry" in patientData)) {
+    return;
+  }
+
+  const deletePatientEntry = async (entry: string | object[]) => {
+    let id;
+    if (typeof entry === "string") {
+      console.info("entry is string", patientId);
+      return (id = patientId);
     }
-    // loop through all patients to delete; patientData with numerous entries
-    const id = patientData.entry[0].resource.id;
-    const response = await fetch(`${FHIR_URL}/Patient/${id}?_cascade=delete`, {
+    id = entry[0].resource.id;
+    console.info("deleting records related to " + id);
+    const response = await fetch(`${baseURL}/${id}?_cascade=delete`, {
       method: "DELETE",
     });
     if (!response.ok) {
-      console.log(response.statusText);
-      console.log(response.body);
+      console.error(response.statusText);
+      console.error(response.body);
     }
-    const check = await response.json();
-    console.log(check);
-    await new Promise((r) => setTimeout(r, 500));
+    check(response);
+    await new Promise((r) => setTimeout(r, 1500));
+  };
+
+  const patientEntry = patientData.entry;
+  await deletePatientEntry(patientEntry);
+};
+
+describe("FHIR resources", () => {
+  beforeEach(async () => {
+    fetchMock.dontMock();
+    deletePatients();
   });
 
   test("clear database on setup", async () => {
@@ -62,8 +88,7 @@ describe("FHIR resources", () => {
     });
 
     if (!createPatient.ok) console.error(createPatient.body);
-    const check = await createPatient.json();
-    console.log(check);
+    // check (createPatient)
     const patientData = await getPatients();
     expect("entry" in patientData).toBeTruthy();
     expect(patientData.entry[0].resource.identifier[0].value).toEqual(initialValues.patient.mrn);
