@@ -3,18 +3,17 @@ import ReactDOM from "react-dom";
 import { CSSTransition } from "react-transition-group";
 
 import Backdrop from "./Backdrop";
-import "./Modal.css";
+import classes from "./Modal.module.css";
 
 interface ModalOverlayProps {
 	className?: string;
-	style?: CSSProperties | null | undefined; // is this a good solution?
 	headerClass?: string;
 	header?: string;
 	onSubmit?: () => void | undefined;
 	contentClass?: string;
 	footerClass?: string;
 	footer?: ReactElement;
-	children: any;
+	children: ReactElement;
 }
 
 interface ModalProps extends ModalOverlayProps {
@@ -22,10 +21,10 @@ interface ModalProps extends ModalOverlayProps {
 	onCancel: () => void;
 }
 
-const ModalOverlay: FC<ModalOverlayProps> = (props) => {
+const ModalOverlay: FC<ModalOverlayProps> = (props:ModalOverlayProps) => {
 	const content = (
-		<div className={`modal ${props.className}`} style={props.style!}>
-			<header className={`modal__header ${props.headerClass}`}>
+		<div className={`${classes.modal} ${classes[`${props.className}`]}`}>
+			<header className={`${classes.modal__header} ${props.headerClass}`}>
 				<h2>{props.header}</h2>
 			</header>
 			<form
@@ -33,10 +32,11 @@ const ModalOverlay: FC<ModalOverlayProps> = (props) => {
 					props.onSubmit ? props.onSubmit : (event) => event.preventDefault()
 				}
 			>
-				<div className={`modal__content ${props.contentClass}`}>
+				<div className={`${classes.modal__content} ${classes[`${props.contentClass}`]}`}>
 					{props.children}
 				</div>
-				<footer className={`modal__footer ${props.footerClass}`}>
+
+				<footer className={`${classes.modal__footer} ${classes[`${props.footerClass}`]}`}>
 					{props.footer}
 				</footer>
 			</form>

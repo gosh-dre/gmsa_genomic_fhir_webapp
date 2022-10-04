@@ -59,7 +59,10 @@ const ReportForm: FC<Props> = (props: Props) => {
   const formRef = useRef<FormikProps<FormValues>>(null);
 
 	useEffect(() => {
-		setError('test')
+    
+
+      setError('test')
+    
 	}, []);
 
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
@@ -113,7 +116,7 @@ const ReportForm: FC<Props> = (props: Props) => {
 
   return (
     <>
-    <ErrorModal error={error} onClear={() => setError(null)} />
+    <ErrorModal error={error} header={'Error'} onClear={() => setError(null)} />
     
     <Card>
       <h1>Add a new report</h1>
