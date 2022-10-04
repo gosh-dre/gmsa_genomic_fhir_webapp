@@ -44,7 +44,9 @@ const ModalOverlay: FC<ModalOverlayProps> = (props:ModalOverlayProps) => {
 			</form>
 		</div>
 	);
-	return ReactDOM.createPortal(content, document.getElementById("modal-hook")!);
+	
+	const modalElement: HTMLElement | null = document.getElementById("modal-hook");
+	return modalElement ? ReactDOM.createPortal(content, modalElement) : null;
 };
 
 const Modal: FC<ModalProps> = (props) => {
