@@ -1,6 +1,8 @@
 import { FC } from "react";
 
-import "./LoadingSpinner.css";
+// import "./LoadingSpinner.css";
+
+import classes from "./LoadingSpinner.module.css"
 
 interface Props {
 	asOverlay: boolean;
@@ -9,9 +11,9 @@ interface Props {
 
 const LoadingSpinner: FC<Props> = (props) => {
 	return (
-		<div className={`${props.asOverlay && "loading-spinner__overlay"}`}>
-			<div className="lds-dual-ring"></div>
-			<div className="loading-spinner__message">{props.message}</div>
+		<div className={`${props.asOverlay && classes["loading-spinner__overlay"]}`}>
+			<div className={classes["lds-dual-ring"]}></div>
+			<div className={classes["loading-spinner__message"]}>{props.message}</div>
 		</div>
 	);
 };
