@@ -1,16 +1,14 @@
 import { FC } from "react";
 import { FhirProvider } from "../components/fhir/FhirContext";
 
+import ResultsList from "../components/results-list/ResultsList";
 
-
-const ResultsList: FC = () => {
-
-
+const Results: FC = () => {
   return (
     <FhirProvider>
-      <div>results list</div>
+      <ResultsList />
     </FhirProvider>
   );
 };
 
-export default ResultsList;
+export default Results;
