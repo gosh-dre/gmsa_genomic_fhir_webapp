@@ -15,6 +15,7 @@ import Confirmation from "./formSteps/Confirmation";
 import FormStepBtn from "../UI/FormStepBtn";
 import { RequiredCoding } from "../../code_systems/types";
 import ModalWrapper from '../UI/ModalWrapper';
+import { ModalState } from "../UI/ModalWrapper"
 
 const PatientAndAddressValidation = Yup.object({
   address: addressSchema.required(),
@@ -50,7 +51,7 @@ type Props = {
 type SetFieldValue = (field: string, value: any, shouldValidate?: boolean) => void;
 
 const ReportForm: FC<Props> = (props: Props) => {
-  const [modalMessage, setModalMessage] = useState<string | null>(null);
+  const [modal, setModal] = useState<ModalState | null>(null);
   const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(0);
   const [reportedGenes, setReportedGenes] = useState<RequiredCoding[]>([]);
@@ -67,8 +68,11 @@ const ReportForm: FC<Props> = (props: Props) => {
       ?.request(bundle)
       .then((response) => console.debug("Bundle submitted", bundle, response))
       .catch((error) => {
-        setModalMessage(error)
         console.error(error)
+        setModal({
+          message: 'Something went wrong submitting the bundle. Please try again later.',
+          isError: true,
+      });
       });
     actions.setSubmitting(false);
   };
@@ -110,7 +114,7 @@ const ReportForm: FC<Props> = (props: Props) => {
 
   return (
     <>
-    <ModalWrapper isError={false} modalMessage={modalMessage} onClear={() => setModalMessage(null)} />
+    <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
     
     <Card>
       <h1>Add a new report</h1>

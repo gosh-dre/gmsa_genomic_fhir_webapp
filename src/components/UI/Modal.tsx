@@ -13,7 +13,7 @@ interface ModalOverlayProps {
 	footerClass?: string;
 	footer?: ReactElement;
 	children: ReactElement;
-	isError: boolean;
+	isError: boolean | null | undefined;
 }
 
 interface ModalProps extends ModalOverlayProps {
@@ -22,8 +22,6 @@ interface ModalProps extends ModalOverlayProps {
 }
 
 const ModalOverlay: FC<ModalOverlayProps> = (props:ModalOverlayProps) => {
-
-
 	const errorClass = props.isError ? 'error' : 'info';
 
 	const content = (

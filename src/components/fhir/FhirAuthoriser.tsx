@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { oauth2 as SMART } from "fhirclient";
 
 import ModalWrapper from "../UI/ModalWrapper"
+import { ModalState } from "../UI/ModalWrapper"
 
 const FHIR_URL = process.env.REACT_APP_FHIR_URL;
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
@@ -14,7 +15,7 @@ const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET;
  * @constructor
  */
 const FhirAuthoriser: FC = () => {
-  const [modalMessage, setModalMessage] = useState<string | null>(null);
+  const [modal, setModal] = useState<ModalState | null>(null);
 
   useEffect(() => {
     SMART.authorize({
@@ -26,13 +27,16 @@ const FhirAuthoriser: FC = () => {
     .then()
     .catch((error)=> {
       console.log(error);
-      setModalMessage('Something went wrong connecting to the FHIR authoriser. Please try again later.');
+      setModal({
+        message: 'Something went wrong connecting to the FHIR authoriser. Please try again later.',
+        isError: true,
+    });
     })
   }, []);
 
   return (
     <>
-      <ModalWrapper isError={true} modalMessage={modalMessage} onClear={() => setModalMessage(null)} />
+      <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
       <p>Connecting to FHIR back end...</p>
     </>
   )

@@ -3,11 +3,16 @@ import { FC } from "react";
 import Modal from "./Modal";
 import classes from "./Modal.module.css";
 
-interface Props {
+export interface ModalState {
+	message: string | null | undefined;
+	isError: boolean | null | undefined;
+}
+
+export interface Props {
 	onClear: () => void;
-	isError: boolean;
-	modalMessage: string | null;
-  }
+	isError: boolean | null | undefined;
+	modalMessage: string | null | undefined;
+}
 
 const ModalWrapper: FC<Props> = (props: Props) => {
 	const { onClear, isError, modalMessage } = props;
