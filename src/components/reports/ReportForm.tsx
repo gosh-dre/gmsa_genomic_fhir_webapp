@@ -1,4 +1,4 @@
-import { FC, useContext, useRef, useState } from "react";
+import { FC, useContext, useEffect, useRef, useState } from "react";
 import { Form, Formik, FormikHelpers, FormikProps } from "formik";
 import * as Yup from "yup";
 import { FhirContext } from "../fhir/FhirContext";
@@ -14,6 +14,8 @@ import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
 import FormStepBtn from "../UI/FormStepBtn";
 import { RequiredCoding } from "../../code_systems/types";
+import ModalWrapper from "../UI/ModalWrapper";
+import { ModalState } from "../UI/ModalWrapper";
 
 const PatientAndAddressValidation = Yup.object({
   address: addressSchema.required(),
@@ -49,12 +51,20 @@ type Props = {
 type SetFieldValue = (field: string, value: any, shouldValidate?: boolean) => void;
 
 const ReportForm: FC<Props> = (props: Props) => {
+  const [modal, setModal] = useState<ModalState | null>(null);
   const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(0);
   const [reportedGenes, setReportedGenes] = useState<RequiredCoding[]>([]);
   const isLastStep = formStep === steps.length - 1;
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);
+
+  useEffect(() => {
+    setModal({
+      message: "Something went wrong submitting the bundle. Please try again later.",
+      isError: true,
+    });
+  }, []);
 
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     const bundle = bundleRequest(values, reportedGenes);
@@ -64,7 +74,14 @@ const ReportForm: FC<Props> = (props: Props) => {
     ctx.client
       ?.request(bundle)
       .then((response) => console.debug("Bundle submitted", bundle, response))
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error);
+        setModal({
+          message: "Something went wrong submitting the bundle. Please try again later.",
+          isError: true,
+        });
+      });
+
     actions.setSubmitting(false);
   };
 
@@ -104,30 +121,39 @@ const ReportForm: FC<Props> = (props: Props) => {
   };
 
   return (
-    <Card>
-      <h1>Add a new report</h1>
+    <>
+      <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
 
-      <Formik
-        enableReinitialize={true}
-        initialValues={props.initialValues}
-        validationSchema={validators[formStep]}
-        onSubmit={handleSubmit}
-        innerRef={formRef}
-      >
-        {({ setFieldValue, isSubmitting, values }) => (
-          <Form role="form" autoComplete="off" className={classes.form}>
-            <h2 className={classes["step-header"]}>
-              Form step {formStep + 1} of {steps.length}
-            </h2>
+      <Card>
+        <h1>Add a new report</h1>
 
-            {returnStepContent(setFieldValue, values)}
+        <Formik
+          enableReinitialize={true}
+          initialValues={props.initialValues}
+          validationSchema={validators[formStep]}
+          onSubmit={handleSubmit}
+          innerRef={formRef}
+        >
+          {({ setFieldValue, isSubmitting, values }) => (
+            <Form role="form" autoComplete="off" className={classes.form}>
+              <h2 className={classes["step-header"]}>
+                Form step {formStep + 1} of {steps.length}
+              </h2>
 
-            <FormStepBtn formStep={formStep} prevStep={prevStep} isLastStep={isLastStep} isSubmitting={isSubmitting} />
-          </Form>
-        )}
-      </Formik>
-      {result !== "" && <textarea id="resultOutput" role="alert" rows={80} cols={100} defaultValue={result} />}
-    </Card>
+              {returnStepContent(setFieldValue, values)}
+
+              <FormStepBtn
+                formStep={formStep}
+                prevStep={prevStep}
+                isLastStep={isLastStep}
+                isSubmitting={isSubmitting}
+              />
+            </Form>
+          )}
+        </Formik>
+        {result !== "" && <textarea id="resultOutput" role="alert" rows={80} cols={100} defaultValue={result} />}
+      </Card>
+    </>
   );
 };
 
