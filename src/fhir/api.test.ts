@@ -23,7 +23,7 @@ const getPatients = async () => {
 const check = async (response: any) => {
   // would like to figure out which type response should be
   const r = await response.json();
-  console.log(r);
+  console.error(r.body);
 };
 
 const deletePatients = async (patientId?: string) => {
@@ -38,7 +38,7 @@ const deletePatients = async (patientId?: string) => {
     return;
   }
 
-  const deletePatientEntry = async (entry: string | object[]) => {
+  const deletePatientEntry = async (entry: any) => {
     let id;
     if (typeof entry === "string") {
       console.info("entry is string", patientId);
@@ -58,16 +58,16 @@ const deletePatients = async (patientId?: string) => {
   };
 
   const patientEntry = patientData.entry;
-  await deletePatientEntry(patientEntry);
+  deletePatientEntry(patientEntry);
 };
 
 describe("FHIR resources", () => {
   beforeEach(async () => {
     fetchMock.dontMock();
-    deletePatients();
+    await deletePatients();
   });
 
-  test("clear database on setup", async () => {
+  test("database is clear on setup", async () => {
     /**
      * Before doing tests on the database, we want to clear all its data
      */
@@ -87,8 +87,7 @@ describe("FHIR resources", () => {
       },
     });
 
-    if (!createPatient.ok) console.error(createPatient.body);
-    // check (createPatient)
+    check(createPatient);
     const patientData = await getPatients();
     expect("entry" in patientData).toBeTruthy();
     expect(patientData.entry[0].resource.identifier[0].value).toEqual(initialValues.patient.mrn);
