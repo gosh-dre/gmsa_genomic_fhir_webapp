@@ -17,6 +17,8 @@ export interface Props {
 const ModalWrapper: FC<Props> = (props: Props) => {
   const { onClear, isError, modalMessage } = props;
 
+  const errorClass = props.isError ? "error" : "info";
+
   return (
     <Modal
       onCancel={onClear}
@@ -24,7 +26,7 @@ const ModalWrapper: FC<Props> = (props: Props) => {
       header={isError ? "Error" : "Info"}
       show={!!modalMessage}
       footer={
-        <button className={classes.modal__btn} onClick={onClear}>
+        <button className={`${classes.modal__btn} ${classes[`${errorClass}`]}`} onClick={onClear}>
           Okay
         </button>
       }
