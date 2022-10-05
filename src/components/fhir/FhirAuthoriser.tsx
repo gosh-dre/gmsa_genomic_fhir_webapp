@@ -35,9 +35,10 @@ const FhirAuthoriser: FC = () => {
           message: "Something went wrong connecting to the FHIR authoriser. Please try again later.",
           isError: true,
         });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
-
-    setIsLoading(false);
   }, []);
 
   return (
