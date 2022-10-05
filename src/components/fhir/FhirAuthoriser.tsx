@@ -1,6 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { oauth2 as SMART } from "fhirclient";
 
+import LoadingSpinner from "../UI/LoadingSpinner";
 import ModalWrapper from "../UI/ModalWrapper";
 import { ModalState } from "../UI/ModalWrapper";
 
@@ -15,9 +16,12 @@ const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET;
  * @constructor
  */
 const FhirAuthoriser: FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [modal, setModal] = useState<ModalState | null>(null);
 
   useEffect(() => {
+    setIsLoading(true);
+
     SMART.authorize({
       iss: FHIR_URL,
       redirectUri: "#/new_report",
@@ -31,13 +35,16 @@ const FhirAuthoriser: FC = () => {
           message: "Something went wrong connecting to the FHIR authoriser. Please try again later.",
           isError: true,
         });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   }, []);
 
   return (
     <>
+      {isLoading && <LoadingSpinner asOverlay message={"Connecting to FHIR back end..."} />}
       <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
-      <p>Connecting to FHIR back end...</p>
     </>
   );
 };
