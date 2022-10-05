@@ -18,9 +18,12 @@ const check = async (response: Response) => {
   return r;
 };
 
-const getPatients = async () => {
+const getPatients = async (identifier?: string) => {
   const url = `${FHIR_URL}/Patient`;
-  const response = await fetch(url);
+  let response;
+  if (identifier) {
+    response = await fetch(`${url}?identifier=${identifier}`);
+  } else response = await fetch(url);
   return await check(response);
 };
 
@@ -141,5 +144,37 @@ describe("FHIR resources", () => {
     console.info("Validation output");
     console.info(JSON.stringify(output.messages, null, 2));
     expect(output.valid).toBeTruthy();
+  });
+
+  test.skip("Checking only variant is different", async () => {
+    const variantBundle = createBundle(initialValues, reportedGenes);
+    const noVariantBundle = createBundle(initialWithNoVariant, []);
+
+    const createVariantPatient = await fetch(`${FHIR_URL}/`, {
+      method: "POST",
+      body: JSON.stringify(variantBundle),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    check(createVariantPatient);
+    const variantPatientData = await getPatients();
+    console.log("vp only", variantPatientData);
+
+    const createPlainPatient = await fetch(`${FHIR_URL}/`, {
+      method: "POST",
+      body: JSON.stringify(noVariantBundle),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    check(createPlainPatient);
+    const plainPatientData = await getPatients();
+    console.log("vp:", variantPatientData, "pp", plainPatientData);
+    // ideally there's a way to do all equal except x
+
+    expect(variantPatientData.entry[0].resource.identifier.value).toEqual(
+      plainPatientData.entry[0].resource.identifier.value,
+    );
   });
 });
