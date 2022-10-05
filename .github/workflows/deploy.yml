@@ -11,7 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: test-env
+    environment: github-pages
     # only run steps if the workflow didn't fail
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
