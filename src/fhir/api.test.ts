@@ -9,73 +9,82 @@ const fhir = new Fhir();
 const reportedGenes = [geneCoding("HGNC:4389", "GNA01")];
 const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
 
+const check = async (response: Response) => {
+  const r = await response.json();
+  if (!response.ok) {
+    console.error(r.body);
+    throw new Error(response.statusText);
+  }
+  return r;
+};
+
 const getPatients = async () => {
   const url = `${FHIR_URL}/Patient`;
   const response = await fetch(url);
-  if (!response.ok) {
-    console.error(response.statusText);
-    console.error(response.body);
-    throw new Error(response.statusText);
-  }
-  return await response.json();
+  return await check(response);
 };
 
-const check = async (response: any) => {
-  // would like to figure out which type response should be
-  const r = await response.json();
-  console.error(r.body);
-};
-
+/**
+ * Given an ID string
+ * this will delete the chosen patient's records, otherwise it will remove all patients by looping
+ * through and extracting IDs from the search bundle
+ */
 const deletePatients = async (patientId?: string) => {
-  /**
-   * This method can take a string to delete a particular patient's records
-   * or it can accept a bundle with a number of entries from which
-   * it will extract the ID(s) and delete the patient(s)
-   */
-  const baseURL = `${FHIR_URL}/Patient`;
   const patientData = await getPatients();
   if (!("entry" in patientData)) {
     return;
   }
+  if (patientId) {
+    await deleteRequest(patientId);
+    console.info("deleting records related to " + patientId);
+  } else deleteAllPatients();
 
-  const deletePatientEntry = async (entry: any) => {
-    let id;
-    if (typeof entry === "string") {
-      console.info("entry is string", patientId);
-      return (id = patientId);
-    }
-    id = entry[0].resource.id;
-    console.info("deleting records related to " + id);
-    const response = await fetch(`${baseURL}/${id}?_cascade=delete`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      console.error(response.statusText);
-      console.error(response.body);
-    }
-    check(response);
-    await new Promise((r) => setTimeout(r, 1500));
-  };
+  await new Promise((r) => setTimeout(r, 1500));
+};
 
-  const patientEntry = patientData.entry;
-  deletePatientEntry(patientEntry);
+const deleteRequest = async (id: string) => {
+  const baseURL = `${FHIR_URL}/Patient`;
+  const response = await fetch(`${baseURL}/${id}?_cascade=delete`, {
+    method: "DELETE",
+  });
+  check(response);
+};
+
+// could update this to accept a bundle?
+const deleteAllPatients = async () => {
+  const patientData = await getPatients();
+
+  for (const entry in patientData.entry) {
+    const patient = patientData.entry[entry];
+    const id = patient.resource.id;
+    await deleteRequest(id);
+  }
 };
 
 describe("FHIR resources", () => {
   beforeEach(async () => {
+    console.log("before each");
     fetchMock.dontMock();
     await deletePatients();
   });
 
+  /**
+   * Before doing tests on the database, we want to clear all its data
+   */
   test("database is clear on setup", async () => {
-    /**
-     * Before doing tests on the database, we want to clear all its data
-     */
-
     const postDelete = await getPatients();
+    console.log("post delete", postDelete);
+    if (postDelete["entry"]) {
+      console.error(postDelete["entry"]);
+    }
     expect("entry" in postDelete).toBeFalsy();
   });
 
+  /**
+   * Given no patients exist in the FHIR API
+   * When a report bundle is sent to the FHIR API
+   * Then there should be one entry in the FHIR API, and the identifier should be the MRN from the bundle
+   */
   test("bundle creates patient", async () => {
     const bundle = createBundle(initialValues, reportedGenes);
 
@@ -86,7 +95,7 @@ describe("FHIR resources", () => {
         "Content-Type": "application/json",
       },
     });
-
+    // check it's the right patient
     check(createPatient);
     const patientData = await getPatients();
     expect("entry" in patientData).toBeTruthy();
@@ -130,7 +139,7 @@ describe("FHIR resources", () => {
     // fhir validation
     const output = fhir.validate(bundle);
     console.info("Validation output");
-    // console.info(JSON.stringify(output.messages, null, 2));
+    console.info(JSON.stringify(output.messages, null, 2));
     expect(output.valid).toBeTruthy();
   });
 });
