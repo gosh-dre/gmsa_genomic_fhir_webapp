@@ -14,8 +14,7 @@ import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
 import FormStepBtn from "../UI/FormStepBtn";
 import { RequiredCoding } from "../../code_systems/types";
-import ModalWrapper from "../UI/ModalWrapper";
-import { ModalState } from "../UI/ModalWrapper";
+import ModalWrapper, { ModalState } from "../UI/ModalWrapper";
 
 const PatientAndAddressValidation = Yup.object({
   address: addressSchema.required(),
@@ -70,7 +69,7 @@ const ReportForm: FC<Props> = (props: Props) => {
       .catch((error) => {
         console.error(error);
         setModal({
-          message: "Something went wrong submitting the bundle. Please try again later.",
+          message: "Something went wrong submitting the bundle.",
           isError: true,
         });
       });
