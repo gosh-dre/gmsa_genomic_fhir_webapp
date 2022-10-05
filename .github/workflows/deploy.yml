@@ -11,7 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: test-env
+    environment: github-pages
     # only run steps if the workflow didn't fail
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
@@ -31,5 +31,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build
-          # disabling jekyll seems to stop environmental variables from being read by react
-          enable_jekyll: true
+
