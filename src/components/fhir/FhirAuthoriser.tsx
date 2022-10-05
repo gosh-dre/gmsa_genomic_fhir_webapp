@@ -2,8 +2,7 @@ import { FC, useEffect, useState } from "react";
 import { oauth2 as SMART } from "fhirclient";
 
 import LoadingSpinner from "../UI/LoadingSpinner";
-import ModalWrapper from "../UI/ModalWrapper";
-import { ModalState } from "../UI/ModalWrapper";
+import ModalWrapper, { ModalState } from "../UI/ModalWrapper";
 
 const FHIR_URL = process.env.REACT_APP_FHIR_URL;
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
@@ -32,7 +31,7 @@ const FhirAuthoriser: FC = () => {
       .catch((error) => {
         console.log(error);
         setModal({
-          message: "Something went wrong connecting to the FHIR authoriser. Please try again later.",
+          message: "Something went wrong connecting to the FHIR server.",
           isError: true,
         });
       })
