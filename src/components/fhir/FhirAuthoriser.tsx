@@ -45,8 +45,6 @@ const FhirAuthoriser: FC = () => {
     <>
       {isLoading && <LoadingSpinner asOverlay message={"Connecting to FHIR back end..."} />}
       <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
-
-      <p>Connecting to FHIR back end...</p>
     </>
   );
 };
