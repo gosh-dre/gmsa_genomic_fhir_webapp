@@ -28,8 +28,9 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-      - name: Setup mock git user
-        run: |
-          git config --global user.email "gmsa@fhir.com"
-          git config --global user.name "Unused account"
-      - run: npm run deploy
+      - run: npm run predeploy
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
