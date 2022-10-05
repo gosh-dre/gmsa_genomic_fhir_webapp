@@ -69,7 +69,7 @@ const ReportForm: FC<Props> = (props: Props) => {
       .catch((error) => {
         console.error(error);
         setModal({
-          message: "Something went wrong submitting the bundle.",
+          message: "Something went wrong submitting the bundle",
           isError: true,
         });
       });
