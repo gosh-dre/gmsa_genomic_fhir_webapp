@@ -66,7 +66,7 @@ const deleteAllPatients = async () => {
 
 describe("FHIR resources", () => {
   beforeEach(async () => {
-    console.log("before each");
+    // console.log("before each");
     fetchMock.dontMock();
     await deletePatients();
   });
@@ -115,7 +115,7 @@ describe("FHIR resources", () => {
 
     const output = fhir.validate(bundle);
     console.info("Validation output");
-    // console.info(JSON.stringify(output.messages, null, 2));
+    console.info(JSON.stringify(output.messages, null, 2));
     expect(output.valid).toBeTruthy();
   });
 
