@@ -5,6 +5,7 @@ import { Observation } from "fhir/r4";
 import { geneCoding } from "../code_systems/hgnc";
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
+import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 const fhir = new Fhir();
 
@@ -20,7 +21,7 @@ const check = async (response: Response) => {
   return r;
 };
 
-const getPatients = async (identifier?: string) => {
+const getPatients = async (identifier?: string): Promise<Bundle> => {
   const url = `${FHIR_URL}/Patient`;
   //trim down with url variable in if
   let response;
@@ -86,6 +87,23 @@ const deleteAllPatients = async () => {
 
 jest.setTimeout(20000);
 
+const getPatientIdentifier = (patientData: Bundle) => {
+  const patientResource = getPatientResource(patientData);
+  return patientResource.identifier?.at(0)?.value;
+};
+
+const getPatientResource = (patientData: Bundle) => {
+  return patientData.entry
+    ?.map((entry) => entry.resource)
+    .filter((resource) => resource?.resourceType === "Patient")
+    .pop() as Patient;
+};
+
+const getPatientGivenNames = (patientData: Bundle) => {
+  const patientResource = getPatientResource(patientData);
+  return patientResource.name?.at(0)?.given;
+};
+
 describe("FHIR resources", () => {
   beforeEach(async () => {
     // console.log("before each");
@@ -118,7 +136,7 @@ describe("FHIR resources", () => {
     await check(createPatient);
     const patientData = await getPatients();
     expect("entry" in patientData).toBeTruthy();
-    expect(patientData.entry[0].resource.identifier[0].value).toEqual(initialValues.patient.mrn);
+    expect(getPatientIdentifier(patientData)).toEqual(initialValues.patient.mrn);
   });
 
   /**
@@ -180,14 +198,12 @@ describe("FHIR resources", () => {
     await sendBundle(updatedBundle);
     const updatedPatient = await getPatients(identifier);
     // check it's the right patient by identifier
-    expect(originalPatient.entry[0].resource.identifier[0].value).toEqual(
-      updatedPatient.entry[0].resource.identifier[0].value,
-    );
-    expect(originalPatient.entry[0].resource.identifier[0].value).toEqual(initialValues.patient.mrn);
+    expect(getPatientIdentifier(originalPatient)).toEqual(getPatientIdentifier(updatedPatient));
+    expect(getPatientIdentifier(originalPatient)).toEqual(initialValues.patient.mrn);
     // check that the new value is in the updated entry
-    expect(updatedPatient.entry[0].resource.name[0].given).toEqual(["Daffy"]);
+    expect(getPatientGivenNames(updatedPatient)).toEqual(["Daffy"]);
     // check the two entries are different
-    expect(updatedPatient.entry[0].resource.name[0].given).not.toEqual(originalPatient.entry[0].resource.name[0].given);
+    expect(getPatientGivenNames(updatedPatient)).not.toEqual(getPatientGivenNames(originalPatient));
   });
   test.skip("Checking only variant is different", async () => {
     const variantBundle = createBundle(initialValues, reportedGenes);
@@ -216,8 +232,6 @@ describe("FHIR resources", () => {
     console.log("vp:", variantPatientData, "pp", plainPatientData);
     // ideally there's a way to do all equal except x
 
-    expect(variantPatientData.entry[0].resource.identifier.value).toEqual(
-      plainPatientData.entry[0].resource.identifier.value,
-    );
+    expect(getPatientIdentifier(variantPatientData)).toEqual(getPatientIdentifier(plainPatientData));
   });
 });
