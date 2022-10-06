@@ -12,7 +12,7 @@ const fhir = new Fhir();
 const reportedGenes = [geneCoding("HGNC:4389", "GNA01")];
 const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
 
-const check = async (response: Response) => {
+const checkResponseOK = async (response: Response) => {
   const r = await response.json();
   if (!response.ok) {
     console.error(r.body);
@@ -26,7 +26,7 @@ const getPatients = async (identifier?: string): Promise<Bundle> => {
   let url = `${FHIR_URL}/Patient`;
   if (identifier) url = `${FHIR_URL}/Patient?identifier=${identifier}`;
   const response = await fetch(url);
-  return await check(response);
+  return await checkResponseOK(response);
 };
 
 const sendBundle = async (bundle: Bundle) => {
@@ -49,7 +49,7 @@ const sendBundle = async (bundle: Bundle) => {
 const deletePatients = async (patientId?: string) => {
   const patientData = await getPatients();
   if (!("entry" in patientData)) {
-    console.debug("No patients exist in database so not deleting any");
+    console.debug("Nothing to delete; no patients in database");
     return;
   }
   if (patientId) {
@@ -68,7 +68,7 @@ const deleteAndCascadeDelete = async (patientIds: string[]) => {
     const response = await fetch(`${FHIR_URL}/Patient/${patientId}?_cascade=delete`, {
       method: "DELETE",
     });
-    await check(response);
+    await checkResponseOK(response);
   }
 };
 
@@ -93,7 +93,6 @@ const getPatientGivenNames = (patientData: Bundle) => {
 
 describe("FHIR resources", () => {
   beforeEach(async () => {
-    // console.log("before each");
     fetchMock.dontMock();
     await deletePatients();
   });
@@ -103,10 +102,6 @@ describe("FHIR resources", () => {
    */
   test("database is clear on setup", async () => {
     const postDelete = await getPatients();
-    console.log("post delete", postDelete);
-    if (postDelete["entry"]) {
-      console.error(postDelete["entry"]);
-    }
     expect("entry" in postDelete).toBeFalsy();
   });
 
@@ -120,7 +115,7 @@ describe("FHIR resources", () => {
 
     const createPatient = await sendBundle(bundle);
     // check it's the right patient
-    await check(createPatient);
+    await checkResponseOK(createPatient);
     const patientData = await getPatients();
     expect("entry" in patientData).toBeTruthy();
     expect(getPatientIdentifier(patientData)).toEqual(initialValues.patient.mrn);
@@ -203,7 +198,7 @@ describe("FHIR resources", () => {
         "Content-Type": "application/json",
       },
     });
-    await check(createVariantPatient);
+    await checkResponseOK(createVariantPatient);
     const variantPatientData = await getPatients();
     console.log("vp only", variantPatientData);
 
@@ -214,7 +209,7 @@ describe("FHIR resources", () => {
         "Content-Type": "application/json",
       },
     });
-    await check(createPlainPatient);
+    await checkResponseOK(createPlainPatient);
     const plainPatientData = await getPatients();
     console.log("vp:", variantPatientData, "pp", plainPatientData);
     // ideally there's a way to do all equal except x
