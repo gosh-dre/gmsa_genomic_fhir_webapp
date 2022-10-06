@@ -33,6 +33,7 @@ jobs:
         run: curl ${{secrets.REACT_APP_FHIR_URL}}/Bundle
       - name: npm test
         env:
+          REACT_APP_FHIR_URL: ${{secrets.REACT_APP_FHIR_URL}}
           REACT_APP_LOINC_USERNAME: ${{secrets.REACT_APP_LOINC_USERNAME}}
           REACT_APP_LOINC_PASSWORD: ${{secrets.REACT_APP_LOINC_PASSWORD}}
         run: npm test
