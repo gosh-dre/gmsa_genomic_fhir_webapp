@@ -38,7 +38,7 @@ const sendBundle = async (bundle: Bundle) => {
       "Content-Type": "application/json",
     },
   });
-  await new Promise((r) => setTimeout(r, 500));
+  await new Promise((r) => setTimeout(r, 1500));
   return sentBundle;
 };
 
