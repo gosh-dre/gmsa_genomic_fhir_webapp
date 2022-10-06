@@ -93,8 +93,8 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
     resourceType: "Bundle",
     type: Bundle.TypeEnum.Batch,
     entry: [
-      createEntry(patient.resource, patient.identifier),
       createEntry(org.resource, org.identifier),
+      createEntry(patient.resource, patient.identifier),
       createEntry(specimen.resource, specimen.identifier),
       createEntry(authoriser.resource),
       createEntry(reporter.resource),
