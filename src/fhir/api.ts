@@ -1,4 +1,4 @@
-import { Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { Bundle, Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { FormValues } from "../components/reports/ReportForm";
 import {
   createNullVariantAndId,
@@ -32,7 +32,7 @@ export const bundleRequest = (form: FormValues, reportedGenes: RequiredCoding[])
   };
 };
 
-export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]) => {
+export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]): Bundle => {
   const org = organisationAndId(form.address);
   const patient = patientAndId(form.patient, org.id);
   const specimen = specimenAndId(form.sample, patient.id);
@@ -69,7 +69,7 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]) 
   );
   return {
     resourceType: "Bundle",
-    type: "transaction",
+    type: Bundle.TypeEnum.Transaction,
     entry: [
       createEntry(patient.resource, form.patient.mrn),
       createEntry(org.resource, org.identifier),
