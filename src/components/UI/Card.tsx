@@ -7,11 +7,7 @@ import { FC } from "react";
  * @constructor
  */
 const Card: FC<any> = (props) => {
-  return (
-    <div className={classes.card}>
-      {props.children}
-    </div>
-  );
+  return <div className={classes.card}>{props.children}</div>;
 };
 
 export default Card;
