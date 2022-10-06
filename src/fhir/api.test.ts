@@ -26,7 +26,9 @@ const getPatients = async (identifier?: string) => {
   let response;
   if (identifier) {
     response = await fetch(`${url}?identifier=${identifier}`);
-  } else response = await fetch(url);
+  } else {
+    response = await fetch(url);
+  }
   return await check(response);
 };
 
@@ -56,7 +58,9 @@ const deletePatients = async (patientId?: string) => {
   if (patientId) {
     await deleteRequest(patientId);
     console.info("deleting records related to " + patientId);
-  } else deleteAllPatients();
+  } else {
+    await deleteAllPatients();
+  }
 
   await new Promise((r) => setTimeout(r, 1500));
 };
@@ -66,7 +70,7 @@ const deleteRequest = async (id: string) => {
   const response = await fetch(`${baseURL}/${id}?_cascade=delete`, {
     method: "DELETE",
   });
-  check(response);
+  await check(response);
 };
 
 // could update this to accept a bundle?
@@ -111,7 +115,7 @@ describe("FHIR resources", () => {
 
     const createPatient = await sendBundle(bundle);
     // check it's the right patient
-    check(createPatient);
+    await check(createPatient);
     const patientData = await getPatients();
     expect("entry" in patientData).toBeTruthy();
     expect(patientData.entry[0].resource.identifier[0].value).toEqual(initialValues.patient.mrn);
@@ -182,7 +186,7 @@ describe("FHIR resources", () => {
     expect(originalPatient.entry[0].resource.identifier[0].value).toEqual(initialValues.patient.mrn);
     // check that the new value is in the updated entry
     expect(updatedPatient.entry[0].resource.name[0].given).toEqual(["Daffy"]);
-    // double check the two entries are different
+    // check the two entries are different
     expect(updatedPatient.entry[0].resource.name[0].given).not.toEqual(originalPatient.entry[0].resource.name[0].given);
   });
   test.skip("Checking only variant is different", async () => {
@@ -196,7 +200,7 @@ describe("FHIR resources", () => {
         "Content-Type": "application/json",
       },
     });
-    check(createVariantPatient);
+    await check(createVariantPatient);
     const variantPatientData = await getPatients();
     console.log("vp only", variantPatientData);
 
@@ -207,7 +211,7 @@ describe("FHIR resources", () => {
         "Content-Type": "application/json",
       },
     });
-    check(createPlainPatient);
+    await check(createPlainPatient);
     const plainPatientData = await getPatients();
     console.log("vp:", variantPatientData, "pp", plainPatientData);
     // ideally there's a way to do all equal except x
