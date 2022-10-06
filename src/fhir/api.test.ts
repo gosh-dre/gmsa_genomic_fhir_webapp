@@ -3,6 +3,7 @@ import { createBundle } from "./api";
 import { initialValues, initialWithNoVariant } from "../components/reports/FormDefaults";
 import { Observation } from "fhir/r4";
 import { geneCoding } from "../code_systems/hgnc";
+import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 
 const fhir = new Fhir();
 
@@ -20,11 +21,22 @@ const check = async (response: Response) => {
 
 const getPatients = async (identifier?: string) => {
   const url = `${FHIR_URL}/Patient`;
+  //trim down with url variable in if
   let response;
   if (identifier) {
     response = await fetch(`${url}?identifier=${identifier}`);
   } else response = await fetch(url);
   return await check(response);
+};
+
+const sendBundle = async (bundle: Bundle) => {
+  return await fetch(`${FHIR_URL}/`, {
+    method: "POST",
+    body: JSON.stringify(bundle),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 };
 
 /**
@@ -91,13 +103,7 @@ describe("FHIR resources", () => {
   test("bundle creates patient", async () => {
     const bundle = createBundle(initialValues, reportedGenes);
 
-    const createPatient = await fetch(`${FHIR_URL}/`, {
-      method: "POST",
-      body: JSON.stringify(bundle),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const createPatient = await sendBundle(bundle);
     // check it's the right patient
     check(createPatient);
     const patientData = await getPatients();
@@ -154,33 +160,23 @@ describe("FHIR resources", () => {
     const identifier = initialValues.patient.mrn;
     const originalBundle = createBundle(initialValues, reportedGenes);
 
-    await fetch(`${FHIR_URL}/`, {
-      method: "POST",
-      body: JSON.stringify(originalBundle),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    await sendBundle(originalBundle);
     const originalPatient = await getPatients(identifier);
+
     const newValues = { ...initialValues };
     newValues.patient.firstName = "Daffy";
     const updatedBundle = createBundle(newValues, reportedGenes);
 
-    await fetch(`${FHIR_URL}/`, {
-      method: "POST",
-      body: JSON.stringify(updatedBundle),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    await sendBundle(updatedBundle);
     const updatedPatient = await getPatients(identifier);
-
+    // check it's the right patient by identifier
     expect(originalPatient.entry[0].resource.identifier[0].value).toEqual(
       updatedPatient.entry[0].resource.identifier[0].value,
     );
     expect(originalPatient.entry[0].resource.identifier[0].value).toEqual(initialValues.patient.mrn);
-    console.log(updatedPatient);
+    // check that the new value is in the updated entry
     expect(updatedPatient.entry[0].resource.name[0].given).toEqual(["Daffy"]);
+    // double check the two entries are different
     expect(updatedPatient.entry[0].resource.name[0].given).not.toEqual(originalPatient.entry[0].resource.name[0].given);
   });
   test.skip("Checking only variant is different", async () => {
