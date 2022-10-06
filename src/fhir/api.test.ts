@@ -31,13 +31,15 @@ const getPatients = async (identifier?: string) => {
 };
 
 const sendBundle = async (bundle: Bundle) => {
-  return await fetch(`${FHIR_URL}/`, {
+  const sentBundle = await fetch(`${FHIR_URL}/`, {
     method: "POST",
     body: JSON.stringify(bundle),
     headers: {
       "Content-Type": "application/json",
     },
   });
+  await new Promise((r) => setTimeout(r, 100));
+  return sentBundle;
 };
 
 /**
