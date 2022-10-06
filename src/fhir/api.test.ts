@@ -57,31 +57,22 @@ const deletePatients = async (patientId?: string) => {
     return;
   }
   if (patientId) {
-    await deleteRequest(patientId);
-    console.info("deleting records related to " + patientId);
+    await deleteAndCascadeDelete([patientId]);
   } else {
-    await deleteAllPatients();
+    const patientIds = patientData.entry?.map((entry) => entry.resource?.id) as string[];
+    await deleteAndCascadeDelete(patientIds);
   }
 
   await new Promise((r) => setTimeout(r, 1500));
 };
 
-const deleteRequest = async (id: string) => {
-  const baseURL = `${FHIR_URL}/Patient`;
-  const response = await fetch(`${baseURL}/${id}?_cascade=delete`, {
-    method: "DELETE",
-  });
-  await check(response);
-};
-
-// could update this to accept a bundle?
-const deleteAllPatients = async () => {
-  const patientData = await getPatients();
-
-  for (const entry in patientData.entry) {
-    const patient = patientData.entry[entry];
-    const id = patient.resource.id;
-    await deleteRequest(id);
+const deleteAndCascadeDelete = async (patientIds: string[]) => {
+  console.debug(`deleting ids: ${patientIds}`);
+  for (const patientId of patientIds) {
+    const response = await fetch(`${FHIR_URL}/Patient/${patientId}?_cascade=delete`, {
+      method: "DELETE",
+    });
+    await check(response);
   }
 };
 
