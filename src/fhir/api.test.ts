@@ -18,6 +18,7 @@ const check = async (response: Response) => {
     console.error(r.body);
     throw new Error(response.statusText);
   }
+  console.debug(JSON.stringify(r.body, null, 2));
   return r;
 };
 
