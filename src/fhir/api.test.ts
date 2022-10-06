@@ -50,6 +50,7 @@ const sendBundle = async (bundle: Bundle) => {
 const deletePatients = async (patientId?: string) => {
   const patientData = await getPatients();
   if (!("entry" in patientData)) {
+    console.debug("No patients exist in database so not deleting any");
     return;
   }
   if (patientId) {
@@ -78,6 +79,8 @@ const deleteAllPatients = async () => {
     await deleteRequest(id);
   }
 };
+
+jest.setTimeout(20000);
 
 describe("FHIR resources", () => {
   beforeEach(async () => {
