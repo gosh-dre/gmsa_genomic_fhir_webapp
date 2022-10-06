@@ -23,14 +23,9 @@ const check = async (response: Response) => {
 };
 
 const getPatients = async (identifier?: string): Promise<Bundle> => {
-  const url = `${FHIR_URL}/Patient`;
-  //trim down with url variable in if
-  let response;
-  if (identifier) {
-    response = await fetch(`${url}?identifier=${identifier}`);
-  } else {
-    response = await fetch(url);
-  }
+  let url = `${FHIR_URL}/Patient`;
+  if (identifier) url = `${FHIR_URL}/Patient?identifier=${identifier}`;
+  const response = await fetch(url);
   return await check(response);
 };
 
