@@ -4,6 +4,7 @@ import { initialValues, initialWithNoVariant } from "../components/reports/FormD
 import { Observation } from "fhir/r4";
 import { geneCoding } from "../code_systems/hgnc";
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
+import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
 
 const fhir = new Fhir();
 
@@ -134,8 +135,8 @@ describe("FHIR resources", () => {
     const bundle = createBundle(initialWithNoVariant, []);
 
     // null variant entry
-    const variantNotes = bundle.entry
-      .filter((entry) => entry.resource.resourceType === "Observation")
+    const variantNotes = (bundle.entry as Array<BundleEntry>)
+      .filter((entry) => entry.resource?.resourceType === "Observation")
       .map((entry) => entry.resource as Observation)
       .filter((obs) =>
         obs.meta?.profile?.includes("http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/Variant"),
