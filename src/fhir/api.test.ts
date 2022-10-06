@@ -145,7 +145,44 @@ describe("FHIR resources", () => {
     console.info(JSON.stringify(output.messages, null, 2));
     expect(output.valid).toBeTruthy();
   });
+  /**
+   * Given that a patient has been created
+   * When their details are updated
+   * Then the updated values should persist
+   */
+  test("Information can be updated", async () => {
+    const identifier = initialValues.patient.mrn;
+    const originalBundle = createBundle(initialValues, reportedGenes);
 
+    await fetch(`${FHIR_URL}/`, {
+      method: "POST",
+      body: JSON.stringify(originalBundle),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const originalPatient = await getPatients(identifier);
+    const newValues = { ...initialValues };
+    newValues.patient.firstName = "Daffy";
+    const updatedBundle = createBundle(newValues, reportedGenes);
+
+    await fetch(`${FHIR_URL}/`, {
+      method: "POST",
+      body: JSON.stringify(updatedBundle),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const updatedPatient = await getPatients(identifier);
+
+    expect(originalPatient.entry[0].resource.identifier[0].value).toEqual(
+      updatedPatient.entry[0].resource.identifier[0].value,
+    );
+    expect(originalPatient.entry[0].resource.identifier[0].value).toEqual(initialValues.patient.mrn);
+    console.log(updatedPatient);
+    expect(updatedPatient.entry[0].resource.name[0].given).toEqual(["Daffy"]);
+    expect(updatedPatient.entry[0].resource.name[0].given).not.toEqual(originalPatient.entry[0].resource.name[0].given);
+  });
   test.skip("Checking only variant is different", async () => {
     const variantBundle = createBundle(initialValues, reportedGenes);
     const noVariantBundle = createBundle(initialWithNoVariant, []);
