@@ -17,8 +17,7 @@ jobs:
         with:
           node-version: 17
           cache: 'npm'
-      - name: Install sushi
-        run: npm install --no-package-lock --no-save sushi
+      - run: npm ci
       - name: Run sushi
         run: sushi SUSHI/GMSA_genomics_reporting
   build_and_test:
