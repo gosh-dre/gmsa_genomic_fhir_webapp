@@ -1,0 +1,23 @@
+name: Ensure FSH files compile
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Use Node and enable cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: 17
+          cache: 'npm'
+      - name: Install sushi
+        run: npm install --no-package-lock --no-save sushi
+      - name: Run sushi
+        run: sushi SUSHI/GMSA_genomics_reporting
