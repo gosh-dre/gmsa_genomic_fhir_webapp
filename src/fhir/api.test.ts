@@ -1,11 +1,11 @@
 import { Fhir } from "fhir/fhir";
 import { createBundle } from "./api";
 import { initialValues, initialWithNoVariant } from "../components/reports/FormDefaults";
-import { BundleEntryResponse, Observation } from "fhir/r4";
+import { Observation } from "fhir/r4";
 import { geneCoding } from "../code_systems/hgnc";
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
-import { OperationOutcome, Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 const fhir = new Fhir();
 
