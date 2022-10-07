@@ -29,11 +29,8 @@ jobs:
         run: docker-compose -f docker-compose.dev.yml up -d
       - name: npm build
         run: npm run build --if-present
-      - name: Ensure FHIR api is ready for use
-        run: curl ${{secrets.REACT_APP_FHIR_URL}}/Bundle
       - name: npm test
         env:
-          REACT_APP_FHIR_URL: ${{secrets.REACT_APP_FHIR_URL}}
           REACT_APP_LOINC_USERNAME: ${{secrets.REACT_APP_LOINC_USERNAME}}
           REACT_APP_LOINC_PASSWORD: ${{secrets.REACT_APP_LOINC_PASSWORD}}
         run: npm test
