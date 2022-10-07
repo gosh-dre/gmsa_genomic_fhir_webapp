@@ -7,6 +7,20 @@ on:
     branches: [ main ]
 
 jobs:
+  test_fsh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Use Node and enable cache
+        uses: actions/setup-node@v3
+        with:
+          node-version: 17
+          cache: 'npm'
+      - name: Install sushi
+        run: npm install -g fsh-sushi
+      - name: Run sushi
+        run: sushi SUSHI/GMSA_genomics_reporting
   build_and_test:
     runs-on: ubuntu-latest
     environment: test-env
