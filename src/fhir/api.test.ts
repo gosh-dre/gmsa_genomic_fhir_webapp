@@ -18,7 +18,7 @@ const checkResponseOK = async (response: Response) => {
   const findErrors = (r: Bundle) => {
     const errors = r.entry
       ?.map((entry: BundleEntry) => entry.response)
-      .filter((response) => response?.status.startsWith("4"));
+      .filter((response) => response?.status?.startsWith("4"));
     return [errors];
   };
   const errors = findErrors(r);
