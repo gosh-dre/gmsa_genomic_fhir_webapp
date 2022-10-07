@@ -25,7 +25,7 @@ const checkResponseOK = async (response: Response) => {
 
   if (errors.length > 1) {
     errors.forEach((outcome) => {
-      if (!outcome.issue.diagnostics) return;
+      if (!outcome?.issue.diagnostics) return;
       throw outcome.issue.diagnostics;
     });
   }
