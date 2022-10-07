@@ -1,11 +1,11 @@
 import { Fhir } from "fhir/fhir";
 import { createBundle } from "./api";
 import { initialValues, initialWithNoVariant } from "../components/reports/FormDefaults";
-import { Observation } from "fhir/r4";
+import { BundleEntryResponse, Observation } from "fhir/r4";
 import { geneCoding } from "../code_systems/hgnc";
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
-import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { OperationOutcome, Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 const fhir = new Fhir();
 
@@ -14,6 +14,22 @@ const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
 
 const checkResponseOK = async (response: Response) => {
   const r = await response.json();
+
+  const findErrors = (r: Bundle) => {
+    const errors = r.entry
+      ?.map((entry: BundleEntry) => entry.response)
+      .filter((response) => response?.status.startsWith("4"));
+    return [errors];
+  };
+  const errors = findErrors(r);
+
+  if (errors.length > 1) {
+    errors.forEach((outcome) => {
+      if (!outcome.issue.diagnostics) return;
+      throw outcome.issue.diagnostics;
+    });
+  }
+
   if (!response.ok) {
     console.error(r.body);
     throw new Error(response.statusText);
@@ -59,7 +75,7 @@ const deletePatients = async (patientId?: string) => {
     await deleteAndCascadeDelete(patientIds);
   }
 
-  await new Promise((r) => setTimeout(r, 1500));
+  // await new Promise((r) => setTimeout(r, 1500));
 };
 
 const deleteAndCascadeDelete = async (patientIds: string[]) => {
@@ -72,7 +88,7 @@ const deleteAndCascadeDelete = async (patientIds: string[]) => {
   }
 };
 
-jest.setTimeout(20000);
+// jest.setTimeout(20000);
 
 const getPatientIdentifier = (patientData: Bundle) => {
   const patientResource = getPatientResource(patientData);
@@ -186,34 +202,5 @@ describe("FHIR resources", () => {
     expect(getPatientGivenNames(updatedPatient)).toEqual(["Daffy"]);
     // check the two entries are different
     expect(getPatientGivenNames(updatedPatient)).not.toEqual(getPatientGivenNames(originalPatient));
-  });
-  test.skip("Checking only variant is different", async () => {
-    const variantBundle = createBundle(initialValues, reportedGenes);
-    const noVariantBundle = createBundle(initialWithNoVariant, []);
-
-    const createVariantPatient = await fetch(`${FHIR_URL}/`, {
-      method: "POST",
-      body: JSON.stringify(variantBundle),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    await checkResponseOK(createVariantPatient);
-    const variantPatientData = await getPatients();
-    console.log("vp only", variantPatientData);
-
-    const createPlainPatient = await fetch(`${FHIR_URL}/`, {
-      method: "POST",
-      body: JSON.stringify(noVariantBundle),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    await checkResponseOK(createPlainPatient);
-    const plainPatientData = await getPatients();
-    console.log("vp:", variantPatientData, "pp", plainPatientData);
-    // ideally there's a way to do all equal except x
-
-    expect(getPatientIdentifier(variantPatientData)).toEqual(getPatientIdentifier(plainPatientData));
   });
 });
