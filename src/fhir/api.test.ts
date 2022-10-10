@@ -15,25 +15,45 @@ const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
 const checkResponseOK = async (response: Response) => {
   const r = await response.json();
 
-  const findErrors = (r: Bundle) => {
-    const errors = r.entry
-      ?.map((entry: BundleEntry) => entry.response)
-      .filter((response) => response?.status?.startsWith("4"));
-    return [errors];
-  };
-  const errors = findErrors(r);
-
-  if (errors.length > 1) {
-    errors.forEach((outcome) => {
-      if (!outcome?.issue.diagnostics) return;
-      throw outcome.issue.diagnostics;
-    });
-  }
-
   if (!response.ok) {
     console.error(r.body);
     throw new Error(response.statusText);
   }
+
+  type BundleResponse = {
+    entry: [
+      {
+        response: {
+          status: string | number;
+          outcome: {
+            issue?: [
+              {
+                diagnostics: string;
+              },
+            ];
+          };
+        };
+      },
+    ];
+  };
+  const bundleResponse = r as BundleResponse;
+
+  if (r.type === "Response") {
+    const errors = bundleResponse.entry
+      .filter((entry) => entry.response.status.toString().startsWith("4"))
+      .map((entry) => entry.response.outcome.issue);
+
+    if (errors.length > 1) {
+      errors.forEach((issue) => {
+        let message = "unknown error in bundle";
+        if (issue && issue.length > 0) {
+          message = issue[0].diagnostics;
+        }
+        throw new Error(message);
+      });
+    }
+  }
+
   console.debug(`check response: ${JSON.stringify(r, null, 2)}`);
   return r;
 };
