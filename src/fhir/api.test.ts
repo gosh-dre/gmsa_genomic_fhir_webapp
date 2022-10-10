@@ -1,4 +1,5 @@
 import { Fhir } from "fhir/fhir";
+import { BundleResponse } from "../code_systems/types";
 import { createBundle } from "./api";
 import { initialValues, initialWithNoVariant } from "../components/reports/FormDefaults";
 import { Observation } from "fhir/r4";
@@ -22,22 +23,7 @@ const checkResponseOK = async (response: Response) => {
   if (!(r.type === "Response")) {
     return r;
   }
-  type BundleResponse = {
-    entry: [
-      {
-        response: {
-          status: string | number;
-          outcome: {
-            issue?: [
-              {
-                diagnostics: string;
-              },
-            ];
-          };
-        };
-      },
-    ];
-  };
+
   const bundleResponse = r as BundleResponse;
 
   const errors = bundleResponse.entry
