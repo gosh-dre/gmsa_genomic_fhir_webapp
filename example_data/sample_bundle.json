@@ -1,13 +1,23 @@
 {
   "resourceType": "Bundle",
-  "type": "transaction",
+  "type": "batch",
   "entry": [
     {
-      "fullUrl": "Organization/85940927-468f-f53d-864a-7a50b48d73f1",
+      "fullUrl": "Organization/gosh-redcap-20RG-205G0047",
       "resource": {
-        "id": "85940927-468f-f53d-864a-7a50b48d73f1",
         "resourceType": "Organization",
+        "id": "gosh-redcap-20RG-205G0047",
+        "identifier": [
+          {
+            "system": "http://term.hl7.org/CodeSystem/org-id-codes",
+            "value": "gosh-redcap-20RG-205G0047"
+          }
+        ],
         "active": true,
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">1 North London Lab</div>"
+        },
         "type": [
           {
             "coding": [
@@ -20,12 +30,17 @@
             "text": "NHS UK Healthcare Provider"
           }
         ],
-        "name": "Great Ormond Street Hospital for Children NHS Foundation Trust",
+        "name": "North London Lab 1",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "2078298870"
+          }
+        ],
         "address": [
           {
             "line": [
-              "Level 4 Barclays House",
-              "37 Queens Square"
+              "Levels 4-6 Barclay House, 37 Queen Square"
             ],
             "city": "London",
             "postalCode": "WC1N 3BH",
@@ -34,72 +49,75 @@
         ]
       },
       "request": {
-        "method": "POST",
-        "url": "Organization"
+        "method": "PUT",
+        "url": "Organization?_id=gosh-redcap-20RG-205G0047"
       }
     },
     {
-      "fullUrl": "Patient/37176e84-d977-e993-3c49-d76fcfc6e625",
+      "fullUrl": "Patient/gosh-redcap-40388914",
       "resource": {
         "resourceType": "Patient",
-        "id": "37176e84-d977-e993-3c49-d76fcfc6e625",
+        "id": "gosh-redcap-40388914",
         "active": true,
         "name": [
           {
-            "family": "Manager",
+            "family": "BrighGosh321",
             "given": [
-              "General"
+              "Maria321"
             ]
           }
         ],
-        "gender": "female",
-        "birthDate": "2016-06-01",
-        "managingOrganization": {
-          "reference": "Organization/85940927-468f-f53d-864a-7a50b48d73f1"
+        "gender": "male",
+        "birthDate": "2019-08-02",
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">Maria321 BrighGosh321 from RedCap FHIR</div>"
         },
         "identifier": [
           {
-            "value": "40057119"
+            "use": "official",
+            "assigner": {
+              "display": "GOSH MRN"
+            },
+            "system": "https://fhir.nhs.uk/Id/mrn",
+            "value": "40388914"
           },
           {
-            "extension": [
-              {
-                "url": "https://fhir.nhs.uk/R4/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus",
-                "valueCodeableConcept": {
-                  "coding": [
-                    {
-                      "system": "https://fhir.nhs.uk/R4/CodeSystem/UKCore-NHSNumberVerificationStatus",
-                      "code": "Z60791509",
-                      "display": "Family Number"
-                    }
-                  ]
-                }
-              }
-            ]
+            "system": "https://fhir.nhs.uk/Id/nhs-number",
+            "value": "8105688202.0"
+          },
+          {
+            "system": "https://fhir.nhs.uk/Id/nhs-family-number",
+            "value": "Z968769"
           }
         ],
-        "generalPractitioner": {
-          "type": "Practitioner",
-          "reference": "Practitioner/d3447490-96fd-35d0-adf2-0806e5214606"
+        "managingOrganization": {
+          "type": "Organization",
+          "reference": "Organization?_id=gosh-redcap-20RG-205G0047"
         }
       },
       "request": {
-        "method": "POST",
-        "url": "Patient"
+        "method": "PUT",
+        "url": "Patient?_id=gosh-redcap-40388914"
       }
     },
     {
-      "fullUrl": "Specimen/fb82860d-eabc-a8d0-b341-facdff0ac0f1",
+      "fullUrl": "Specimen/specimen-20RG-205G0047",
       "resource": {
         "resourceType": "Specimen",
-        "id": "fb82860d-eabc-a8d0-b341-facdff0ac0f1",
-        "receivedTime": "2020-03-12T14:15:00",
+        "id": "specimen-20RG-205G0047",
+        "receivedTime": "2020-07-23T15:19:00",
         "collection": {
-          "collectedDateTime": "2020-06-12T14:15:00"
+          "collectedDateTime": "2020-07-23T12:22:00"
         },
+        "processing": [
+          {
+            "timeDateTime": "2020-10-21T15:00:00"
+          }
+        ],
         "identifier": [
           {
-            "value": "20RG-114G00099",
+            "value": "specimen-20RG-205G0047",
             "id": "specimen id"
           }
         ],
@@ -108,32 +126,37 @@
             {
               "system": "http://snomed.info/sct",
               "code": "122555007",
-              "display": "Venus blood specimen"
+              "display": "blood"
             }
           ]
         },
         "subject": {
           "type": "Patient",
-          "reference": "Patient/37176e84-d977-e993-3c49-d76fcfc6e625"
+          "reference": "Patient?_id=gosh-redcap-40388914"
         }
       },
       "request": {
-        "method": "POST",
-        "url": "Specimen"
+        "method": "PUT",
+        "url": "Specimen?_id=specimen-20RG-205G0047"
       }
     },
     {
-      "fullUrl": "Practitioner/d3447490-96fd-35d0-adf2-0806e5214606",
+      "fullUrl": "Practitioner/practitioner1-20RG-205G0047",
       "resource": {
         "resourceType": "Practitioner",
-        "id": "d3447490-96fd-35d0-adf2-0806e5214606",
+        "id": "practitioner1-20RG-205G0047",
+        "identifier": [
+          {
+            "value": "practitioner1-20RG-205G0047"
+          }
+        ],
         "active": true,
         "name": [
           {
             "use": "official",
-            "family": "Nephrology",
+            "family": "Fredrick",
             "given": [
-              "Clinics"
+              "Freya"
             ],
             "text": "Authorized By"
           }
@@ -141,12 +164,16 @@
         "qualification": [
           {
             "code": {
-              "text": "Principal Clinical Scientist"
+              "coding": [
+                {
+                  "display": "Principal Clinical Scientist"
+                }
+              ]
             }
           },
           {
             "issuer": {
-              "reference": "Organization/85940927-468f-f53d-864a-7a50b48d73f1"
+              "reference": "Organization/gosh-redcap-20RG-205G0047"
             }
           }
         ]
@@ -157,17 +184,22 @@
       }
     },
     {
-      "fullUrl": "Practitioner/46743741-9466-e472-6b5f-5241f323ca74",
+      "fullUrl": "Practitioner/practitioner2-20RG-205G0047",
       "resource": {
         "resourceType": "Practitioner",
-        "id": "46743741-9466-e472-6b5f-5241f323ca74",
+        "id": "practitioner2-20RG-205G0047",
+        "identifier": [
+          {
+            "value": "practitioner1-20RG-205G0047"
+          }
+        ],
         "active": true,
         "name": [
           {
             "use": "official",
-            "family": "Quality",
+            "family": "Anooli",
             "given": [
-              "Activity"
+              "Ana"
             ],
             "text": "Reported By"
           }
@@ -175,12 +207,16 @@
         "qualification": [
           {
             "code": {
-              "text": "Clinical Scientist"
+              "coding": [
+                {
+                  "display": "Clinical Scientist"
+                }
+              ]
             }
           },
           {
             "issuer": {
-              "reference": "Organization/85940927-468f-f53d-864a-7a50b48d73f1"
+              "reference": "Organization/gosh-redcap-20RG-205G0047"
             }
           }
         ]
@@ -191,17 +227,22 @@
       }
     },
     {
-      "fullUrl": "Observation/5306f3f5-1516-6570-5b7c-709acb175a5a",
+      "fullUrl": "Observation/20RG-205G0047-variant1-variant1",
       "resource": {
         "resourceType": "Observation",
-        "id": "5306f3f5-1516-6570-5b7c-709acb175a5a",
+        "id": "20RG-205G0047-variant1-variant1",
+        "identifier": [
+          {
+            "value": "20RG-205G0047-variant1-variant1"
+          }
+        ],
         "status": "final",
         "code": {
           "coding": [
             {
               "system": "http://loinc.org",
               "code": "69548-6",
-              "display": "Genetic variant assessment"
+              "display": "Genetic variant assesment"
             }
           ]
         },
@@ -212,26 +253,26 @@
         },
         "subject": {
           "type": "Patient",
-          "reference": "Patient/37176e84-d977-e993-3c49-d76fcfc6e625"
+          "reference": "Patient?_id=gosh-redcap-40388914"
         },
         "specimen": {
           "type": "Specimen",
-          "reference": "Specimen/fb82860d-eabc-a8d0-b341-facdff0ac0f1"
+          "reference": "Specimen?_id=specimen-20RG-205G0047"
         },
         "performer": [
           {
             "type": "Practitioner",
-            "reference": "Practitioner/d3447490-96fd-35d0-adf2-0806e5214606"
+            "reference": "Practitioner/practitioner1-20RG-205G0047"
           },
           {
             "type": "Practitioner",
-            "reference": "Practitioner/46743741-9466-e472-6b5f-5241f323ca74"
+            "reference": "Practitioner/practitioner2-20RG-205G0047"
           }
         ],
         "note": [
           {
             "authorString": "gene information",
-            "text": "MECP2: Pathogenic variants in MECP2 can cause a variety of X-linked conditions: Rett syndrome (OMIM, 312750), neonatal severe encephalopathy (OMIM,300673), and X-linked syndromic mental retardation (OMIM 300260 and 300055)."
+            "text": "SMC1A: Heterozygous pathogenic variants in SMC1A (MIM 300040) are associated with early infantile epileptic encephalopathy-85 with or without midline brain defects (EIEE85; MIM 301044) that is an X-linked neurologic disorder characterized by onset of severe refractory seizures in the first year of life, global developmental delay with impaired intellectual development and poor or absent speech, and dysmorphic facial features. Pathogenic variants in SMC1A can also cause Cornelia de Lange syndrome-2 (CDLS2: 3005900), a milder disorder with some overlapping features."
           }
         ],
         "component": [
@@ -248,8 +289,8 @@
             "valueCodeableConcept": {
               "coding": [
                 {
-                  "system": "http://www.ncbi.nlm.nih.gov/refseq",
-                  "code": "NM_001350626.1"
+                  "system": "https://www.ncbi.nlm.nih.gov/refseq",
+                  "code": "NM_006306.3:"
                 }
               ]
             }
@@ -268,7 +309,7 @@
               "coding": [
                 {
                   "system": "http://varnomen.hgvs.org",
-                  "code": "NM_001350626.1:c.1550G>T"
+                  "code": "c.1263del"
                 }
               ]
             }
@@ -287,7 +328,7 @@
               "coding": [
                 {
                   "system": "http://varnomen.hgvs.org/",
-                  "code": "p.(Arg701*)"
+                  "code": "p.(Lys422Serfs*28)"
                 }
               ]
             }
@@ -326,7 +367,7 @@
               "coding": [
                 {
                   "system": "http://loinc.org",
-                  "code": "LA6668-3",
+                  "code": " LA6668-3",
                   "display": "Pathogenic"
                 }
               ]
@@ -337,7 +378,7 @@
               "coding": [
                 {
                   "system": "http://loinc.org",
-                  "code": "79742-3",
+                  "code": "53034-0",
                   "display": "Inheritance pattern based on family history"
                 }
               ]
@@ -346,8 +387,8 @@
               "coding": [
                 {
                   "system": "http://loinc.org",
-                  "code": "LA24640-7",
-                  "display": "Autosomal dominant"
+                  "code": "LA24947-6",
+                  "display": "X-linked"
                 }
               ]
             }
@@ -357,11 +398,11 @@
               "coding": [
                 {
                   "system": "http://www.genenames.org/geneId",
-                  "code": "HGNC:6990"
+                  "code": "HGNC:11111"
                 }
               ]
             },
-            "valueString": "MECP2"
+            "valueString": "SMC1A"
           },
           {
             "code": {
@@ -369,35 +410,48 @@
                 {
                   "system": "http://hl7.org/evidence",
                   "code": "evidence",
-                  "display": "Evidence for classification of variant"
+                  "display": "Evidence for classification of variant1"
                 }
               ]
             },
-            "valueString": "absent from the gnomAD population database (PM2_Moderate)."
+            "valueString": "\u00ef\u0082\u00b7 Absent from the gnomAD population database (PM2_Moderate).  \u00ef\u0082\u00b7 Predicted null variant where loss of function is known disease mechanism (PVS1_very strong)."
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81297-4",
+                  "display": "CNV"
+                }
+              ]
+            },
+            "valueString": "CNV"
           },
           {
             "code": {
               "coding": [
                 {
                   "system": "http://hl7.org/variant",
-                  "code": "confirmed-variant"
+                  "code": "confirmed-variant",
+                  "display": true
                 }
               ]
             },
-            "valueBoolean": false
+            "valueBoolean": true
           }
         ]
       },
       "request": {
-        "method": "POST",
-        "url": "Observation"
+        "method": "PUT",
+        "url": "Observation?_id=20RG-205G0047-variant1-variant1"
       }
     },
     {
-      "fullUrl": "Task/5f3f5638-3870-1a14-b490-b6081dfc8352",
+      "fullUrl": "Task/8c1745a7-9a6a-5f92-cca7-4147f6be1f72",
       "resource": {
         "resourceType": "Task",
-        "id": "5f3f5638-3870-1a14-b490-b6081dfc8352",
+        "id": "8c1745a7-9a6a-5f92-cca7-4147f6be1f72",
         "meta": {
           "profile": [
             "http://hl7.org/fhir/StructureDefinition/task-rec-followup"
@@ -414,10 +468,10 @@
             }
           ]
         },
-        "description": "Testing of General Manager's parents is recommended to determine whether the SCN1A c.2101C>T pathogenic variant has arisen de novo and",
+        "description": "Testing of Maria321 BrighGosh321's parents is recommended to determine whether the SMC1A c.1263del p.(Lys422Serfs*28) pathogenic variant has arisen de novo and to assess the recurrence risk. Please include clinical information for the parents. A referral to their local clinical genetics service may be appropriate for this family.",
         "for": {
           "type": "Patient",
-          "reference": "Patient/37176e84-d977-e993-3c49-d76fcfc6e625"
+          "reference": "Patient/gosh-redcap-40388914"
         }
       },
       "request": {
@@ -426,11 +480,16 @@
       }
     },
     {
-      "fullUrl": "Observation/6d16ee18-5521-16dd-2ba4-b180cb69ca38",
+      "fullUrl": "Observation/20RG-205G0047-overall-interpretation",
       "resource": {
         "resourceType": "Observation",
-        "id": "6d16ee18-5521-16dd-2ba4-b180cb69ca38",
+        "id": "20RG-205G0047-overall-interpretation",
         "status": "final",
+        "identifier": [
+          {
+            "value": "20RG-205G0047-overall-interpretation"
+          }
+        ],
         "meta": {
           "profile": [
             "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/overall-interpretation"
@@ -447,16 +506,20 @@
         },
         "subject": {
           "type": "Patient",
-          "reference": "Patient/37176e84-d977-e993-3c49-d76fcfc6e625"
+          "reference": "Patient?_id=gosh-redcap-40388914"
         },
         "specimen": {
           "type": "Specimen",
-          "reference": "Specimen/fb82860d-eabc-a8d0-b341-facdff0ac0f1"
+          "reference": "Specimen?_id=specimen-20RG-205G0047"
         },
         "performer": [
           {
             "type": "Practitioner",
-            "reference": "Practitioner/d3447490-96fd-35d0-adf2-0806e5214606"
+            "reference": "Practitioner/practitioner1-20RG-205G0047"
+          },
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/practitioner2-20RG-205G0047"
           }
         ],
         "category": [
@@ -470,34 +533,77 @@
             ]
           }
         ],
-        "valueString": "Next generation sequence analysis indicates that General Manager is heterozygous for the MECP2 c.953G>C p.(Arg318Pro) likely pathogenic variant that has been confirmed by Sanger sequence analysis"
+        "effectiveDateTime": "2020-10-22",
+        "note": [
+          {
+            "authorString": "genomic interpretation",
+            "text": "Next generation sequence analysis indicates that Maria321 BrighGosh321 is heterozygous for the SMC1A c.1263del p.(Lys422Serfs*28) pathogenic variant that has been confirmed by Sanger sequence analysis (see technical information below)."
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "LA6577-6",
+              "display": "Negative"
+            }
+          ],
+          "text": "report finding"
+        }
       },
       "request": {
-        "method": "POST",
-        "url": "Observation"
+        "method": "PUT",
+        "url": "Observation?_id=20RG-205G0047-overall-interpretation"
       }
     },
     {
-      "fullUrl": "ServiceRequest/c87a7463-19c1-6a0d-0feb-d845d0dfae43",
+      "fullUrl": "ServiceRequest/1775336d-71ea-cd05-49a3-e80e966e1277",
       "resource": {
         "resourceType": "ServiceRequest",
-        "id": "c87a7463-19c1-6a0d-0feb-d845d0dfae43",
+        "id": "1775336d-71ea-cd05-49a3-e80e966e1277",
         "meta": {
           "profile": [
             "http://hl7.org/fhir/StructureDefinition/servicerequest"
           ]
         },
+        "text": {
+          "status": "generated",
+          "div": "<div xmlns=\\\"http://www.w3.org/1999/xhtml\\\">Lab Procedure from RedCap FHIR app</div>"
+        },
         "status": "active",
         "intent": "order",
-        "supportingInfo": [
-          {
-            "reference": "PlanDefinition/38018b47-b29a-8b06-daf6-6c5f2577bffa"
-          }
+        "instantiatesCanonical": [
+          "PlanDefinition/20RG-205G0047-plan-definition"
         ],
+        "performerType": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "310049001",
+              "display": "Clinical genetics service"
+            }
+          ]
+        },
         "subject": {
           "type": "Patient",
-          "reference": "Patient/37176e84-d977-e993-3c49-d76fcfc6e625"
+          "reference": "Patient/gosh-redcap-40388914"
         },
+        "specimen": [
+          {
+            "type": "Specimen",
+            "reference": "Specimen/specimen-20RG-205G0047"
+          }
+        ],
+        "performer": [
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/practitioner1-20RG-205G0047"
+          },
+          {
+            "type": "Practitioner",
+            "reference": "Practitioner/practitioner2-20RG-205G0047"
+          }
+        ],
         "category": [
           {
             "coding": [
@@ -515,10 +621,10 @@
               {
                 "system": "http://snomed.info/sct",
                 "code": "230387008",
-                "display": "Benign occipital epilepsy of childhood - early onset variant"
+                "display": "Reason for recommending early-onset benign childhood epilepsy"
               }
             ],
-            "text": "Sequence variant screening in General Manager because of seizures and developmental delay. There is a clinical suspicion of Dravet Syndrome."
+            "text": "Sequence variant screening in Maria321 BrighGosh321 because of seizure disorder and global developmental delay."
           }
         ]
       },
@@ -528,21 +634,37 @@
       }
     },
     {
-      "fullUrl": "PlanDefinition/38018b47-b29a-8b06-daf6-6c5f2577bffa",
+      "fullUrl": "PlanDefinition/20RG-205G0047-plan-definition",
       "resource": {
         "resourceType": "PlanDefinition",
-        "id": "38018b47-b29a-8b06-daf6-6c5f2577bffa",
+        "id": "20RG-205G0047-plan-definition",
         "status": "active",
+        "identifier": [
+          {
+            "value": "20RG-205G0047-plan-definition"
+          }
+        ],
+        "description": "Sequence variant screening in Maria321 BrighGosh321 because of seizure disorder and global developmental delay.",
         "subjectReference": {
           "type": "Patient",
-          "reference": "Patient/37176e84-d977-e993-3c49-d76fcfc6e625"
+          "reference": "Patient/gosh-redcap-40388914"
         },
-        "description": "Screening of 82 genes associated with severe delay and seizures (ADSL, ALG13, ARHGEF9, ARX, ATP1A3, ATRX, BRAT1, CDKL5, CHD2, CHRNA2, CHRNA4, CHRNB2, CLN5, CLN6, CLN8, CNTNAP2, DNM1, DOCK7, DYRK1A, EHMT1, FOXG1, GABRA1, GABRB3, GATAD2B, GNAO1, GRIN1, GRIN2A, GRIN2B, HCN1, IQSEC2, KCNA2, KCNB1, KCNC1, KCNQ2, KCNT1, KIAA1279 (KIF1BP), KIAA2022, LGI1, MAGI2, MBD5, MECP2, MEF2C, MFSD8, NACC1, NRXN1, PCDH19, PIGA, PIGN, PLCB1, PNKP, POLG, PRRT2, PURA, QARS, SCN1A, SCN1B, SCN2A, SCN8A, SETD5, SIK1, SLC12A5, SLC13A5, SLC16A2, SLC25A22, SLC2A1, SLC35A2, SLC6A1, SLC9A6, SMC1A, SPTAN1, STX1B, STXBP1, SYNGAP1, TBC1D24, TCF4, TPP1, UBE2A, UBE3A, UNC80, WDR45, WWOX, ZEB2) was carried out using next generation sequencing (Agilent SureSelect + MiSeq/NextSeq). *Pseudogenes with significant sequence homology to DMN1 exons 18, 19, 20 and 22 may result in incorrect coverage data for this gene and variants in these exons may not be detected. 99.6% of the coding bases in the targeted genes were covered >30x. Sequencing includes the coding region of the genes targeted, including intron/exon splice regions (-14 splice acceptor and +6 splice donor, unless otherwise specified). Inhouse validation attributes a minimum sensitivity of 99.9% to detect single nucleotide substitutions (with 95% confidence) and 77% for insertion/deletion variants (with 95% confidence) for regions covered by 30 or more reads. Variants are classified using the ACMG/AMP guidelines (Richards et al 2015 Genet Med) /ACGS Best Practice guidelines (2019).",
         "relatedArtifact": [
           {
             "type": "citation",
-            "citation": "(1) Shapiro et al Pediatr Res. 2010 Nov;68(5):446-51. (2) Neul et al Am J Med Genet B Neuropsychiatr Genet. 2019 Jan;180(1):55-67. (3) Cheadle et al, Hum Mol Genet. 2000, 9, 1119-1129.",
-            "display": "Gene reference"
+            "citation": "Zheng-Wen et al (2014) Int J Mol Sci. Dec 16;15(12):23408-17; [2] Lee et al (2012) PLoS One. 7(8); [3] M\u00c3\u00a9neret et al (2012) Neurology. Jul  10;79(2):170-4."
+          }
+        ],
+        "action": [
+          {
+            "prefix": "1",
+            "description": "Screening of 82 genes associated with severe delay and seizures () was carried out using next generation sequencing (Agilent SureSelect + MiSeq/NextSeq). *Pseudogenes with significant sequence homology to DMN1 exons 18, 19, 20 and 22 may result in incorrect coverage data for this gene and variants in these exons may not be detected. 99.3% of the coding bases in the targeted genes were covered >30x. Sequencing includes the coding region of the genes targeted, including intron/exon splice regions (-14 splice acceptor and +6 splice donor, unless otherwise specified). Inhouse validation attributes a minimum sensitivity of 99.9% to detect single nucleotide substitutions (with 95% confidence) and 77% for insertion/deletion variants (with 95% confidence) for regions covered by 30 or more reads. Variants are classified using the ACMG/AMP guidelines (Richards et al 2015 Genet Med) /ACGS Best Practice guidelines (2020).",
+            "title": "Test Method"
+          },
+          {
+            "prefix": "2",
+            "textEquivalent": "ADSL, ALG13, ARHGEF9, ARX, ATP1A3, ATRX, BRAT1, CDKL5, CHD2, CHRNA2, CHRNA4, CHRNB2, CLN5, CLN6, CLN8, CNTNAP2, DNM1, DOCK7, DYRK1A, EHMT1, FOXG1, GABRA1, GABRB3, GATAD2B, GNAO1, GRIN1, GRIN2A, GRIN2B, HCN1, IQSEC2, KCNA2, KCNB1, KCNC1, KCNQ2, KCNT1, KIAA1279 (KIF1BP), KIAA2022, LGI1, MAGI2, MBD5, MECP2, MEF2C, MFSD8, NACC1, NRXN1, PCDH19, PIGA, PIGN, PLCB1, PNKP, POLG, PRRT2, PURA, QARS, SCN1A, SCN1B, SCN2A, SCN8A, SETD5, SIK1, SLC12A5, SLC13A5, SLC16A2, SLC25A22, SLC2A1, SLC35A2, SLC6A1, SLC9A6, SMC1A, SPTAN1, STX1B, STXBP1, SYNGAP1, TBC1D24, TCF4, TPP1, UBE2A, UBE3A, UNC80, WDR45, WWOX, ZEB2",
+            "title": "gene list"
           }
         ]
       },
@@ -552,10 +674,10 @@
       }
     },
     {
-      "fullUrl": "DiagnosticReport/a425799a-a905-d750-7e1e-a9c573581a81",
+      "fullUrl": "DiagnosticReport/3405095c-8a50-06c1-ec18-8efbd080e66e",
       "resource": {
         "resourceType": "DiagnosticReport",
-        "id": "a425799a-a905-d750-7e1e-a9c573581a81",
+        "id": "3405095c-8a50-06c1-ec18-8efbd080e66e",
         "meta": {
           "profile": [
             "http://hl7.org/fhir/StructureDefinition/genomicreport"
@@ -565,52 +687,47 @@
         "code": {
           "coding": [
             {
-              "system": "http://snomed.info/sct",
-              "code": "230387008",
-              "display": "Benign occipital epilepsy of childhood - early onset variant"
+              "system": "https://panelapp.genomicsengland.co.uk/api/v1/entities",
+              "code": "R59",
+              "display": "Early onset or syndromic epilepsy"
             }
           ]
         },
         "subject": {
           "type": "Patient",
-          "reference": "Patient/37176e84-d977-e993-3c49-d76fcfc6e625"
+          "reference": "Patient/gosh-redcap-40388914"
         },
-        "effectiveDateTime": "2020-04-06",
+        "issued": "2020-10-21",
+        "effectiveDateTime": "2020-10-22",
+        "performer": [
+          {
+            "type": "Organization",
+            "reference": "Organization/gosh-redcap-20RG-205G0047"
+          }
+        ],
         "resultsInterpreter": [
           {
             "type": "Practitioner",
-            "reference": "Practitioner/d3447490-96fd-35d0-adf2-0806e5214606"
+            "reference": "Practitioner/practitioner1-20RG-205G0047"
           },
           {
             "type": "Practitioner",
-            "reference": "Practitioner/46743741-9466-e472-6b5f-5241f323ca74"
+            "reference": "Practitioner/practitioner2-20RG-205G0047"
           }
         ],
         "specimen": [
           {
             "type": "Specimen",
-            "reference": "Specimen/fb82860d-eabc-a8d0-b341-facdff0ac0f1"
+            "reference": "Specimen/specimen-20RG-205G0047"
           }
         ],
         "result": [
           {
             "type": "Observation",
-            "reference": "Observation/5306f3f5-1516-6570-5b7c-709acb175a5a"
-          },
-          {
-            "type": "Observation",
-            "reference": "Observation/964a870c-7c87-9b74-1d87-8f9f9cdf5a86"
-          },
-          {
-            "type": "Observation",
-            "reference": "Observation/30bcab0e-d857-0102-55d4-4936a1515607"
-          },
-          {
-            "type": "Observation",
-            "reference": "Observation/4562be7f-bb42-e0b2-0426-465e3e37952d"
+            "reference": "Observation/20RG-205G0047-variant1-variant1"
           }
         ],
-        "conclusion": "Consistent with a diagnosis of Rett syndrome."
+        "conclusion": "Genetic diagnosis of Early infantile epileptic encephalopathy-85 (EIEE85) in Maria321 BrighGosh321."
       },
       "request": {
         "method": "POST",
