@@ -19,7 +19,9 @@ const checkResponseOK = async (response: Response) => {
     console.error(r.body);
     throw new Error(response.statusText);
   }
-
+  if (!(r.type === "Response")) {
+    return r;
+  }
   type BundleResponse = {
     entry: [
       {
@@ -38,9 +40,6 @@ const checkResponseOK = async (response: Response) => {
   };
   const bundleResponse = r as BundleResponse;
 
-  if (!(r.type === "Response")) {
-    return r;
-  }
   const errors = bundleResponse.entry
     .filter((entry) => entry.response.status.toString().startsWith("4"))
     .map((entry) => entry.response.outcome.issue);
