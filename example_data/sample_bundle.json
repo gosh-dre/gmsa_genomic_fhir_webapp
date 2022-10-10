@@ -39,7 +39,9 @@
         ],
         "address": [
           {
-            "line": ["Levels 4-6 Barclay House, 37 Queen Square"],
+            "line": [
+              "Levels 4-6 Barclay House, 37 Queen Square"
+            ],
             "city": "London",
             "postalCode": "WC1N 3BH",
             "country": "United Kingdom"
@@ -60,7 +62,9 @@
         "name": [
           {
             "family": "BrighGosh321",
-            "given": ["Maria321"]
+            "given": [
+              "Maria321"
+            ]
           }
         ],
         "gender": "male",
@@ -151,7 +155,9 @@
           {
             "use": "official",
             "family": "Taylor-Beadling",
-            "given": ["Alison"],
+            "given": [
+              "Alison"
+            ],
             "text": "Authorized By"
           }
         ],
@@ -192,7 +198,9 @@
           {
             "use": "official",
             "family": "Perez Caballero",
-            "given": ["Ana "],
+            "given": [
+              "Ana "
+            ],
             "text": "Reported By"
           }
         ],
@@ -554,7 +562,9 @@
         "resourceType": "ServiceRequest",
         "id": "1775336d-71ea-cd05-49a3-e80e966e1277",
         "meta": {
-          "profile": ["http://hl7.org/fhir/StructureDefinition/servicerequest"]
+          "profile": [
+            "http://hl7.org/fhir/StructureDefinition/servicerequest"
+          ]
         },
         "text": {
           "status": "generated",
@@ -669,7 +679,9 @@
         "resourceType": "DiagnosticReport",
         "id": "3405095c-8a50-06c1-ec18-8efbd080e66e",
         "meta": {
-          "profile": ["http://hl7.org/fhir/StructureDefinition/genomicreport"]
+          "profile": [
+            "http://hl7.org/fhir/StructureDefinition/genomicreport"
+          ]
         },
         "status": "final",
         "code": {
