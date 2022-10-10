@@ -4,10 +4,10 @@ import {
   Narrative,
   Observation,
   ObservationComponent,
-  Reference,
 } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { RequiredReference } from "../code_systems/types";
 
-export const reference = (refType: string, identifier: string): Reference => {
+export const reference = (refType: string, identifier: string): RequiredReference => {
   return { reference: `${refType}?identifier=${identifier}`, type: refType };
 };
 

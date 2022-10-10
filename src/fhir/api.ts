@@ -75,7 +75,7 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
   const serviceRequest = serviceRequestAndId(
     form.sample,
     patient.identifier,
-    plan.id,
+    plan.identifier,
     reporter.identifier,
     specimen.identifier,
   );
