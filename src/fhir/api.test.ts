@@ -108,7 +108,7 @@ const deleteAndCascadeDelete = async (patientIds: string[]) => {
   }
 };
 
-// jest.setTimeout(20000);
+jest.setTimeout(20000);
 
 const getPatientIdentifier = (patientData: Bundle) => {
   const patientResource = getPatientResource(patientData);
