@@ -24,9 +24,7 @@ const checkResponseOK = async (response: Response) => {
     return r;
   }
 
-  const bundleResponse = r as BundleResponse;
-
-  const errors = bundleResponse.entry
+  const errors = (r as BundleResponse).entry
     .filter((entry) => entry.response.status.toString().startsWith("4"))
     .map((entry) => entry.response.outcome.issue);
 
