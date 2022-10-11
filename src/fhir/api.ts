@@ -1,4 +1,4 @@
-import { Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { Bundle, Resource } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 import { FormValues } from "../components/reports/ReportForm";
 import {
   createNullVariantAndIdentifier,
@@ -17,7 +17,6 @@ import {
 import { VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
 import { RequiredCoding } from "../code_systems/types";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * Create a report bundle
@@ -33,7 +32,7 @@ export const bundleRequest = (form: FormValues, reportedGenes: RequiredCoding[])
   };
 };
 
-export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]) => {
+export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]): Bundle => {
   const org = organisationAndIdentifier(form.address);
   const patient = patientAndIdentifier(form.patient, org.identifier);
   const specimen = specimenAndIdentifier(form.sample, patient.identifier);
@@ -91,9 +90,8 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]) 
     variants.map((variant) => variant.identifier),
   );
   return {
-    id: uuidv4(),
     resourceType: "Bundle",
-    type: "batch",
+    type: Bundle.TypeEnum.Batch,
     entry: [
       createEntry(org.resource, org.identifier),
       createEntry(patient.resource, patient.identifier),
