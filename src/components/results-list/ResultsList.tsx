@@ -47,8 +47,6 @@ const ResultsList: FC = () => {
   const parseObservations = (rawObservations: any) => {
     console.log(rawObservations);
 
-    let parsedObservations: any = [];
-
     const patients = rawObservations.filter((element: any) => {
       const url = element.fullUrl;
       const regex = /Patient/;
@@ -68,36 +66,35 @@ const ResultsList: FC = () => {
     console.log(patients);
     console.log(observations);
 
-    // loop through each patient
-    // for each patient we extract the patient id
-    // we then loop through each observation
-    // if the subject of the observation matches the patient id, then we add the observation to the current patient data structure
+    const readableResults = createReadableResults(patients, observations);
+
+    setParsedObservations(readableResults);
+  };
+
+  const createReadableResults = (patients: any, observations: any) => {
+    let readableResults: any = [];
 
     patients.forEach((patient: any, index: number) => {
-      let newPatientObj: any = patient;
-      let patientObservations: any = [];
-
       const patientId = patient.resource.id;
+      const firstName = patient.resource.name[0].given[0];
+      const lastName = patient.resource.name[0].family;
 
-      observations.forEach((observation: any, index: number) => {
+      const patientObservations = observations.filter((observation: any) => {
         const subjectIdLong = observation.resource.subject.reference;
-        const parsedSubjectId = subjectIdLong.split("Patient/")[1];
-
-        if (patientId === parsedSubjectId) {
-          patientObservations = [...patientObservations, observation];
-
-          newPatientObj = {
-            ...newPatientObj,
-            ["observations"]: patientObservations,
-          };
-          console.log(newPatientObj);
-        }
+        return subjectIdLong.includes(patientId);
       });
+      console.log(patientObservations);
 
-      parsedObservations = [...parsedObservations, newPatientObj];
+      // filter the observations by loinc code here instead of in the html?
+
+      readableResults = [
+        ...readableResults,
+        { patientId: patientId, firstName: firstName, lastName: lastName, observations: patientObservations },
+      ];
     });
 
-    setParsedObservations(parsedObservations);
+    console.log(readableResults);
+    return readableResults;
   };
 
   if (!parsedObservations) {
@@ -111,21 +108,31 @@ const ResultsList: FC = () => {
       <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
       {isLoading && <LoadingSpinner asOverlay message={"Getting observations"} />}
 
-      {parsedObservations.map((obervation: any, index: number) => {
+      {parsedObservations.map((patient: any, index: number) => {
         return (
           <div className="observations-container">
             <h1>Observation {index}</h1>
-            <div>First name: {obervation.resource.name[0].given[0]}</div>
-            <div>Last name: {obervation.resource.name[0].family}</div>
+            <div>First name: {patient.firstName}</div>
+            <div>Last name: {patient.lastName}</div>
+
             <div>
-              cDNA changes:
-              {obervation.observations.map((innerObservation: any) => {
-                const res = innerObservation.resource.component.map((component: any) => {
+              cDNA changes: {""}
+              {patient.observations.map((observation: any, index: number) => {
+                const isLast = patient.observations.length === index + 1;
+
+                const res = observation.resource.component.map((component: any) => {
                   const loincCode = "48004-6";
-                  if (component.code.coding[0].code === loincCode) component.valueCodeableConcept.coding[0].display;
+                  if (component.code.coding[0].code === loincCode) {
+                    return component.valueCodeableConcept.coding[0].display;
+                  }
                 });
 
-                return <span> {res}, </span>;
+                return (
+                  <span>
+                    {res}
+                    {!isLast && ", "}
+                  </span>
+                );
               })}
             </div>
           </div>
