@@ -20,7 +20,7 @@ const checkResponseOK = async (response: Response) => {
     console.error(r.body);
     throw new Error(response.statusText);
   }
-  if (!(r.type === "Response")) {
+  if (r.type !== "bundle-response") {
     return r;
   }
 
@@ -45,6 +45,13 @@ const checkResponseOK = async (response: Response) => {
 const getPatients = async (identifier?: string): Promise<Bundle> => {
   let url = `${FHIR_URL}/Patient`;
   if (identifier) url = `${FHIR_URL}/Patient?identifier=${identifier}`;
+  const response = await fetch(url);
+  return await checkResponseOK(response);
+};
+
+const getObservations = async (identifier?: string): Promise<Bundle> => {
+  let url = `${FHIR_URL}/Observation`;
+  if (identifier) url = `${FHIR_URL}/Observation?identifier=${identifier}`;
   const response = await fetch(url);
   return await checkResponseOK(response);
 };
@@ -134,6 +141,7 @@ describe("FHIR resources", () => {
     const bundle = createBundle(initialValues, reportedGenes);
 
     const createPatient = await sendBundle(bundle);
+
     // check it's the right patient
     await checkResponseOK(createPatient);
     const patientData = await getPatients();
@@ -144,15 +152,26 @@ describe("FHIR resources", () => {
   /**
    * Given that form data has been correctly populated
    * When a FHIR bundle is created
-   * Then the fhir library should pass validation of the bundle
+   * Then the fhir library should pass validation of the bundle and have the expected profile
    */
-  test("Bundle with variants is valid", () => {
+  test("Bundle with variants is valid", async () => {
     const bundle = createBundle(initialValues, reportedGenes);
 
     const output = fhir.validate(bundle);
     console.info("Validation output");
     console.info(JSON.stringify(output.messages, null, 2));
     expect(output.valid).toBeTruthy();
+
+    // check it has the expected profile
+    await sendBundle(bundle);
+    const expectedProfile = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant";
+    const obsResponse = await getObservations();
+
+    const varProfile = (obsResponse.entry as Array<BundleEntry>)
+      .filter((entry) => entry.resource?.resourceType === "Observation")
+      .map((entry) => entry.resource as Observation)
+      .filter((obs) => obs.meta?.profile?.includes(expectedProfile));
+    expect(varProfile.length).toEqual(1);
   });
 
   /**
@@ -160,11 +179,13 @@ describe("FHIR resources", () => {
    * When a FHIR bundle is created
    * Then the fhir library should pass validation of the bundle and null variant entry
    */
-  test("Bundle without variants", () => {
+  test("Bundle without variants", async () => {
     const bundle = createBundle(initialWithNoVariant, []);
+    await sendBundle(bundle);
+    const obsResponse = await getObservations();
 
     // null variant entry
-    const variantNotes = (bundle.entry as Array<BundleEntry>)
+    const variantNotes = (obsResponse.entry as Array<BundleEntry>)
       .filter((entry) => entry.resource?.resourceType === "Observation")
       .map((entry) => entry.resource as Observation)
       .filter((obs) =>
