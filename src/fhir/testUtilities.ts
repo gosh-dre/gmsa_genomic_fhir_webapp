@@ -1,3 +1,4 @@
+import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { checkResponseOK } from "./api";
 import { FHIR_URL } from "./api.test";
 
