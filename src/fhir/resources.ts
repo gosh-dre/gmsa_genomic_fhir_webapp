@@ -377,9 +377,8 @@ export const planDefinitionAndId = (
   sample: SampleSchema,
   report: ReportDetailSchema,
   patientIdentifier: string,
-): ResourceAndId => {
+): ResourceAndIdentifier => {
   const plan = new PlanDefinition();
-  plan.id = uuidv4();
   plan.resourceType = "PlanDefinition";
   plan.status = PlanDefinition.StatusEnum.Active;
   if (sample.reasonForTestText !== undefined) {
@@ -392,7 +391,6 @@ export const planDefinitionAndId = (
       title: "Test Method",
     },
   ];
-
   if (report.citation !== undefined) {
     plan.relatedArtifact = [
       {
@@ -402,8 +400,10 @@ export const planDefinitionAndId = (
     ];
   }
   plan.subjectReference = reference("Patient", patientIdentifier);
+  const identifier = createIdentifier(`${patientIdentifier}`);
+  plan.identifier = [identifier];
 
-  return { id: plan.id, resource: plan };
+  return { identifier: identifier.value, resource: plan };
 };
 
 export const furtherTestingAndId = (report: ReportDetailSchema, patientIdentifier: string): ResourceAndId => {
@@ -426,14 +426,14 @@ export const furtherTestingAndId = (report: ReportDetailSchema, patientIdentifie
  * Create a service request resource from form data and dependent references.
  * @param sample form data for sample
  * @param patientIdentifier to link the resource
- * @param planId id for PlanDefinition
+ * @param planIdentifier identifier search string for PlanDefinition
  * @param practitionerIdentifier to link the resource for the reporting scientist
  * @param specimenIdentifier to link the resource
  */
 export const serviceRequestAndId = (
   sample: SampleSchema,
   patientIdentifier: string,
-  planId: string,
+  planIdentifier: string,
   practitionerIdentifier: string,
   specimenIdentifier: string,
 ): ResourceAndId => {
@@ -442,7 +442,7 @@ export const serviceRequestAndId = (
   request.id = uuidv4();
   request.meta = { profile: ["http://hl7.org/fhir/StructureDefinition/servicerequest"] };
   request.text = generatedNarrative("Lab Procedure");
-  request.instantiatesCanonical = [`PlanDefinition/${planId}`];
+  request.instantiatesCanonical = [reference("PlanDefinition", planIdentifier).reference];
   request.status = "active";
   request.intent = "order";
   request.category = [

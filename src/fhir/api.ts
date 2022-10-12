@@ -75,7 +75,7 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
   const serviceRequest = serviceRequestAndId(
     form.sample,
     patient.identifier,
-    plan.id,
+    plan.identifier,
     reporter.identifier,
     specimen.identifier,
   );
@@ -96,8 +96,8 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
       createEntry(org.resource, org.identifier),
       createEntry(patient.resource, patient.identifier),
       createEntry(specimen.resource, specimen.identifier),
-      createEntry(authoriser.resource),
-      createEntry(reporter.resource),
+      createEntry(authoriser.resource, authoriser.identifier),
+      createEntry(reporter.resource, reporter.identifier),
       createEntry(overallInterpretation.resource, overallInterpretation.identifier),
       ...variants.map((variant) => createEntry(variant.resource, variant.identifier)),
       createEntry(furtherTesting.resource),
