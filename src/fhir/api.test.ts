@@ -20,7 +20,7 @@ const checkResponseOK = async (response: Response) => {
     console.error(r.body);
     throw new Error(response.statusText);
   }
-  if (!(r.type === "bundle-response")) {
+  if (r.type !== "bundle-response") {
     return r;
   }
 
