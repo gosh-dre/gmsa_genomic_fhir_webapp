@@ -5,6 +5,8 @@ import LoadingSpinner from "../UI/LoadingSpinner";
 import ModalWrapper from "../UI/ModalWrapper";
 import { ModalState } from "../UI/ModalWrapper";
 
+import classes from "./ResultsList.module.css";
+
 const FHIR_URL = process.env.REACT_APP_FHIR_URL;
 type patientResult = {
   firstName: string;
@@ -103,36 +105,40 @@ const ResultsList: FC = () => {
     return <div>Getting observations.</div>;
   }
 
-  console.log(parsedResults);
-
   return (
     <>
       <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
       {isLoading && <LoadingSpinner asOverlay message={"Getting observations..."} />}
 
-      {parsedResults.map((patient: patientResult, index: number) => {
-        return (
-          <div key={`${patient.patientId}-${index}`} className="observations-container">
-            <h1>Observation {index}</h1>
-            <div>First name: {patient.firstName}</div>
-            <div>Last name: {patient.lastName}</div>
+      <h1>Patient results table</h1>
 
-            <div>
-              cDNA changes: {""}
-              {patient.observations.map((observation: { [key: string]: any }, index: number) => {
-                const isLast = patient.observations.length === index + 1;
+      <table className={classes["results-table"]}>
+        <tr>
+          <th>First name</th>
+          <th>Last name</th>
+          <th>cDNA changes</th>
+        </tr>
+        {parsedResults.map((patient, index) => {
+          return (
+            <tr key={`${patient.patientId}-${index}`}>
+              <td>{patient.firstName}</td>
+              <td>{patient.lastName}</td>
+              <td>
+                {patient.observations.map((observation: { [key: string]: any }, index) => {
+                  const isLast = patient.observations.length === index + 1;
 
-                return (
-                  <span key={`${observation.observationId}-${index}`}>
-                    {observation.valueCodeableConcept.coding[0].display}
-                    {!isLast && ", "}
-                  </span>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })}
+                  return (
+                    <span key={`${observation.observationId}-${index}`}>
+                      {observation.valueCodeableConcept.coding[0].display}
+                      {!isLast && ", "}
+                    </span>
+                  );
+                })}
+              </td>
+            </tr>
+          );
+        })}
+      </table>
     </>
   );
 };
