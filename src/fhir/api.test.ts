@@ -1,6 +1,5 @@
 import { Fhir } from "fhir/fhir";
-import { BundleResponse } from "../code_systems/types";
-import { createBundle } from "./api";
+import { createBundle, checkResponseOK } from "./api";
 import { initialValues, initialWithNoVariant } from "../components/reports/FormDefaults";
 import { Observation } from "fhir/r4";
 import { geneCoding } from "../code_systems/hgnc";
@@ -12,35 +11,6 @@ const fhir = new Fhir();
 
 const reportedGenes = [geneCoding("HGNC:4389", "GNA01")];
 const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
-
-const checkResponseOK = async (response: Response) => {
-  const r = await response.json();
-
-  if (!response.ok) {
-    console.error(r.body);
-    throw new Error(response.statusText);
-  }
-  if (!(r.type === "bundle-response")) {
-    return r;
-  }
-
-  const errors = (r as BundleResponse).entry
-    .filter((entry) => entry.response.status.toString().startsWith("4"))
-    .map((entry) => entry.response.outcome.issue);
-
-  if (errors.length > 1) {
-    errors.forEach((issue) => {
-      let message = "unknown error in bundle";
-      if (issue && issue.length > 0) {
-        message = issue[0].diagnostics;
-      }
-      throw new Error(message);
-    });
-  }
-
-  console.debug(`check response: ${JSON.stringify(r, null, 2)}`);
-  return r;
-};
 
 const getPatients = async (identifier?: string): Promise<Bundle> => {
   let url = `${FHIR_URL}/Patient`;

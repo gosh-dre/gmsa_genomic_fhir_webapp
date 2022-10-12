@@ -16,7 +16,7 @@ import {
 } from "./resources";
 import { VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
-import { RequiredCoding } from "../code_systems/types";
+import { BundleResponse, RequiredCoding } from "../code_systems/types";
 
 /**
  * Create a report bundle
@@ -127,4 +127,33 @@ const createEntry = (resource: Resource, identifier?: string) => {
     resource: resource,
     request: requestInfo,
   };
+};
+
+export const checkResponseOK = async (response: Response) => {
+  const r = await response.json();
+
+  if (!response.ok) {
+    console.error(r.body);
+    throw new Error(response.statusText);
+  }
+  if (!(r.type === "bundle-response")) {
+    return r;
+  }
+
+  const errors = (r as BundleResponse).entry
+    .filter((entry) => entry.response.status.toString().startsWith("4"))
+    .map((entry) => entry.response.outcome.issue);
+
+  if (errors.length > 1) {
+    errors.forEach((issue) => {
+      let message = "unknown error in bundle";
+      if (issue && issue.length > 0) {
+        message = issue[0].diagnostics;
+      }
+      throw new Error(message);
+    });
+  }
+
+  console.debug(`check response: ${JSON.stringify(r, null, 2)}`);
+  return r;
 };
