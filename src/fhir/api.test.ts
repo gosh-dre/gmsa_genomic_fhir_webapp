@@ -20,7 +20,7 @@ const checkResponseOK = async (response: Response) => {
     console.error(r.body);
     throw new Error(response.statusText);
   }
-  if (!(r.type === "Response")) {
+  if (!(r.type === "bundle-response")) {
     return r;
   }
 
@@ -49,6 +49,13 @@ const getPatients = async (identifier?: string): Promise<Bundle> => {
   return await checkResponseOK(response);
 };
 
+const getObservations = async (identifier?: string): Promise<Bundle> => {
+  let url = `${FHIR_URL}/Observation`;
+  if (identifier) url = `${FHIR_URL}/Observation?identifier=${identifier}`;
+  const response = await fetch(url);
+  return await checkResponseOK(response);
+};
+
 const sendBundle = async (bundle: Bundle) => {
   const sentBundle = await fetch(`${FHIR_URL}/`, {
     method: "POST",
@@ -57,7 +64,7 @@ const sendBundle = async (bundle: Bundle) => {
       "Content-Type": "application/json",
     },
   });
-  await new Promise((r) => setTimeout(r, 1500));
+  // await new Promise((r) => setTimeout(r, 1500));
   return sentBundle;
 };
 
@@ -92,7 +99,7 @@ const deleteAndCascadeDelete = async (patientIds: string[]) => {
   }
 };
 
-jest.setTimeout(20000);
+// jest.setTimeout(20000);
 
 const getPatientIdentifier = (patientData: Bundle) => {
   const patientResource = getPatientResource(patientData);
@@ -134,6 +141,7 @@ describe("FHIR resources", () => {
     const bundle = createBundle(initialValues, reportedGenes);
 
     const createPatient = await sendBundle(bundle);
+
     // check it's the right patient
     await checkResponseOK(createPatient);
     const patientData = await getPatients();
@@ -155,16 +163,25 @@ describe("FHIR resources", () => {
     expect(output.valid).toBeTruthy();
   });
 
+  test("Bundle with variants has expected profile", () => {
+    const expectedProfile = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant";
+
+    const obsResponse = getObservations();
+    // filter by expectedProfile and count length?
+  });
+
   /**
    * Given that form data has been populated with no variants
    * When a FHIR bundle is created
    * Then the fhir library should pass validation of the bundle and null variant entry
    */
-  test("Bundle without variants", () => {
+  test("Bundle without variants", async () => {
     const bundle = createBundle(initialWithNoVariant, []);
+    await sendBundle(bundle);
+    const obsResponse = await getObservations();
 
     // null variant entry
-    const variantNotes = (bundle.entry as Array<BundleEntry>)
+    const variantNotes = (obsResponse.entry as Array<BundleEntry>)
       .filter((entry) => entry.resource?.resourceType === "Observation")
       .map((entry) => entry.resource as Observation)
       .filter((obs) =>
