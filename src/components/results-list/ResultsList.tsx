@@ -49,6 +49,7 @@ const ResultsList: FC = () => {
   }, [ctx]);
 
   const parseResults = (entries: { [key: string]: any }[]) => {
+    console.log(entries);
     // extract patients from the data
     const patients = entries.filter((entry: { [key: string]: any }) => {
       return entry.fullUrl.includes("Patient");
@@ -113,31 +114,35 @@ const ResultsList: FC = () => {
       <h1>Patient results table</h1>
 
       <table className={classes["results-table"]}>
-        <tr>
-          <th>First name</th>
-          <th>Last name</th>
-          <th>cDNA changes</th>
-        </tr>
-        {parsedResults.map((patient, index) => {
-          return (
-            <tr key={`${patient.patientId}-${index}`}>
-              <td>{patient.firstName}</td>
-              <td>{patient.lastName}</td>
-              <td>
-                {patient.observations.map((observation: { [key: string]: any }, index) => {
-                  const isLast = patient.observations.length === index + 1;
+        <thead>
+          <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>cDNA changes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {parsedResults.map((patient, index) => {
+            return (
+              <tr key={`${patient.patientId}-${index}`}>
+                <td>{patient.firstName}</td>
+                <td>{patient.lastName}</td>
+                <td>
+                  {patient.observations.map((observation: { [key: string]: any }, index) => {
+                    const isLast = patient.observations.length === index + 1;
 
-                  return (
-                    <span key={`${observation.observationId}-${index}`}>
-                      {observation.valueCodeableConcept.coding[0].display}
-                      {!isLast && ", "}
-                    </span>
-                  );
-                })}
-              </td>
-            </tr>
-          );
-        })}
+                    return (
+                      <span key={`${observation.observationId}-${index}`}>
+                        {observation.valueCodeableConcept.coding[0].display}
+                        {!isLast && ", "}
+                      </span>
+                    );
+                  })}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
       </table>
     </>
   );
