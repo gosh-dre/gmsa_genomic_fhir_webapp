@@ -1,4 +1,4 @@
-import { Coding } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { Coding, Reference } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 /**
  * Subset of FHIR Coding Type, with all fields required.
@@ -21,3 +21,8 @@ export type BundleResponse = {
     },
   ];
 };
+
+/**
+ * FHIR reference with reference and type required.
+ */
+export type RequiredReference = Required<Pick<Reference, "reference" | "type">>;
