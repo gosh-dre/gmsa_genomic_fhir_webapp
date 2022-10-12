@@ -152,22 +152,27 @@ describe("FHIR resources", () => {
   /**
    * Given that form data has been correctly populated
    * When a FHIR bundle is created
-   * Then the fhir library should pass validation of the bundle
+   * Then the fhir library should pass validation of the bundle and have the expected profile
    */
-  test("Bundle with variants is valid", () => {
+  test("Bundle with variants is valid", async () => {
     const bundle = createBundle(initialValues, reportedGenes);
 
     const output = fhir.validate(bundle);
     console.info("Validation output");
     console.info(JSON.stringify(output.messages, null, 2));
     expect(output.valid).toBeTruthy();
-  });
 
-  test("Bundle with variants has expected profile", () => {
+    // check it has the expected profile
+    await sendBundle(bundle);
     const expectedProfile = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant";
 
-    const obsResponse = getObservations();
+    const obsResponse = await getObservations();
     // filter by expectedProfile and count length?
+    const varProfile = (obsResponse.entry as Array<BundleEntry>)
+      .filter((entry) => entry.resource?.resourceType === "Observation")
+      .map((entry) => entry.resource as Observation)
+      .filter((obs) => obs.meta?.profile?.includes(expectedProfile));
+    expect(varProfile.length).toEqual(1);
   });
 
   /**
