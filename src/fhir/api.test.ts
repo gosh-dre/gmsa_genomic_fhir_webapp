@@ -6,68 +6,12 @@ import { geneCoding } from "../code_systems/hgnc";
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { sendBundle, deletePatients, getPatients, getObservations } from "./testUtilities";
 
 const fhir = new Fhir();
 
 const reportedGenes = [geneCoding("HGNC:4389", "GNA01")];
-const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
-
-const getPatients = async (identifier?: string): Promise<Bundle> => {
-  let url = `${FHIR_URL}/Patient`;
-  if (identifier) url = `${FHIR_URL}/Patient?identifier=${identifier}`;
-  const response = await fetch(url);
-  return await checkResponseOK(response);
-};
-
-const getObservations = async (identifier?: string): Promise<Bundle> => {
-  let url = `${FHIR_URL}/Observation`;
-  if (identifier) url = `${FHIR_URL}/Observation?identifier=${identifier}`;
-  const response = await fetch(url);
-  return await checkResponseOK(response);
-};
-
-const sendBundle = async (bundle: Bundle) => {
-  const sentBundle = await fetch(`${FHIR_URL}/`, {
-    method: "POST",
-    body: JSON.stringify(bundle),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  await new Promise((r) => setTimeout(r, 1500));
-  return sentBundle;
-};
-
-/**
- * Given an ID string
- * this will delete the chosen patient's records, otherwise it will remove all patients by looping
- * through and extracting IDs from the search bundle
- */
-const deletePatients = async (patientId?: string) => {
-  const patientData = await getPatients();
-  if (!("entry" in patientData)) {
-    console.debug("Nothing to delete; no patients in database");
-    return;
-  }
-  if (patientId) {
-    await deleteAndCascadeDelete([patientId]);
-  } else {
-    const patientIds = patientData.entry?.map((entry) => entry.resource?.id) as string[];
-    await deleteAndCascadeDelete(patientIds);
-  }
-
-  // await new Promise((r) => setTimeout(r, 1500));
-};
-
-const deleteAndCascadeDelete = async (patientIds: string[]) => {
-  console.debug(`deleting ids: ${patientIds}`);
-  for (const patientId of patientIds) {
-    const response = await fetch(`${FHIR_URL}/Patient/${patientId}?_cascade=delete`, {
-      method: "DELETE",
-    });
-    await checkResponseOK(response);
-  }
-};
+export const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
 
 jest.setTimeout(20000);
 
@@ -113,7 +57,7 @@ describe("FHIR resources", () => {
     const createPatient = await sendBundle(bundle);
 
     // check it's the right patient
-    await checkResponseOK(createPatient);
+    const response = await checkResponseOK(createPatient);
     const patientData = await getPatients();
     expect("entry" in patientData).toBeTruthy();
     expect(getPatientIdentifier(patientData)).toEqual(initialValues.patient.mrn);
