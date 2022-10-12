@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/gmsa_genomic_fhir_webapp/static/css/main.4823b576.css",
-    "main.js": "/gmsa_genomic_fhir_webapp/static/js/main.bf7d69cb.js",
+    "main.js": "/gmsa_genomic_fhir_webapp/static/js/main.db25c8bd.js",
     "index.html": "/gmsa_genomic_fhir_webapp/index.html",
     "main.4823b576.css.map": "/gmsa_genomic_fhir_webapp/static/css/main.4823b576.css.map",
-    "main.bf7d69cb.js.map": "/gmsa_genomic_fhir_webapp/static/js/main.bf7d69cb.js.map"
+    "main.db25c8bd.js.map": "/gmsa_genomic_fhir_webapp/static/js/main.db25c8bd.js.map"
   },
   "entrypoints": [
     "static/css/main.4823b576.css",
-    "static/js/main.bf7d69cb.js"
+    "static/js/main.db25c8bd.js"
   ]
 }
