@@ -57,7 +57,7 @@ describe("FHIR resources", () => {
     const createPatient = await sendBundle(bundle);
 
     // check it's the right patient
-    const response = await checkResponseOK(createPatient);
+    await checkResponseOK(createPatient);
     const patientData = await getPatients();
     expect("entry" in patientData).toBeTruthy();
     expect(getPatientIdentifier(patientData)).toEqual(initialValues.patient.mrn);

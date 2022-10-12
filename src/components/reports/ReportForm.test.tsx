@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { noValues } from "./FormDefaults";
 import { act } from "react-dom/test-utils";
+import { deletePatients } from "../../fhir/testUtilities";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -137,6 +138,10 @@ const setReportFields = async () => {
 jest.setTimeout(20000);
 
 describe("Report form", () => {
+  beforeEach(async () => {
+    fetchMock.dontMock();
+    await deletePatients();
+  });
   /**
    * Given the report form
    * When all data filled in
