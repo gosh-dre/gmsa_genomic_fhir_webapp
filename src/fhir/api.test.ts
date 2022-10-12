@@ -64,7 +64,7 @@ const sendBundle = async (bundle: Bundle) => {
       "Content-Type": "application/json",
     },
   });
-  // await new Promise((r) => setTimeout(r, 1500));
+  await new Promise((r) => setTimeout(r, 1500));
   return sentBundle;
 };
 
@@ -99,7 +99,7 @@ const deleteAndCascadeDelete = async (patientIds: string[]) => {
   }
 };
 
-// jest.setTimeout(20000);
+jest.setTimeout(20000);
 
 const getPatientIdentifier = (patientData: Bundle) => {
   const patientResource = getPatientResource(patientData);
@@ -165,9 +165,8 @@ describe("FHIR resources", () => {
     // check it has the expected profile
     await sendBundle(bundle);
     const expectedProfile = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant";
-
     const obsResponse = await getObservations();
-    // filter by expectedProfile and count length?
+
     const varProfile = (obsResponse.entry as Array<BundleEntry>)
       .filter((entry) => entry.resource?.resourceType === "Observation")
       .map((entry) => entry.resource as Observation)
