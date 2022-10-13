@@ -26,16 +26,9 @@ export const FhirProvider: FC<Props> = (props) => {
   useEffect(() => {
     if (!client) {
       SMART.ready()
-        .then((client) => {
-          setClient(client);
-        })
-        .catch((error) => {
-          setError(error);
-          console.error(error);
-        })
-        .finally(() => {
-          console.debug("FHIR client ready");
-        });
+        .then((client) => setClient(client))
+        .catch((error) => setError(error))
+        .finally(() => console.debug("FHIR client ready"));
     }
   }, []);
 
