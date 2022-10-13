@@ -159,7 +159,7 @@ export const checkResponseOK = async (response: Response) => {
     const responseStatus = (r as BundleResponse).entry.map((entry) => entry.response.status);
     if (!responseStatus.toString().startsWith("2")) {
       const responseIssue = (r as BundleResponse).entry.map((entry) => entry.response.outcome.issue);
-      const issueDiagnostics = responseIssue?.map((issue) => issue[0].diagnostics);
+      const issueDiagnostics = responseIssue?.map((issue) => issue?.[0].diagnostics);
 
       notOKs.push([r.resourceType, responseStatus, issueDiagnostics]);
     }
