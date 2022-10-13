@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-import { parsedResultsModel } from "../../pages/Results";
+import { parsedResultsModel } from "./ResultsDataFetcher";
 
 import classes from "./ResultsList.module.css";
 

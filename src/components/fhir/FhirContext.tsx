@@ -35,7 +35,6 @@ export const FhirProvider: FC<Props> = (props) => {
         })
         .finally(() => {
           console.debug("FHIR client ready");
-          setError(null);
         });
     }
   }, []);

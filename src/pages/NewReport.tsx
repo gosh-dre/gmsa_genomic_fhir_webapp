@@ -1,6 +1,7 @@
 import ReportForm from "../components/reports/ReportForm";
 import { FC } from "react";
 import { initialWithNoVariant, noValues } from "../components/reports/FormDefaults";
+import { FhirProvider } from "../components/fhir/FhirContext";
 
 const PREFILLED_REPORT = process.env.REACT_APP_PREFILLED_REPORT;
 
@@ -10,7 +11,11 @@ const NewReport: FC = () => {
     initialFormValues = initialWithNoVariant;
   }
 
-  return <ReportForm initialValues={initialFormValues} />;
+  return (
+    <FhirProvider>
+      <ReportForm initialValues={initialFormValues} />
+    </FhirProvider>
+  );
 };
 
 export default NewReport;
