@@ -59,8 +59,6 @@ const ResultsDataFetcher: FC = () => {
       })
       .map((entry) => entry.resource as Patient);
 
-    console.log(patients);
-
     // extract observations from the data
     const observations = entries
       .filter((entry) => {
@@ -122,8 +120,6 @@ const ResultsDataFetcher: FC = () => {
   if (!parsedResults) {
     return <div>Getting observations.</div>;
   }
-
-  console.log(parsedResults);
 
   return (
     <>
