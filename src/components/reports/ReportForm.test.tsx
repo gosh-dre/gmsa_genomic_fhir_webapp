@@ -142,6 +142,24 @@ describe("Report form", () => {
     fetchMock.dontMock();
     await deletePatients();
   });
+
+  test("Error modal exists", async () => {
+    // Arrange
+    render(<ReportForm initialValues={noValues} />);
+
+    // Act
+    await setLabAndPatient();
+    await setSample();
+    await setVariantFields();
+    await setReportFields();
+    await act(async () => {
+      userEvent.click(screen.getByText(/submit/i));
+    });
+
+    // Assert
+    const modal = await screen.findByRole("modal");
+    expect(modal).toContain("error");
+  });
   /**
    * Given the report form
    * When all data filled in
