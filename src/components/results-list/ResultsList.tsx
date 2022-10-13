@@ -35,7 +35,7 @@ const ResultsList: FC<Props> = (props) => {
 
                     return (
                       <span key={`${observation.observationId}-${index}`}>
-                        {observation.valueCodeableConcept.coding[0].display}
+                        {observation.cDnaChange}
                         {!isLast && ", "}
                       </span>
                     );

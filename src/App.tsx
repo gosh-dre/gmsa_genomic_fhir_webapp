@@ -7,15 +7,27 @@ import { FhirProvider } from "./components/fhir/FhirContext";
 
 function App() {
   return (
-    <FhirProvider>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<FhirAuthoriser />} />
-          <Route path="/new_report" element={<NewReport />} />
-          <Route path="/results_list" element={<Results />} />
-        </Routes>
-      </Layout>
-    </FhirProvider>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<FhirAuthoriser />} />
+        <Route
+          path="/new_report"
+          element={
+            <FhirProvider>
+              <NewReport />
+            </FhirProvider>
+          }
+        />
+        <Route
+          path="/results_list"
+          element={
+            <FhirProvider>
+              <Results />
+            </FhirProvider>
+          }
+        />
+      </Routes>
+    </Layout>
   );
 }
 

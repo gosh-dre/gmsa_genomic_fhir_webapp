@@ -6,13 +6,16 @@ import ModalWrapper from "../components/UI/ModalWrapper";
 import { ModalState } from "../components/UI/ModalWrapper";
 import ResultsList from "../components/results-list/ResultsList";
 
+import { Patient, Observation } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+
 const FHIR_URL = process.env.REACT_APP_FHIR_URL;
 
+type trimmedObservation = { cDnaChange: string | undefined; observationId: string | undefined };
 type patientResult = {
-  firstName: string;
-  lastName: string;
-  patientId: string;
-  observations: { [key: string]: any }[]; // using any since it is a deeply nested object from an external api}
+  firstName: string | undefined;
+  lastName: string | undefined;
+  patientId: string | undefined;
+  observations: trimmedObservation[];
 };
 export type parsedResultsModel = patientResult[];
 
@@ -49,48 +52,62 @@ const Results: FC = () => {
   }, [ctx]);
 
   const parseResults = (entries: { [key: string]: any }[]) => {
-    console.log(entries);
     // extract patients from the data
-    const patients = entries.filter((entry: { [key: string]: any }) => {
-      return entry.fullUrl.includes("Patient");
-    });
+    const patients = entries
+      .filter((entry) => {
+        return entry.fullUrl.includes("Patient");
+      })
+      .map((entry) => entry.resource as Patient);
+
+    console.log(patients);
 
     // extract observations from the data
-    const observations = entries.filter((entry: { [key: string]: any }) => {
-      return entry.fullUrl.includes("Observation");
-    });
+    const observations = entries
+      .filter((entry) => {
+        return entry.fullUrl.includes("Observation");
+      })
+      .map((entry) => entry.resource as Observation);
 
     const readableResults = createReadableResults(patients, observations);
+
     return readableResults;
   };
 
-  const createReadableResults = (patients: { [key: string]: any }[], observations: { [key: string]: any }[]) => {
+  const createReadableResults = (patients: Patient[], observations: Observation[]) => {
     let readableResults: parsedResultsModel = [];
 
     // extract the required data and store in a trimmed down data structure
-    patients.forEach((patient: { [key: string]: any }) => {
-      const patientId = patient.resource.id;
-      const firstName = patient.resource.name[0].given[0];
-      const lastName = patient.resource.name[0].family;
+    patients.forEach((patient) => {
+      if (!patient.id || !patient.name || !patient.name[0].given) return;
+
+      const patientId = patient.id;
+      const firstName = patient.name[0].given[0];
+      const lastName = patient.name[0].family;
 
       // return observations belonging to a patient based on the patient ID
-      const patientObservations = observations.filter((observation: { [key: string]: any }) => {
-        const subjectIdLong = observation.resource.subject.reference;
+      const patientObservations = observations.filter((observation) => {
+        if (!observation.subject || !observation.subject.reference) return;
+
+        const subjectIdLong = observation.subject.reference;
+
         return subjectIdLong.includes(patientId);
       });
 
       // extract required data from each observation
-      let trimmedObservations: { [key: string]: any }[] = [];
-      patientObservations.forEach((observation: { [key: string]: any }) => {
-        let trimmedObservation = observation.resource.component.filter((component: { [key: string]: any }) => {
+      let trimmedObservations: trimmedObservation[] = [];
+      patientObservations.forEach((observation) => {
+        if (!observation || !observation.component) return;
+
+        const trimmedObservation = observation.component.filter((component) => {
           const loincCode = "48004-6";
-          if (component.code.coding[0].code === loincCode) {
-            return component.valueCodeableConcept.coding[0].display;
+          if (component?.code?.coding?.[0].code === loincCode) {
+            return component?.valueCodeableConcept?.coding?.[0].display;
           }
         });
-        trimmedObservation = { ...trimmedObservation[0], observationId: observation.resource.id };
 
-        trimmedObservations = [...trimmedObservations, trimmedObservation];
+        const cDnaChange = trimmedObservation[0].valueCodeableConcept?.coding?.[0].display;
+
+        trimmedObservations = [...trimmedObservations, { cDnaChange: cDnaChange, observationId: observation.id }];
       });
 
       readableResults = [
@@ -105,6 +122,8 @@ const Results: FC = () => {
   if (!parsedResults) {
     return <div>Getting observations.</div>;
   }
+
+  console.log(parsedResults);
 
   return (
     <>
