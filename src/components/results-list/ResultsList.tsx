@@ -11,6 +11,10 @@ interface Props {
 const ResultsList: FC<Props> = (props) => {
   const { results } = props;
 
+  if (!results || results.length === 0) {
+    return <div>No results were returned from the fhir query. </div>;
+  }
+
   return (
     <>
       <h1>Patient results table</h1>

@@ -84,12 +84,14 @@ const ResultsDataFetcher: FC = () => {
 
       // return observations belonging to a patient based on the patient ID
       const patientObservations = observations.filter((observation) => {
-        if (!observation.subject || !observation.subject.reference) return;
+        if (!observation.subject?.reference) return;
 
         const subjectIdLong = observation.subject.reference;
 
         return subjectIdLong.includes(patientId);
       });
+
+      if (!patientObservations || patientObservations.length === 0) return;
 
       // extract required data from each observation
       let trimmedObservations: trimmedObservation[] = [];
