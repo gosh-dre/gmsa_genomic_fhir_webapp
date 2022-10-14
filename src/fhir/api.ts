@@ -155,14 +155,15 @@ export const checkResponseOK = async (response: Response) => {
   }
 
   if (r.type === "batch-response") {
-    const notOKs = [];
+    const errorsForModal = [];
     const responseStatus = (r as BundleResponse).entry.map((entry) => entry.response.status);
     if (!responseStatus.toString().startsWith("2")) {
       const responseIssue = (r as BundleResponse).entry.map((entry) => entry.response.outcome.issue);
       const issueDiagnostics = responseIssue?.map((issue) => issue?.[0].diagnostics);
 
-      notOKs.push([r.resourceType, responseStatus, issueDiagnostics]);
+      errorsForModal.push([r.resourceType, responseStatus, issueDiagnostics]); // need to make these accessible
     }
+    return errorsForModal;
   }
 
   console.debug(`check response: ${JSON.stringify(r, null, 2)}`);
