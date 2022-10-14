@@ -137,11 +137,11 @@ export const getErrors = (r: any) => {
     .filter((response) => !response.status.toString().startsWith("2"));
   if (errorResponses.length > 1) {
     errorResponses.forEach((error) => {
-      const errorDetails: ErrorDetails = [
-        error.status,
-        r.resourceType as string,
-        error.outcome.issue?.[0].diagnostics as string,
-      ];
+      const errorDetails: ErrorDetails = {
+        errorCode: error.status,
+        resourceType: r.resourceType as string,
+        diagnostics: error.outcome.issue?.[0].diagnostics as string,
+      };
       errorArray.push(errorDetails);
     });
   }
