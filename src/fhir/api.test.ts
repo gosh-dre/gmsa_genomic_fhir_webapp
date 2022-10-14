@@ -11,7 +11,6 @@ import { sendBundle, deletePatients, getPatients, getObservations } from "./test
 const fhir = new Fhir();
 
 const reportedGenes = [geneCoding("HGNC:4389", "GNA01")];
-export const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
 
 jest.setTimeout(20000);
 

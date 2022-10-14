@@ -4,8 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { initialWithNoVariant, noValues } from "./FormDefaults";
 import { act } from "react-dom/test-utils";
-import { deletePatients } from "../../fhir/testUtilities";
-import { FHIR_URL } from "../../fhir/api.test";
+import { createPractitioner, deletePatients } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
 
@@ -155,17 +154,6 @@ describe("Report form", () => {
     practitioner.identifier = [identifier];
     console.log(practitioner);
 
-    const createPractitioner = async (practitioner: any) => {
-      const sendPractitioner = await fetch(`${FHIR_URL}/Practitioner`, {
-        method: "POST",
-        body: JSON.stringify(practitioner),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      await new Promise((r) => setTimeout(r, 1500));
-      return sendPractitioner;
-    };
     createPractitioner(practitioner);
     createPractitioner(practitioner);
 

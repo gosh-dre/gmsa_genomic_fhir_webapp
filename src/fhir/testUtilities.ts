@@ -1,6 +1,19 @@
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { checkResponseOK } from "./api";
-import { FHIR_URL } from "./api.test";
+
+const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
+
+export const createPractitioner = async (practitioner: any) => {
+  const sendPractitioner = await fetch(`${FHIR_URL}/Practitioner`, {
+    method: "POST",
+    body: JSON.stringify(practitioner),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  await new Promise((r) => setTimeout(r, 1500));
+  return sendPractitioner;
+};
 
 export const sendBundle = async (bundle: Bundle) => {
   const sentBundle = await fetch(`${FHIR_URL}/`, {
@@ -40,7 +53,6 @@ export const deletePatients = async (patientId?: string) => {
     const patientIds = patientData.entry?.map((entry) => entry.resource?.id) as string[];
     await deleteAndCascadeDelete(patientIds);
   }
-
   // await new Promise((r) => setTimeout(r, 1500));
 };
 
