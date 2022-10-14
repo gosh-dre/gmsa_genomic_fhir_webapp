@@ -8,16 +8,16 @@ import ResultsList from "../results-list/ResultsList";
 
 import { Patient, Observation } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
-const FHIR_URL = process.env.REACT_APP_FHIR_URL;
-
-type trimmedObservation = { cDnaChange: string | undefined; observationId: string | undefined };
-type patientResult = {
+type TrimmedObservation = { cDnaChange: string | undefined; observationId: string | undefined };
+type PatientResult = {
   firstName: string | undefined;
   lastName: string | undefined;
   patientId: string | undefined;
-  observations: trimmedObservation[];
+  observations: TrimmedObservation[];
 };
-export type parsedResultsModel = patientResult[];
+export type parsedResultsModel = PatientResult[];
+
+const HGVS_CDNA_LOINC = "48004-6";
 
 const ResultsDataFetcher: FC = () => {
   const ctx = useContext(FhirContext);
@@ -26,7 +26,7 @@ const ResultsDataFetcher: FC = () => {
   const [parsedResults, setParsedResults] = useState<parsedResultsModel | null>(null);
 
   useEffect(() => {
-    const observationQueryUrl = `${FHIR_URL}/Observation?_profile=http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant&_include=Observation:subject`;
+    const observationQueryUrl = `Observation?_profile=http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant&_include=Observation:subject`;
 
     setIsLoading(true);
 
@@ -76,7 +76,9 @@ const ResultsDataFetcher: FC = () => {
 
     // extract the required data and store in a trimmed down data structure
     patients.forEach((patient) => {
-      if (!patient.id || !patient.name || !patient.name[0].given) return;
+      if (!patient.id || !patient.name || !patient.name[0].given) {
+        return;
+      }
 
       const patientId = patient.id;
       const firstName = patient.name[0].given[0];
@@ -91,21 +93,24 @@ const ResultsDataFetcher: FC = () => {
         return subjectIdLong.includes(patientId);
       });
 
-      if (!patientObservations || patientObservations.length === 0) return;
+      if (!patientObservations || patientObservations.length === 0) {
+        return;
+      }
 
       // extract required data from each observation
-      let trimmedObservations: trimmedObservation[] = [];
+      let trimmedObservations: TrimmedObservation[] = [];
       patientObservations.forEach((observation) => {
-        if (!observation || !observation.component) return;
+        if (!observation || !observation.component) {
+          return;
+        }
 
-        const trimmedObservation = observation.component.filter((component) => {
-          const loincCode = "48004-6";
-          if (component?.code?.coding?.[0].code === loincCode) {
+        const TrimmedObservation = observation.component.filter((component) => {
+          if (component?.code?.coding?.[0].code === HGVS_CDNA_LOINC) {
             return component?.valueCodeableConcept?.coding?.[0].display;
           }
         });
 
-        const cDnaChange = trimmedObservation[0].valueCodeableConcept?.coding?.[0].display;
+        const cDnaChange = TrimmedObservation[0].valueCodeableConcept?.coding?.[0].display;
 
         trimmedObservations = [...trimmedObservations, { cDnaChange: cDnaChange, observationId: observation.id }];
       });
@@ -120,7 +125,7 @@ const ResultsDataFetcher: FC = () => {
   };
 
   if (!parsedResults) {
-    return <div>Getting observations.</div>;
+    return <div>Something went wrong getting observations. Please try again later.</div>;
   }
 
   return (
