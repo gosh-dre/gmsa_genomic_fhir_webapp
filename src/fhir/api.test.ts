@@ -6,7 +6,14 @@ import { geneCoding } from "../code_systems/hgnc";
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import { sendBundle, deletePatients, getPatients, getObservations, checkResponseOK } from "./testUtilities";
+import {
+  sendBundle,
+  deletePatients,
+  getPatients,
+  getObservations,
+  checkResponseOK,
+  deletePractitioners,
+} from "./testUtilities";
 
 const fhir = new Fhir();
 
@@ -34,6 +41,7 @@ const getPatientGivenNames = (patientData: Bundle) => {
 describe("FHIR resources", () => {
   beforeEach(async () => {
     await deletePatients();
+    await deletePractitioners();
   });
 
   /**
