@@ -81,10 +81,10 @@ export const deletePatients = async (patientId?: string) => {
     return;
   }
   if (patientId) {
-    await deleteAndCascadeDelete([patientId]);
+    await deleteAndCascadeDelete([patientId], "Patient");
   } else {
     const patientIds = patientData.entry?.map((entry) => entry.resource?.id) as string[];
-    await deleteAndCascadeDelete(patientIds);
+    await deleteAndCascadeDelete(patientIds, "Patient");
   }
   // await new Promise((r) => setTimeout(r, 1500));
 };
@@ -96,17 +96,17 @@ export const deletePractitioners = async (practitionerId?: string) => {
     return;
   }
   if (practitionerId) {
-    await deleteAndCascadeDelete([practitionerId]);
+    await deleteAndCascadeDelete([practitionerId], "Practitioner");
   } else {
     const practitionerIds = practitionerData.entry?.map((entry) => entry.resource?.id) as string[];
-    await deleteAndCascadeDelete(practitionerIds);
+    await deleteAndCascadeDelete(practitionerIds, "Practitioner");
   }
 };
 
-const deleteAndCascadeDelete = async (patientIds: string[]) => {
-  console.debug(`deleting ids: ${patientIds}`);
-  for (const patientId of patientIds) {
-    const response = await fetch(`${FHIR_URL}/Patient/${patientId}?_cascade=delete`, {
+const deleteAndCascadeDelete = async (identifiers: string[], resource: string) => {
+  console.debug(`deleting ids: ${identifiers}`);
+  for (const id of identifiers) {
+    const response = await fetch(`${FHIR_URL}/${resource}/${id}?_cascade=delete`, {
       method: "DELETE",
     });
     await checkResponseOK(response);
