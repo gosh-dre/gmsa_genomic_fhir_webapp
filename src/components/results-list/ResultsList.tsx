@@ -1,5 +1,6 @@
 import { FC, useState, useContext } from "react";
 import { FhirContext } from "../fhir/FhirContext";
+import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 import LoadingSpinner from "../UI/LoadingSpinner";
 import ModalWrapper from "../UI/ModalWrapper";
@@ -38,7 +39,7 @@ const ResultsList: FC<Props> = (props) => {
           return;
         }
 
-        displayCascadeAdvice(response);
+        displayCascadeAdvice(response.entry);
       })
       .catch((error) => {
         setModal({
@@ -52,8 +53,8 @@ const ResultsList: FC<Props> = (props) => {
       });
   };
 
-  const displayCascadeAdvice = (response: any) => {
-    if (response.entry.length === 1) {
+  const displayCascadeAdvice = (patients: Patient[]) => {
+    if (patients.length === 1) {
       setModal({
         message:
           "This patient has a known pathogenic variant, please offer cascade testing to family. Currently this is the only family member with a test result.",
@@ -61,7 +62,7 @@ const ResultsList: FC<Props> = (props) => {
       });
     }
 
-    if (response.entry.length > 1) {
+    if (patients.length > 1) {
       setModal({
         message: "Cascade testing has been performed for the family. No need for any further action.",
         isError: false,
