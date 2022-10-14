@@ -1,19 +1,25 @@
 import { FC } from "react";
 
-import { parsedResultsModel } from "./ResultsDataFetcher";
+import { ParsedResultsModel, TrimmedObservation } from "./ResultsDataFetcher";
 
 import classes from "./ResultsList.module.css";
 
 interface Props {
-  results: parsedResultsModel;
+  results: ParsedResultsModel;
 }
 
 const ResultsList: FC<Props> = (props) => {
   const { results } = props;
 
+  const checkCascadeTesting = (patientIdentifier: string) => {
+    console.log(patientIdentifier);
+  };
+
   if (!results || results.length === 0) {
     return <div>No results were returned from the fhir query. </div>;
   }
+
+  console.log(results);
 
   return (
     <>
@@ -30,7 +36,10 @@ const ResultsList: FC<Props> = (props) => {
         <tbody>
           {results.map((patient, index) => {
             return (
-              <tr key={`${patient.patientId}-${index}`}>
+              <tr
+                key={`${patient.patientId}-${index}`}
+                onClick={() => checkCascadeTesting(patient.officialPatientIdentifier)}
+              >
                 <td>{patient.firstName}</td>
                 <td>{patient.lastName}</td>
                 <td>
