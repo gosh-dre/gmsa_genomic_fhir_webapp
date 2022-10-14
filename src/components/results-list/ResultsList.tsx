@@ -20,8 +20,7 @@ const ResultsList: FC<Props> = (props) => {
 
   const { results } = props;
 
-  const checkCascadeTesting = async (patientIdentifier: string) => {
-    console.log(patientIdentifier);
+  const checkCascadeTestingHandler = async (patientIdentifier: string) => {
     const observationQueryUrl = `/Patient?identifier=${patientIdentifier}`;
 
     setIsLoading(true);
@@ -31,13 +30,15 @@ const ResultsList: FC<Props> = (props) => {
       .then((response) => {
         console.log(response);
 
-        if (response.entry.length < 2) {
+        if (!response.entry) {
           setModal({
-            message:
-              "This patient has a known pathogenic variant, please offer cascade testing to family. Currently this is the only family member with a test result.",
+            message: "No patients returned from the fhir query. Please check that the identifier is correct",
             isError: false,
           });
+          return;
         }
+
+        displayCascadeAdvice(response);
       })
       .catch((error) => {
         setModal({
@@ -49,6 +50,23 @@ const ResultsList: FC<Props> = (props) => {
       .finally(() => {
         setIsLoading(false);
       });
+  };
+
+  const displayCascadeAdvice = (response: any) => {
+    if (response.entry.length === 1) {
+      setModal({
+        message:
+          "This patient has a known pathogenic variant, please offer cascade testing to family. Currently this is the only family member with a test result.",
+        isError: false,
+      });
+    }
+
+    if (response.entry.length > 1) {
+      setModal({
+        message: "Cascade testing has been performed for the family. No need for any further action.",
+        isError: false,
+      });
+    }
   };
 
   if (!results || results.length === 0) {
@@ -77,7 +95,7 @@ const ResultsList: FC<Props> = (props) => {
             return (
               <tr
                 key={`${patient.patientId}-${index}`}
-                onClick={() => checkCascadeTesting(patient.officialPatientIdentifier)}
+                onClick={() => checkCascadeTestingHandler(patient.officialPatientIdentifier)}
               >
                 <td>{patient.firstName}</td>
                 <td>{patient.lastName}</td>
