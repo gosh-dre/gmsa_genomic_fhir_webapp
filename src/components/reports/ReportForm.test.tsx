@@ -2,9 +2,12 @@ import ReportForm from "./ReportForm";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
-import { noValues } from "./FormDefaults";
+import { initialWithNoVariant, noValues } from "./FormDefaults";
 import { act } from "react-dom/test-utils";
 import { deletePatients } from "../../fhir/testUtilities";
+import { FHIR_URL } from "../../fhir/api.test";
+import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
+import { createIdentifier } from "../../fhir/resource_helpers";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -145,7 +148,26 @@ describe("Report form", () => {
 
   test("Error modal exists", async () => {
     // Arrange
-    render(<ReportForm initialValues={noValues} />);
+    render(<ReportForm initialValues={initialWithNoVariant} />);
+    const practitioner = new Practitioner();
+    practitioner.resourceType = "Practitioner";
+    const identifier = createIdentifier("anapietra_report");
+    practitioner.identifier = [identifier];
+    console.log(practitioner);
+
+    const createPractitioner = async (practitioner: any) => {
+      const sendPractitioner = await fetch(`${FHIR_URL}/Practitioner`, {
+        method: "POST",
+        body: JSON.stringify(practitioner),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      await new Promise((r) => setTimeout(r, 1500));
+      return sendPractitioner;
+    };
+    createPractitioner(practitioner);
+    createPractitioner(practitioner);
 
     // Act
     await setLabAndPatient();
