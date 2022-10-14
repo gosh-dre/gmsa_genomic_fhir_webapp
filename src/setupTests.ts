@@ -10,7 +10,7 @@ enableFetchMocks();
 
 global.beforeEach(() => {
   fetchMock.resetMocks();
-  fetchMock.mockResponse((request: Request) => {
+  fetchMock.mockIf(/clinicaltables\.nlm\.nih\.gov\/api\/genes\/v4\/search/, (request: Request) => {
     let requestData: (number | string[] | string[][] | null)[] = [0, [], null, []];
     if (request.url.includes("TW")) {
       requestData = [2, ["TWO", "TWENTY"], null, [["TWO_SYMBOL"], ["TWENTY_SYMBOL"]]];
