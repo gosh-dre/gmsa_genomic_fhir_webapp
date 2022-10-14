@@ -43,7 +43,7 @@ const ResultsList: FC<Props> = (props) => {
                 <td>{patient.firstName}</td>
                 <td>{patient.lastName}</td>
                 <td>
-                  {patient.observations.map((observation: { [key: string]: any }, index) => {
+                  {patient.observations.map((observation: TrimmedObservation, index) => {
                     const isLast = patient.observations.length === index + 1;
 
                     return (
