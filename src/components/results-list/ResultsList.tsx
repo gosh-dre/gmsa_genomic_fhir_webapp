@@ -39,7 +39,7 @@ const ResultsList: FC<Props> = (props) => {
           return;
         }
 
-        displayCascadeAdvice(response.entry);
+        displayCascadeAdvice(response.entry, patientIdentifier);
       })
       .catch((error) => {
         setModal({
@@ -53,18 +53,17 @@ const ResultsList: FC<Props> = (props) => {
       });
   };
 
-  const displayCascadeAdvice = (patients: Patient[]) => {
+  const displayCascadeAdvice = (patients: Patient[], patientIdentifier: string) => {
     if (patients.length === 1) {
       setModal({
-        message:
-          "This patient has a known pathogenic variant, please offer cascade testing to family. Currently this is the only family member with a test result.",
+        message: `Patient with identifier ${patientIdentifier} has a known pathogenic variant, please offer cascade testing to family. Currently this is the only family member with a test result.`,
         isError: false,
       });
     }
 
     if (patients.length > 1) {
       setModal({
-        message: "Cascade testing has been performed for the family. No need for any further action.",
+        message: `Cascade testing has been performed for the family of patient with identifier ${patientIdentifier}. No need for any further action.`,
         isError: false,
       });
     }
