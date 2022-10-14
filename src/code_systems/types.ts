@@ -22,6 +22,8 @@ export type BundleResponse = {
   ];
 };
 
+export type ErrorDetails = [errorCode: string | number, resourceType: string, diagnostics: string];
+
 /**
  * FHIR reference with reference and type required.
  */
