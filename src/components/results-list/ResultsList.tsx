@@ -29,8 +29,6 @@ const ResultsList: FC<Props> = (props) => {
     ctx.client
       ?.request(observationQueryUrl)
       .then((response) => {
-        console.log(response);
-
         if (!response.entry) {
           setModal({
             message: "No patients returned from the fhir query. Please check that the identifier is correct",

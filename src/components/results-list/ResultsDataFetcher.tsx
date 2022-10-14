@@ -82,14 +82,7 @@ const ResultsDataFetcher: FC = () => {
 
     // extract the required data and store in a trimmed down data structure
     patients.forEach((patient) => {
-      if (
-        !patient.id ||
-        !patient.identifier ||
-        !patient.identifier[0].value ||
-        !patient.name ||
-        !patient.name[0].given ||
-        !patient.name[0].family
-      ) {
+      if (!(patient.id && patient.identifier?.[0]?.value && patient.name?.[0]?.given && patient.name?.[0]?.family)) {
         return;
       }
 
@@ -114,29 +107,21 @@ const ResultsDataFetcher: FC = () => {
       // extract required data from each observation
       let trimmedObservations: TrimmedObservation[] = [];
       patientObservations.forEach((observation) => {
-        if (!observation || !observation?.component || !observation?.id) {
+        if (!observation?.id) {
           return;
         }
 
-        const TrimmedObservation = observation.component.filter((component) => {
-          if (
-            !component ||
-            !component?.code?.coding?.[0].code ||
-            !component?.valueCodeableConcept?.coding?.[0].display
-          ) {
-            return;
-          }
-
-          if (component.code.coding[0].code === HGVS_CDNA_LOINC) {
-            return component.valueCodeableConcept.coding[0].display;
+        const trimmedObservation = observation?.component?.filter((component) => {
+          if (component?.code?.coding?.[0].code === HGVS_CDNA_LOINC) {
+            return component?.valueCodeableConcept?.coding?.[0].display;
           }
         });
 
-        if (!TrimmedObservation?.[0].valueCodeableConcept?.coding?.[0].display) {
+        if (!trimmedObservation?.[0].valueCodeableConcept?.coding?.[0].display) {
           return;
         }
 
-        const cDnaChange = TrimmedObservation[0].valueCodeableConcept?.coding?.[0].display;
+        const cDnaChange = trimmedObservation[0].valueCodeableConcept.coding[0].display;
 
         trimmedObservations = [...trimmedObservations, { cDnaChange: cDnaChange, observationId: observation.id }];
       });
