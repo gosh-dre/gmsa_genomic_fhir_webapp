@@ -18,3 +18,7 @@ table.results-table th {
 table.results-table tr:nth-child(odd) {
   background: #d0e4f5;
 }
+
+table.results-table tbody tr {
+  cursor: pointer;
+}
