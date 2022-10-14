@@ -33,7 +33,6 @@ const getPatientGivenNames = (patientData: Bundle) => {
 
 describe("FHIR resources", () => {
   beforeEach(async () => {
-    fetchMock.dontMock();
     await deletePatients();
   });
 

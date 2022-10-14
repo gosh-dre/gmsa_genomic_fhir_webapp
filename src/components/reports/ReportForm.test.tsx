@@ -141,7 +141,6 @@ jest.setTimeout(20000);
 
 describe("Report form", () => {
   beforeEach(async () => {
-    fetchMock.dontMock();
     await deletePatients();
   });
 
