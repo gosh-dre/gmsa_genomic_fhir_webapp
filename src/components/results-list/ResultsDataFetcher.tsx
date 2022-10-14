@@ -8,12 +8,12 @@ import ResultsList from "../results-list/ResultsList";
 
 import { Patient, Observation } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
-export type TrimmedObservation = { cDnaChange: string | undefined; observationId: string | undefined };
+export type TrimmedObservation = { cDnaChange: string; observationId: string };
 type PatientResult = {
-  patientId: string | undefined;
+  patientId: string;
   officialPatientIdentifier: string;
-  firstName: string | undefined;
-  lastName: string | undefined;
+  firstName: string;
+  lastName: string;
   observations: TrimmedObservation[];
 };
 export type ParsedResultsModel = PatientResult[];
@@ -89,7 +89,8 @@ const ResultsDataFetcher: FC = () => {
         !patient.identifier ||
         !patient.identifier[0].value ||
         !patient.name ||
-        !patient.name[0].given
+        !patient.name[0].given ||
+        !patient.name[0].family
       ) {
         return;
       }
@@ -115,15 +116,27 @@ const ResultsDataFetcher: FC = () => {
       // extract required data from each observation
       let trimmedObservations: TrimmedObservation[] = [];
       patientObservations.forEach((observation) => {
-        if (!observation || !observation.component) {
+        if (!observation || !observation?.component || !observation?.id) {
           return;
         }
 
         const TrimmedObservation = observation.component.filter((component) => {
-          if (component?.code?.coding?.[0].code === HGVS_CDNA_LOINC) {
-            return component?.valueCodeableConcept?.coding?.[0].display;
+          if (
+            !component ||
+            !component?.code?.coding?.[0].code ||
+            !component?.valueCodeableConcept?.coding?.[0].display
+          ) {
+            return;
+          }
+
+          if (component.code.coding[0].code === HGVS_CDNA_LOINC) {
+            return component.valueCodeableConcept.coding[0].display;
           }
         });
+
+        if (!TrimmedObservation?.[0].valueCodeableConcept?.coding?.[0].display) {
+          return;
+        }
 
         const cDnaChange = TrimmedObservation[0].valueCodeableConcept?.coding?.[0].display;
 
