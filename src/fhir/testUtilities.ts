@@ -34,6 +34,13 @@ export const getPatients = async (identifier?: string): Promise<Bundle> => {
   return await checkResponseOK(response);
 };
 
+const getPractitioners = async (id?: string): Promise<Bundle> => {
+  let url = `${FHIR_URL}/Practitioner`;
+  if (id) url = `${FHIR_URL}/Practitioner/${id}`;
+  const response = await fetch(url);
+  return await checkResponseOK(response);
+};
+
 export const getObservations = async (identifier?: string): Promise<Bundle> => {
   let url = `${FHIR_URL}/Observation`;
   if (identifier) url = `${FHIR_URL}/Observation?identifier=${identifier}`;
@@ -54,6 +61,20 @@ export const deletePatients = async (patientId?: string) => {
     await deleteAndCascadeDelete(patientIds);
   }
   // await new Promise((r) => setTimeout(r, 1500));
+};
+
+export const deletePractitioners = async (practitionerId?: string) => {
+  const practitionerData = await getPractitioners();
+  if (!("resource" in practitionerData)) {
+    console.debug("Nothing to delete; no practitioners in database");
+    return;
+  }
+  if (practitionerId) {
+    await deleteAndCascadeDelete([practitionerId]);
+  } else {
+    const practitionerIds = practitionerData.entry?.map((entry) => entry.resource?.id) as string[];
+    await deleteAndCascadeDelete(practitionerIds);
+  }
 };
 
 const deleteAndCascadeDelete = async (patientIds: string[]) => {
