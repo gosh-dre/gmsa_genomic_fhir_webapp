@@ -136,7 +136,23 @@ export const checkResponseOK = async (response: Response) => {
     console.error(r.body);
     throw new Error(response.statusText);
   }
-  if (!(r.type === "bundle-response")) {
+  if (r.type === "batch-response") {
+    const errorsForModal: string[] = [];
+    const errorResponses = (r as BundleResponse).entry
+      .map((entry) => entry.response)
+      .filter((response) => !response.status.toString().startsWith("2"));
+    if (errorResponses.length > 1) {
+      errorResponses.forEach((error) => {
+        const errorDetails: any = [
+          r.resourceType.toString(),
+          error.status.toString(),
+          error.outcome.issue?.[0].diagnostics.toString(),
+        ];
+        errorsForModal.push(errorDetails); //had as string[] but errorDetails claimed it couldn't be assigned to type string
+      });
+    }
+    return errorsForModal;
+  } else if (!(r.type === "bundle-response")) {
     return r;
   }
 
@@ -152,18 +168,6 @@ export const checkResponseOK = async (response: Response) => {
       }
       throw new Error(message);
     });
-  }
-
-  if (r.type === "batch-response") {
-    const errorsForModal = [];
-    const responseStatus = (r as BundleResponse).entry.map((entry) => entry.response.status);
-    if (!responseStatus.toString().startsWith("2")) {
-      const responseIssue = (r as BundleResponse).entry.map((entry) => entry.response.outcome.issue);
-      const issueDiagnostics = responseIssue?.map((issue) => issue?.[0].diagnostics);
-
-      errorsForModal.push([r.resourceType, responseStatus, issueDiagnostics]); // need to make these accessible
-    }
-    return errorsForModal;
   }
 
   console.debug(`check response: ${JSON.stringify(r, null, 2)}`);
