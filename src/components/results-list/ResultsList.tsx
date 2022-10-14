@@ -1,4 +1,9 @@
-import { FC } from "react";
+import { FC, useState, useContext } from "react";
+import { FhirContext } from "../fhir/FhirContext";
+
+import LoadingSpinner from "../UI/LoadingSpinner";
+import ModalWrapper from "../UI/ModalWrapper";
+import { ModalState } from "../UI/ModalWrapper";
 
 import { ParsedResultsModel, TrimmedObservation } from "./ResultsDataFetcher";
 
@@ -9,20 +14,54 @@ interface Props {
 }
 
 const ResultsList: FC<Props> = (props) => {
+  const ctx = useContext(FhirContext);
+  const [modal, setModal] = useState<ModalState | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const { results } = props;
 
-  const checkCascadeTesting = (patientIdentifier: string) => {
+  const checkCascadeTesting = async (patientIdentifier: string) => {
     console.log(patientIdentifier);
+    const observationQueryUrl = `/Patient?identifier=${patientIdentifier}`;
+
+    setIsLoading(true);
+
+    ctx.client
+      ?.request(observationQueryUrl)
+      .then((response) => {
+        console.log(response);
+
+        if (response.entry.length < 2) {
+          setModal({
+            message:
+              "This patient has a known pathogenic variant, please offer cascade testing to family. Currently this is the only family member with a test result.",
+            isError: false,
+          });
+        }
+      })
+      .catch((error) => {
+        setModal({
+          message: "Something went wrong fetching patients from the FHIR server.",
+          isError: true,
+        });
+        console.error(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   if (!results || results.length === 0) {
-    return <div>No results were returned from the fhir query. </div>;
+    return <div> No results were returned from the fhir query. </div>;
   }
 
   console.log(results);
 
   return (
     <>
+      <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
+      {isLoading && <LoadingSpinner asOverlay message={"Getting observations..."} />}
+
       <h1>Patient results table</h1>
 
       <table className={classes["results-table"]}>
