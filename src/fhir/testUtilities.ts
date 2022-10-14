@@ -1,5 +1,5 @@
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
-import { checkResponseOK } from "./api";
+import { getErrors } from "./api";
 
 const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
 
@@ -25,6 +25,32 @@ export const sendBundle = async (bundle: Bundle) => {
   });
   await new Promise((r) => setTimeout(r, 1500));
   return sentBundle;
+};
+
+export const checkResponseOK = async (response: Response) => {
+  const r = await response.json();
+
+  if (!response.ok) {
+    console.error(r.body);
+    throw new Error(response.statusText);
+  }
+  //   if (r.type === "batch-response") {
+  //     getErrors(r);
+  //   } else
+  if (!(r.type === "bundle-response")) {
+    return r;
+  }
+
+  const errors = getErrors(r);
+  if (errors.length > 1) {
+    errors.forEach((error) => {
+      const message = error.diagnostics;
+      throw new Error(message);
+    });
+  }
+
+  console.debug(`check response: ${JSON.stringify(r, null, 2)}`);
+  return r;
 };
 
 export const getPatients = async (identifier?: string): Promise<Bundle> => {
