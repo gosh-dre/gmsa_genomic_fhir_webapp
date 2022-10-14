@@ -91,7 +91,7 @@ export const deletePatients = async (patientId?: string) => {
 
 export const deletePractitioners = async (practitionerId?: string) => {
   const practitionerData = await getPractitioners();
-  if (!("resource" in practitionerData)) {
+  if (!("entry" in practitionerData)) {
     console.debug("Nothing to delete; no practitioners in database");
     return;
   }
