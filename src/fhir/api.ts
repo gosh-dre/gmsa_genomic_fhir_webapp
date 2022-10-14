@@ -16,7 +16,7 @@ import {
 } from "./resources";
 import { VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
-import { BundleResponse, RequiredCoding } from "../code_systems/types";
+import { BundleResponse, ErrorDetails, RequiredCoding } from "../code_systems/types";
 
 /**
  * Create a report bundle
@@ -129,47 +129,21 @@ const createEntry = (resource: Resource, identifier?: string) => {
   };
 };
 
-export const checkResponseOK = async (response: Response) => {
-  const r = await response.json();
-
-  if (!response.ok) {
-    console.error(r.body);
-    throw new Error(response.statusText);
-  }
-  if (r.type === "batch-response") {
-    const errorsForModal: string[] = [];
-    const errorResponses = (r as BundleResponse).entry
-      .map((entry) => entry.response)
-      .filter((response) => !response.status.toString().startsWith("2"));
-    if (errorResponses.length > 1) {
-      errorResponses.forEach((error) => {
-        const errorDetails: any = [
-          r.resourceType.toString(),
-          error.status.toString(),
-          error.outcome.issue?.[0].diagnostics.toString(),
-        ];
-        errorsForModal.push(errorDetails); //had as string[] but errorDetails claimed it couldn't be assigned to type string
-      });
-    }
-    return errorsForModal;
-  } else if (!(r.type === "bundle-response")) {
-    return r;
-  }
-
-  const errors = (r as BundleResponse).entry
-    .filter((entry) => entry.response.status.toString().startsWith("4"))
-    .map((entry) => entry.response.outcome.issue);
-
-  if (errors.length > 1) {
-    errors.forEach((issue) => {
-      let message = "unknown error in bundle";
-      if (issue && issue.length > 0) {
-        message = issue[0].diagnostics;
-      }
-      throw new Error(message);
+export const getErrors = (r: any) => {
+  //should be result of response.json()
+  const errorArray: ErrorDetails[] = [];
+  const errorResponses = (r as BundleResponse).entry
+    .map((entry) => entry.response)
+    .filter((response) => !response.status.toString().startsWith("2"));
+  if (errorResponses.length > 1) {
+    errorResponses.forEach((error) => {
+      const errorDetails: ErrorDetails = [
+        error.status,
+        r.resourceType as string,
+        error.outcome.issue?.[0].diagnostics as string,
+      ];
+      errorArray.push(errorDetails);
     });
   }
-
-  console.debug(`check response: ${JSON.stringify(r, null, 2)}`);
-  return r;
+  return errorArray;
 };
