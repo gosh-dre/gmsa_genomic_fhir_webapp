@@ -53,8 +53,6 @@ const ResultsDataFetcher: FC = () => {
   }, [ctx]);
 
   const parseResults = (entries: { [key: string]: any }[]) => {
-    console.log(entries);
-
     // extract patients from the data
     const patients = entries
       .filter((entry) => {

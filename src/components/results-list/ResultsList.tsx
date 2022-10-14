@@ -74,8 +74,6 @@ const ResultsList: FC<Props> = (props) => {
     return <div> No results were returned from the fhir query. </div>;
   }
 
-  console.log(results);
-
   return (
     <>
       <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
