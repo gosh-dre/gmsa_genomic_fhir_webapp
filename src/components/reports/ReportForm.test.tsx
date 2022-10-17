@@ -7,6 +7,7 @@ import { act } from "react-dom/test-utils";
 import { createPractitioner, deleteFhirData } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
+import { FhirProvider } from "../fhir/FhirContext";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -146,7 +147,13 @@ describe("Report form", () => {
 
   test("Error modal exists", async () => {
     // Arrange
-    render(<ReportForm initialValues={initialWithNoVariant} />);
+    render(
+      <>
+        <div id="backdrop-hook"></div>
+        <div id="modal-hook"></div>
+        <ReportForm initialValues={initialWithNoVariant} />
+      </>,
+    );
     const practitioner = new Practitioner();
     practitioner.resourceType = "Practitioner";
     const identifier = createIdentifier("anapietra_report");
@@ -168,7 +175,7 @@ describe("Report form", () => {
     // Assert
     const debug = screen.debug();
     console.log(debug);
-    const errorModal = await screen.findByText(/add a new report/i);
+    const errorModal = await screen.findByText(/error/i);
     expect(errorModal).toBeInTheDocument();
   });
   /**
