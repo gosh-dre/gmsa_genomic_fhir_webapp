@@ -141,7 +141,7 @@ jest.setTimeout(20000);
 
 describe("Report form", () => {
   beforeEach(async () => {
-    deleteFhirData();
+    await deleteFhirData();
   });
 
   test("Error modal exists", async () => {
@@ -151,23 +151,25 @@ describe("Report form", () => {
     practitioner.resourceType = "Practitioner";
     const identifier = createIdentifier("anapietra_report");
     practitioner.identifier = [identifier];
-    console.log(practitioner);
 
-    createPractitioner(practitioner);
-    createPractitioner(practitioner);
+    await createPractitioner(practitioner);
+    await createPractitioner(practitioner);
 
     // Act
     await setLabAndPatient();
     await setSample();
     await setVariantFields();
     await setReportFields();
+
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });
 
     // Assert
-    const modal = await screen.findByTitle("modal");
-    expect(modal).toContain("error");
+    const debug = screen.debug();
+    console.log(debug);
+    const errorModal = await screen.findByText(/add a new report/i);
+    expect(errorModal).toBeInTheDocument();
   });
   /**
    * Given the report form
