@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { initialWithNoVariant, noValues } from "./FormDefaults";
 import { act } from "react-dom/test-utils";
-import { createPractitioner, deletePatients, deletePractitioners } from "../../fhir/testUtilities";
+import { createPractitioner, deleteFhirData } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
 
@@ -141,8 +141,7 @@ jest.setTimeout(20000);
 
 describe("Report form", () => {
   beforeEach(async () => {
-    await deletePatients();
-    await deletePractitioners();
+    deleteFhirData();
   });
 
   test("Error modal exists", async () => {
@@ -167,7 +166,7 @@ describe("Report form", () => {
     });
 
     // Assert
-    const modal = await screen.findByRole("modal");
+    const modal = await screen.findByTitle("modal");
     expect(modal).toContain("error");
   });
   /**
