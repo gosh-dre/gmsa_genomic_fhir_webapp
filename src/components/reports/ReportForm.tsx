@@ -6,7 +6,7 @@ import { FhirContext } from "../fhir/FhirContext";
 import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
 import { addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantsSchema } from "./formDataValidation";
-import { bundleRequest } from "../../fhir/api";
+import { bundleRequest, getErrors } from "../../fhir/api";
 import Patient from "./formSteps/Patient";
 import Sample from "./formSteps/Sample";
 import Variant from "./formSteps/Variant";
@@ -66,7 +66,35 @@ const ReportForm: FC<Props> = (props: Props) => {
 
     ctx.client
       ?.request(bundle)
-      .then((response) => console.debug("Bundle submitted", bundle, response))
+      .then((response) => {
+        console.debug("Bundle submitted", bundle, response);
+        const errors = getErrors(response);
+        if (errors) {
+          const errorsTable = () => {
+            return (
+              <>
+                <table>
+                  <thead>
+                    <td>Code</td>
+                    <td>Resource</td>
+                    <td>Information</td>
+                  </thead>
+                  <tbody>
+                    {errors.map((error) => (
+                      <tr>
+                        <td>{error.errorCode}</td>
+                        <td>{error.resourceType}</td>
+                        <td>{error.diagnostics}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            );
+          };
+          setModal({ message: errorsTable(), isError: true });
+        }
+      })
       .catch((error) => {
         console.error(error);
         setModal({
