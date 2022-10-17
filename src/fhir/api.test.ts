@@ -6,14 +6,7 @@ import { geneCoding } from "../code_systems/hgnc";
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import {
-  sendBundle,
-  deletePatients,
-  getPatients,
-  getObservations,
-  checkResponseOK,
-  deletePractitioners,
-} from "./testUtilities";
+import { sendBundle, getPatients, checkResponseOK, deleteFhirData, getResources } from "./testUtilities";
 
 const fhir = new Fhir();
 
@@ -40,8 +33,8 @@ const getPatientGivenNames = (patientData: Bundle) => {
 
 describe("FHIR resources", () => {
   beforeEach(async () => {
-    await deletePatients();
-    await deletePractitioners();
+    await deleteFhirData();
+    await new Promise((r) => setTimeout(r, 1500));
   });
 
   /**
@@ -85,7 +78,7 @@ describe("FHIR resources", () => {
     // check it has the expected profile
     await sendBundle(bundle);
     const expectedProfile = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant";
-    const obsResponse = await getObservations();
+    const obsResponse = await getResources("Observation");
 
     const varProfile = (obsResponse.entry as Array<BundleEntry>)
       .filter((entry) => entry.resource?.resourceType === "Observation")
@@ -102,7 +95,7 @@ describe("FHIR resources", () => {
   test("Bundle without variants", async () => {
     const bundle = createBundle(initialWithNoVariant, []);
     await sendBundle(bundle);
-    const obsResponse = await getObservations();
+    const obsResponse = await getResources("Observation");
 
     // null variant entry
     const variantNotes = (obsResponse.entry as Array<BundleEntry>)
