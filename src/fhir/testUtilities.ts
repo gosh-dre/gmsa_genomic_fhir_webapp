@@ -60,13 +60,6 @@ export const getPatients = async (identifier?: string): Promise<Bundle> => {
   return await checkResponseOK(response);
 };
 
-// const getPractitioners = async (id?: string): Promise<Bundle> => {
-//   let url = `${FHIR_URL}/Practitioner`;
-//   if (id) url = `${FHIR_URL}/Practitioner/${id}`;
-//   const response = await fetch(url);
-//   return await checkResponseOK(response);
-// };
-
 export const getResources = async (resource: string, id?: string): Promise<Bundle> => {
   let url = `${FHIR_URL}/${resource}`;
   if (id) {
@@ -99,35 +92,6 @@ export const deleteFhirData = async (resource?: string, id?: string) => {
     }
   }
   await new Promise((response) => setTimeout(response, 500));
-};
-
-export const deletePatients = async (patientId?: string) => {
-  const patientData = await getPatients();
-  if (!("entry" in patientData)) {
-    console.debug("Nothing to delete; no patients in database");
-    return;
-  }
-  if (patientId) {
-    await deleteAndCascadeDelete([patientId], "Patient");
-  } else {
-    const patientIds = patientData.entry?.map((entry) => entry.resource?.id) as string[];
-    await deleteAndCascadeDelete(patientIds, "Patient");
-  }
-  // await new Promise((r) => setTimeout(r, 1500));
-};
-
-export const deletePractitioners = async (practitionerId?: string) => {
-  const practitionerData = await getPractitioners();
-  if (!("entry" in practitionerData)) {
-    console.debug("Nothing to delete; no practitioners in database");
-    return;
-  }
-  if (practitionerId) {
-    await deleteAndCascadeDelete([practitionerId], "Practitioner");
-  } else {
-    const practitionerIds = practitionerData.entry?.map((entry) => entry.resource?.id) as string[];
-    await deleteAndCascadeDelete(practitionerIds, "Practitioner");
-  }
 };
 
 const deleteAndCascadeDelete = async (identifiers: string[], resource: string) => {

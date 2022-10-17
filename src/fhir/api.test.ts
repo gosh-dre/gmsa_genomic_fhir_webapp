@@ -6,7 +6,7 @@ import { geneCoding } from "../code_systems/hgnc";
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import { sendBundle, getPatients, checkResponseOK, deleteFhirData, getResources } from "./testUtilities";
+import { sendBundle, checkResponseOK, deleteFhirData, getResources } from "./testUtilities";
 
 const fhir = new Fhir();
 
@@ -41,7 +41,7 @@ describe("FHIR resources", () => {
    * Before doing tests on the database, we want to clear all its data
    */
   test("database is clear on setup", async () => {
-    const postDelete = await getPatients();
+    const postDelete = await getResources("Patient");
     expect("entry" in postDelete).toBeFalsy();
   });
 
@@ -57,7 +57,7 @@ describe("FHIR resources", () => {
 
     // check it's the right patient
     await checkResponseOK(createPatient);
-    const patientData = await getPatients();
+    const patientData = await getResources("Patient");
     expect("entry" in patientData).toBeTruthy();
     expect(getPatientIdentifier(patientData)).toEqual(initialValues.patient.mrn);
   });
@@ -125,14 +125,14 @@ describe("FHIR resources", () => {
     const originalBundle = createBundle(initialValues, reportedGenes);
 
     await sendBundle(originalBundle);
-    const originalPatient = await getPatients(identifier);
+    const originalPatient = await getResources("Patient", identifier);
 
     const newValues = { ...initialValues };
     newValues.patient.firstName = "Daffy";
     const updatedBundle = createBundle(newValues, reportedGenes);
 
     await sendBundle(updatedBundle);
-    const updatedPatient = await getPatients(identifier);
+    const updatedPatient = await getResources("Patient", identifier);
     // check it's the right patient by identifier
     expect(getPatientIdentifier(originalPatient)).toEqual(getPatientIdentifier(updatedPatient));
     expect(getPatientIdentifier(originalPatient)).toEqual(initialValues.patient.mrn);
