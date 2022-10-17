@@ -60,18 +60,45 @@ export const getPatients = async (identifier?: string): Promise<Bundle> => {
   return await checkResponseOK(response);
 };
 
-const getPractitioners = async (id?: string): Promise<Bundle> => {
-  let url = `${FHIR_URL}/Practitioner`;
-  if (id) url = `${FHIR_URL}/Practitioner/${id}`;
+// const getPractitioners = async (id?: string): Promise<Bundle> => {
+//   let url = `${FHIR_URL}/Practitioner`;
+//   if (id) url = `${FHIR_URL}/Practitioner/${id}`;
+//   const response = await fetch(url);
+//   return await checkResponseOK(response);
+// };
+
+export const getResources = async (resource: string, id?: string): Promise<Bundle> => {
+  let url = `${FHIR_URL}/${resource}`;
+  if (id) {
+    if (resource === "Practitioner") {
+      url = `${FHIR_URL}/Practitioner/${id}`;
+    }
+    url = `${FHIR_URL}/${resource}?identifier=${id}`;
+  }
   const response = await fetch(url);
   return await checkResponseOK(response);
 };
 
-export const getObservations = async (identifier?: string): Promise<Bundle> => {
-  let url = `${FHIR_URL}/Observation`;
-  if (identifier) url = `${FHIR_URL}/Observation?identifier=${identifier}`;
-  const response = await fetch(url);
-  return await checkResponseOK(response);
+export const deleteFhirData = async (resource?: string, id?: string) => {
+  let resources = [resource];
+
+  if (!resource) {
+    resources = ["Patient", "Practitioner"];
+  }
+  for (const r of resources) {
+    const fhirData = await getResources(r as string);
+    if (!("entry" in fhirData)) {
+      console.debug("Nothing to delete; no data in database");
+      return;
+    }
+    if (id) {
+      await deleteAndCascadeDelete([id], r as string);
+    } else {
+      const resourceId = fhirData.entry?.map((entry) => entry.resource?.id) as string[];
+      await deleteAndCascadeDelete(resourceId, r as string);
+    }
+  }
+  await new Promise((response) => setTimeout(response, 500));
 };
 
 export const deletePatients = async (patientId?: string) => {
