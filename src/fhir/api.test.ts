@@ -6,7 +6,7 @@ import { geneCoding } from "../code_systems/hgnc";
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import { sendBundle, checkResponseOK, deleteFhirData, getResources } from "./testUtilities";
+import { sendBundle, deleteFhirData, getResources } from "./testUtilities";
 
 const fhir = new Fhir();
 
@@ -53,10 +53,9 @@ describe("FHIR resources", () => {
   test("bundle creates patient", async () => {
     const bundle = createBundle(initialValues, reportedGenes);
 
-    const createPatient = await sendBundle(bundle);
+    await sendBundle(bundle);
 
     // check it's the right patient
-    await checkResponseOK(createPatient);
     const patientData = await getResources("Patient");
     expect("entry" in patientData).toBeTruthy();
     expect(getPatientIdentifier(patientData)).toEqual(initialValues.patient.mrn);

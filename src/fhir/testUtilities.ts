@@ -12,7 +12,7 @@ export const createPractitioner = async (practitioner: any) => {
     },
   });
   await new Promise((r) => setTimeout(r, 1500));
-  return sendPractitioner;
+  return checkResponseOK(sendPractitioner);
 };
 
 export const sendBundle = async (bundle: Bundle) => {
@@ -24,10 +24,10 @@ export const sendBundle = async (bundle: Bundle) => {
     },
   });
   await new Promise((r) => setTimeout(r, 1500));
-  return sentBundle;
+  return checkResponseOK(sentBundle);
 };
 
-export const checkResponseOK = async (response: Response) => {
+const checkResponseOK = async (response: Response) => {
   const r = await response.json();
 
   if (!response.ok) {
