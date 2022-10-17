@@ -11,7 +11,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: github-pages
     # only run steps if the workflow didn't fail
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
@@ -25,6 +24,8 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
+      - name: Setup .env file
+        run: cp env/dev.env .env
       - run: npm run predeploy
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

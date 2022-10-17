@@ -3,9 +3,9 @@
 Prototype for FHIR genomics reports.
 
 > **Note**
-> If you have a Great Ormond St. Hospital account and have been granted access to the
-> Aridhia synthetic FHIR server you can view the current version of the application on
-> [the GitHub.io page](https://gosh-dre.github.io/gmsa_genomic_fhir_webapp/#/).
+> If you have cloned and run the docker commands in the [Development services section](#development-services) then  
+> [the GitHub.io page](https://gosh-dre.github.io/gmsa_genomic_fhir_webapp/#/) will connect to your FHIR server
+> that is running on your machine.
 
 > **Warning**
 > This is only for testing, and no clinical data should be entered
