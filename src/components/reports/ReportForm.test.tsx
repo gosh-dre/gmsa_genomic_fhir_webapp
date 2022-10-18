@@ -1,13 +1,10 @@
-import ReportForm from "./ReportForm";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
-import { initialWithNoVariant, noValues } from "./FormDefaults";
 import { act } from "react-dom/test-utils";
-import { createPractitioner, deleteFhirData } from "../../fhir/testUtilities";
+import { createPractitioner, deleteFhirData, TestReportForm } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
-import { FhirProvider } from "../fhir/FhirContext";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -20,7 +17,7 @@ type DropDown = {
 };
 
 const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
-  const dummyValue = "Always the same";
+  const dummyValue = "Always_the_same";
   const form = screen.getByRole("form");
   const textInputs = within(form).getAllByLabelText(
     /^((?!resultOutput|date|address|gender|specimen type|search|gene symbol|follow up).)*$/i,
@@ -147,22 +144,16 @@ describe("Report form", () => {
 
   test("Error modal exists", async () => {
     // Arrange
-    render(
-      <>
-        <div id="backdrop-hook"></div>
-        <div id="modal-hook"></div>
-        <ReportForm initialValues={initialWithNoVariant} />
-      </>,
-    );
     const practitioner = new Practitioner();
     practitioner.resourceType = "Practitioner";
-    const identifier = createIdentifier("anapietra_report");
+    const identifier = createIdentifier("always_the_same_report");
     practitioner.identifier = [identifier];
 
     await createPractitioner(practitioner);
     await createPractitioner(practitioner);
 
     // Act
+    render(<TestReportForm />);
     await setLabAndPatient();
     await setSample();
     await setVariantFields();
@@ -185,7 +176,7 @@ describe("Report form", () => {
    */
   test("Report with variant", async () => {
     // Arrange
-    render(<ReportForm initialValues={noValues} />);
+    render(<TestReportForm />);
 
     // Act
     await setLabAndPatient();
@@ -208,7 +199,7 @@ describe("Report form", () => {
    */
   test("Report without variant", async () => {
     // Arrange
-    render(<ReportForm initialValues={noValues} />);
+    render(<TestReportForm />);
 
     // Act
     await setLabAndPatient();

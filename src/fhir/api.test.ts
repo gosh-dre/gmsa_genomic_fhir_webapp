@@ -32,9 +32,8 @@ const getPatientGivenNames = (patientData: Bundle) => {
 };
 
 describe("FHIR resources", () => {
-  beforeEach(async () => {
-    await deleteFhirData();
-    await new Promise((r) => setTimeout(r, 1500));
+  beforeEach(() => {
+    return deleteFhirData();
   });
 
   /**
