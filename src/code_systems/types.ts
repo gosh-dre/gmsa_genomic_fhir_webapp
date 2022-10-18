@@ -23,7 +23,7 @@ export type BundleResponse = {
 };
 
 export type ErrorDetails = {
-  errorCode: string | number;
+  errorCode: string;
   resourceType: string;
   diagnostics: string;
 };
