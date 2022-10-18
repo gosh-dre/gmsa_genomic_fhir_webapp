@@ -23,24 +23,20 @@ export const sendBundle = async (bundle: Bundle) => {
       "Content-Type": "application/json",
     },
   });
+
   await new Promise((r) => setTimeout(r, 1500));
   return checkResponseOK(sentBundle);
 };
 
 const checkResponseOK = async (response: Response) => {
   const r = await response.json();
-
   if (!response.ok) {
     console.error(r.body);
     throw new Error(response.statusText);
   }
-  //   if (r.type === "batch-response") {
-  //     getErrors(r);
-  //   } else
   if (!(r.type === "bundle-response")) {
     return r;
   }
-
   const errors = getErrors(r);
   if (errors.length > 1) {
     errors.forEach((error) => {
@@ -51,13 +47,6 @@ const checkResponseOK = async (response: Response) => {
 
   console.debug(`check response: ${JSON.stringify(r, null, 2)}`);
   return r;
-};
-
-export const getPatients = async (identifier?: string): Promise<Bundle> => {
-  let url = `${FHIR_URL}/Patient`;
-  if (identifier) url = `${FHIR_URL}/Patient?identifier=${identifier}`;
-  const response = await fetch(url);
-  return await checkResponseOK(response);
 };
 
 export const getResources = async (resource: string, id?: string): Promise<Bundle> => {
