@@ -70,7 +70,7 @@ const ReportForm: FC<Props> = (props: Props) => {
       .then((response) => {
         console.debug("Bundle submitted", bundle, response);
         const errors = getErrors(response, resourceList);
-        if (errors.length > 1) {
+        if (errors.length > 0) {
           const errorsTable = () => {
             //originally had this in ReportForm.module.css but didn't work?
             const css = ` 
