@@ -20,7 +20,7 @@ export const createPractitioner = async (practitioner: any) => {
       "Content-Type": "application/json",
     },
   });
-  await new Promise((r) => setTimeout(r, 500));
+  // await new Promise((r) => setTimeout(r, 500));
   return checkResponseOK(sendPractitioner);
 };
 
@@ -32,7 +32,7 @@ export const sendBundle = async (bundle: Bundle) => {
       "Content-Type": "application/json",
     },
   });
-  await new Promise((r) => setTimeout(r, 500));
+  // await new Promise((r) => setTimeout(r, 500));
   return checkResponseOK(sentBundle);
 };
 
@@ -97,7 +97,7 @@ const deleteAndCascadeDelete = async (identifiers: string[], resource: string) =
       method: "DELETE",
     });
     await checkResponseOK(response);
-    await new Promise((r) => setTimeout(r, 500));
+    // await new Promise((r) => setTimeout(r, 500));
   }
 };
 
