@@ -5,6 +5,7 @@ import ReportForm from "../components/reports/ReportForm";
 import { noValues } from "../components/reports/FormDefaults";
 import FHIR from "fhirclient/lib/entry/browser";
 import React from "react";
+import { RetrievableResource } from "../code_systems/types";
 
 /**
  * Utilities to be used only during testing, no actual tests here.
@@ -52,12 +53,14 @@ const checkResponseOK = async (response: Response) => {
       throw new Error(message);
     });
   }
-
   console.debug(`check response: ${JSON.stringify(r, null, 2)}`);
   return r;
 };
 
-export const getResources = async (resource: string, id?: string): Promise<Bundle> => {
+export const getResources = async (
+  resource: "Practitioner" | "Patient" | "Observation",
+  id?: string,
+): Promise<Bundle> => {
   let url = `${FHIR_URL}/${resource}`;
   if (id) {
     if (resource === "Practitioner") {
@@ -69,28 +72,28 @@ export const getResources = async (resource: string, id?: string): Promise<Bundl
   return await checkResponseOK(response);
 };
 
-export const deleteFhirData = async (resource?: string, id?: string) => {
+export const deleteFhirData = async (resource?: RetrievableResource, id?: string) => {
   let resources = [resource];
 
   if (!resource) {
     resources = ["Patient", "Practitioner"];
   }
-  for (const r of resources) {
-    const fhirData = await getResources(r as string);
+  for (const res of resources) {
+    const fhirData = await getResources(res as RetrievableResource);
     if (!("entry" in fhirData)) {
-      console.debug(`No ${r} to delete`);
+      console.debug(`No ${res} to delete`);
       continue;
     }
     if (id) {
-      await deleteAndCascadeDelete([id], r as string);
+      await deleteAndCascadeDelete([id], res as RetrievableResource);
     } else {
       const resourceId = fhirData.entry?.map((entry) => entry.resource?.id) as string[];
-      await deleteAndCascadeDelete(resourceId, r as string);
+      await deleteAndCascadeDelete(resourceId, res as RetrievableResource);
     }
   }
 };
 
-const deleteAndCascadeDelete = async (identifiers: string[], resource: string) => {
+const deleteAndCascadeDelete = async (identifiers: string[], resource: RetrievableResource) => {
   console.debug(`deleting ${identifiers.length}x ids of resource '${resource}'`);
   for (const id of identifiers) {
     const response = await fetch(`${FHIR_URL}/${resource}/${id}?_cascade=delete`, {

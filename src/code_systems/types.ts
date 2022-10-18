@@ -27,6 +27,7 @@ export type ErrorDetails = {
   resourceType: string;
   diagnostics: string;
 };
+export type RetrievableResource = "Practitioner" | "Patient" | "Observation";
 
 /**
  * FHIR reference with reference and type required.
