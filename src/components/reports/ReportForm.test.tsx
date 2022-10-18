@@ -138,8 +138,8 @@ const setReportFields = async () => {
 jest.setTimeout(20000);
 
 describe("Report form", () => {
-  beforeEach(async () => {
-    await deleteFhirData();
+  beforeEach(() => {
+    return deleteFhirData();
   });
 
   test("Error modal exists", async () => {
