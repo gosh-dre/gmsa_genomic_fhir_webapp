@@ -164,8 +164,6 @@ describe("Report form", () => {
     });
 
     // Assert
-    const debug = screen.debug();
-    console.log(debug);
     const errorModal = await screen.findByText(/error/i, { selector: "h2" });
     expect(errorModal).toBeInTheDocument();
   });
