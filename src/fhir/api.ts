@@ -129,21 +129,26 @@ const createEntry = (resource: Resource, identifier?: string) => {
   };
 };
 
-export const getErrors = (r: any) => {
+export const getErrors = (r: any, resourceTypes?: string[]) => {
   //should be result of response.json()
   const errorArray: ErrorDetails[] = [];
-  const errorResponses = (r as BundleResponse).entry
-    .map((entry) => entry.response)
-    .filter((response) => !response.status.toString().startsWith("2"));
-  if (errorResponses.length > 1) {
-    errorResponses.forEach((error) => {
-      const errorDetails: ErrorDetails = {
-        errorCode: error.status,
-        resourceType: r.resourceType as string,
-        diagnostics: error.outcome.issue?.[0].diagnostics as string,
-      };
-      errorArray.push(errorDetails);
-    });
+  const errorResponses = [];
+  let count = 0;
+  for (const entry of r.entry) {
+    if (!entry.response.status.toString().startsWith("2")) {
+      entry.count = count;
+      errorResponses.push(entry);
+    }
+    count++;
   }
+  errorResponses.forEach((error) => {
+    const errorDetails: ErrorDetails = {
+      errorCode: error.response.status,
+      resourceType: resourceTypes?.[error.count] as string,
+      diagnostics: error.response.outcome.issue?.[0].diagnostics as string,
+    };
+    errorArray.push(errorDetails);
+  });
+
   return errorArray;
 };

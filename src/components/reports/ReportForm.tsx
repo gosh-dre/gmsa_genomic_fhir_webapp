@@ -63,25 +63,35 @@ const ReportForm: FC<Props> = (props: Props) => {
     const bundle = bundleRequest(values, reportedGenes);
 
     setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
+    const resourceList = JSON.parse(bundle.body).entry.map((entry: any) => entry.resource.resourceType);
 
     ctx.client
       ?.request(bundle)
       .then((response) => {
         console.debug("Bundle submitted", bundle, response);
-        const errors = getErrors(response);
-        if (errors) {
+        const errors = getErrors(response, resourceList);
+        if (errors.length > 1) {
           const errorsTable = () => {
+            //originally had this in ReportForm.module.css but didn't work?
+            const css = ` 
+            .errors-table {
+              font: inherit;
+              font-size: 86%;
+            }`;
             return (
               <>
-                <table>
-                  <thead>
-                    <td>Code</td>
-                    <td>Resource</td>
-                    <td>Information</td>
+                <style>{css}</style>
+                <table className="errors-table">
+                  <thead className="errors-table__header">
+                    <tr>
+                      <th>Code</th>
+                      <th>Resource</th>
+                      <th>Information</th>
+                    </tr>
                   </thead>
-                  <tbody>
-                    {errors.map((error) => (
-                      <tr>
+                  <tbody className="errors-table__body">
+                    {errors.map((error, i) => (
+                      <tr key={i}>
                         <td>{error.errorCode}</td>
                         <td>{error.resourceType}</td>
                         <td>{error.diagnostics}</td>

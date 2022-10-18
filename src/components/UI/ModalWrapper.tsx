@@ -31,7 +31,7 @@ const ModalWrapper: FC<Props> = (props: Props) => {
         </button>
       }
     >
-      <p id="errors-table">{modalMessage}</p>
+      <div>{modalMessage}</div>
     </Modal>
   );
 };
