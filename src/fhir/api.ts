@@ -16,7 +16,7 @@ import {
 } from "./resources";
 import { VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
-import { BundleResponse, ErrorDetails, RequiredCoding } from "../code_systems/types";
+import { ErrorDetails, RequiredCoding } from "../code_systems/types";
 
 /**
  * Create a report bundle
