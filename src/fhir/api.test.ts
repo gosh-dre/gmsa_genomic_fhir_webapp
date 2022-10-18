@@ -6,7 +6,7 @@ import { geneCoding } from "../code_systems/hgnc";
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import { sendBundle, checkResponseOK, deleteFhirData, getResources } from "./testUtilities";
+import { deleteFhirData, getResources, sendBundle } from "./testUtilities";
 
 const fhir = new Fhir();
 
@@ -32,9 +32,8 @@ const getPatientGivenNames = (patientData: Bundle) => {
 };
 
 describe("FHIR resources", () => {
-  beforeEach(async () => {
-    await deleteFhirData();
-    await new Promise((r) => setTimeout(r, 1500));
+  beforeEach(() => {
+    return deleteFhirData();
   });
 
   /**
@@ -56,7 +55,6 @@ describe("FHIR resources", () => {
     const createPatient = await sendBundle(bundle);
 
     // check it's the right patient
-    await checkResponseOK(createPatient);
     const patientData = await getResources("Patient");
     expect("entry" in patientData).toBeTruthy();
     expect(getPatientIdentifier(patientData)).toEqual(initialValues.patient.mrn);

@@ -1,5 +1,14 @@
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { getErrors } from "./api";
+import { FhirContext } from "../components/fhir/FhirContext";
+import ReportForm from "../components/reports/ReportForm";
+import { noValues } from "../components/reports/FormDefaults";
+import FHIR from "fhirclient/lib/entry/browser";
+import React from "react";
+
+/**
+ * Utilities to be used only during testing, no actual tests here.
+ */
 
 const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
 
@@ -11,8 +20,8 @@ export const createPractitioner = async (practitioner: any) => {
       "Content-Type": "application/json",
     },
   });
-  await new Promise((r) => setTimeout(r, 1500));
-  return sendPractitioner;
+  await new Promise((r) => setTimeout(r, 100));
+  return checkResponseOK(sendPractitioner);
 };
 
 export const sendBundle = async (bundle: Bundle) => {
@@ -23,15 +32,15 @@ export const sendBundle = async (bundle: Bundle) => {
       "Content-Type": "application/json",
     },
   });
-  await new Promise((r) => setTimeout(r, 1500));
-  return sentBundle;
+  await new Promise((r) => setTimeout(r, 100));
+  return checkResponseOK(sentBundle);
 };
 
 export const checkResponseOK = async (response: Response) => {
   const r = await response.json();
 
   if (!response.ok) {
-    console.error(r.body);
+    console.error(JSON.stringify(r));
     throw new Error(response.statusText);
   }
   //   if (r.type === "batch-response") {
@@ -81,8 +90,8 @@ export const deleteFhirData = async (resource?: string, id?: string) => {
   for (const r of resources) {
     const fhirData = await getResources(r as string);
     if (!("entry" in fhirData)) {
-      console.debug("Nothing to delete; no data in database");
-      return;
+      console.debug(`No ${r} to delete`);
+      continue;
     }
     if (id) {
       await deleteAndCascadeDelete([id], r as string);
@@ -91,15 +100,36 @@ export const deleteFhirData = async (resource?: string, id?: string) => {
       await deleteAndCascadeDelete(resourceId, r as string);
     }
   }
-  await new Promise((response) => setTimeout(response, 500));
 };
 
 const deleteAndCascadeDelete = async (identifiers: string[], resource: string) => {
-  console.debug(`deleting ids: ${identifiers}`);
+  console.debug(`deleting ${identifiers.length}x ids of resource '${resource}'`);
   for (const id of identifiers) {
     const response = await fetch(`${FHIR_URL}/${resource}/${id}?_cascade=delete`, {
       method: "DELETE",
     });
     await checkResponseOK(response);
+    await new Promise((r) => setTimeout(r, 100));
   }
+};
+
+/**
+ * Report Form setup for testing of the modal output.
+ *
+ * Contains hooks for displaying the modal and the fhir client context being set.
+ * @constructor
+ */
+export const TestReportForm: React.FC = () => {
+  const client = FHIR.client(FHIR_URL);
+
+  return (
+    <>
+      <div id="backdrop-hook"></div>
+      <div id="modal-hook"></div>
+      <div id="root"></div>
+      <FhirContext.Provider value={{ client: client, setClient: () => "" }}>
+        <ReportForm initialValues={noValues} />
+      </FhirContext.Provider>
+    </>
+  );
 };
