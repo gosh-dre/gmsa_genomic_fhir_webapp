@@ -68,7 +68,6 @@ const ReportForm: FC<Props> = (props: Props) => {
     ctx.client
       ?.request(bundle)
       .then((response) => {
-        console.debug("Bundle submitted", bundle, response);
         const errors = getErrors(response, resourceList);
         if (errors.length > 0) {
           const errorsTable = () => {
