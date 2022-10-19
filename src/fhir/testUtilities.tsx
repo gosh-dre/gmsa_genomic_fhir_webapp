@@ -78,17 +78,17 @@ export const deleteFhirData = async (resource?: RetrievableResource, id?: string
   if (!resource) {
     resources = ["Patient", "Practitioner"];
   }
-  for (const res of resources) {
-    const fhirData = await getResources(res as RetrievableResource);
+  for (const resourceToDelete of resources) {
+    const fhirData = await getResources(resourceToDelete as RetrievableResource);
     if (!("entry" in fhirData)) {
-      console.debug(`No ${res} to delete`);
+      console.debug(`No ${resourceToDelete} to delete`);
       continue;
     }
     if (id) {
-      await deleteAndCascadeDelete([id], res as RetrievableResource);
+      await deleteAndCascadeDelete([id], resourceToDelete as RetrievableResource);
     } else {
       const resourceId = fhirData.entry?.map((entry) => entry.resource?.id) as string[];
-      await deleteAndCascadeDelete(resourceId, res as RetrievableResource);
+      await deleteAndCascadeDelete(resourceId, resourceToDelete as RetrievableResource);
     }
   }
 };
