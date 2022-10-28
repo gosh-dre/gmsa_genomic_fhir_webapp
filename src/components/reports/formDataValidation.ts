@@ -93,6 +93,7 @@ export const reportDetailSchema = Yup.object({
   testMethodology: requiredString,
   clinicalConclusion: requiredString,
   citation: optionalString,
+  reportFinding: requiredString,
 });
 
 export type ReportDetailSchema = Yup.InferType<typeof reportDetailSchema>;

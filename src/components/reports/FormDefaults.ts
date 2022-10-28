@@ -72,6 +72,7 @@ export const initialValues: FormValues = {
       "Screening of 82 genes associated with severe delay and seizures " +
       "... Variants are classified using the ACMG/AMP guidelines (Richards et al 2015 Genet Med) " +
       "/ACGS Best Practice guidelines (2019).",
+    reportFinding: "LA6576-8", // Positive
     clinicalConclusion: "Confirms the diagnosis of Childhood-nset epileptic encephalopathy (EEOC).",
   },
 };
@@ -120,5 +121,6 @@ export const noValues: FormValues = {
     reportingDate: "",
     reportingScientist: "",
     reportingScientistTitle: "",
+    reportFinding: "",
   },
 };

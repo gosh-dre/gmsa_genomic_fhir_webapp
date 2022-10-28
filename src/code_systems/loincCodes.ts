@@ -6,6 +6,7 @@ type LoincCodes = {
   classification: ValueSet;
   inheritance: ValueSet;
   zygosity: ValueSet;
+  reportFinding: ValueSet;
   followUp: ValueSet;
 };
 
@@ -216,6 +217,60 @@ export const loincCodes: LoincCodes = {
       ],
     },
   },
+  reportFinding: {
+    resourceType: "ValueSet",
+    id: "LL2431-6-2.73",
+    meta: {
+      versionId: "1",
+      lastUpdated: "2022-08-08T12:57:53.978+00:00",
+    },
+    url: "http://loinc.org/vs/LL2431-6",
+    identifier: [
+      {
+        system: "urn:ietf:rfc:3986",
+        value: "urn:oid:1.3.6.1.4.1.12009.10.1.1595",
+      },
+    ],
+    version: "Loinc_2.73-2.73",
+    name: "Pos|Neg|Inconcl",
+    status: "active",
+    publisher: "Regenstrief Institute, Inc.",
+    contact: [
+      {
+        name: "Regenstrief Institute, Inc.",
+        telecom: [
+          {
+            system: "url",
+            value: "https://loinc.org",
+          },
+        ],
+      },
+    ],
+    copyright:
+      "This material contains content from LOINC (http://loinc.org). LOINC is copyright ©1995-2022, Regenstrief Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is available at no cost under the license at http://loinc.org/license. LOINC® is a registered United States trademark of Regenstrief Institute, Inc.",
+    compose: {
+      include: [
+        {
+          system: "http://loinc.org",
+          version: "2.73",
+          concept: [
+            {
+              code: "LA6576-8",
+              display: "Positive",
+            },
+            {
+              code: "LA6577-6",
+              display: "Negative",
+            },
+            {
+              code: "LA9663-1",
+              display: "Inconclusive",
+            },
+          ],
+        },
+      ],
+    },
+  },
   followUp: {
     resourceType: "ValueSet",
     id: "LL1037-2",
@@ -285,6 +340,7 @@ export const loincSelect = {
   classification: getSelectOptions(loincCodes.classification),
   inheritance: getSelectOptions(loincCodes.inheritance),
   zygosity: getSelectOptions(loincCodes.zygosity),
+  reportFinding: getSelectOptions(loincCodes.reportFinding),
   followUp: getSelectOptions(loincCodes.followUp),
 };
 

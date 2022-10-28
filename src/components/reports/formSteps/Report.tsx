@@ -9,6 +9,7 @@ const Report: FC = () => {
       <h2>Report</h2>
       <FieldSet as="textarea" name="result.resultSummary" label="Result summary" />
       <FieldSet as="textarea" name="result.clinicalConclusion" label="Clinical Conclusion" />
+      <FieldSet name="result.reportFinding" label="Report finding" selectOptions={loincSelect.reportFinding} />
       <FieldSet as="textarea" name="result.citation" label="Citation" />
       <FieldSet name="result.followUp" label="Follow up" selectOptions={loincSelect.followUp} />
       <FieldSet as="textarea" name="result.furtherTesting" label="Further testing" />

@@ -130,7 +130,10 @@ async function setNoVariant() {
 }
 
 const setReportFields = async () => {
-  const dropDowns = [{ field: /Follow up/i, value: "Genetic counseling recommended (LA14020-4)" }];
+  const dropDowns = [
+    { field: /Follow up/i, value: "Genetic counseling recommended (LA14020-4)" },
+    { field: /Report finding/i, value: "Positive (LA6576-8)" },
+  ];
   await setDummyAndNext(true, dropDowns);
 };
 

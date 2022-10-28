@@ -239,7 +239,11 @@ export const interpretationAndIdentifier = (
       ],
     },
   ];
-  obs.valueString = result.resultSummary;
+  obs.note = [{ authorString: "genomic interpretation", text: result.resultSummary }];
+  obs.valueCodeableConcept = {
+    coding: [codedValue(loincSelect.reportFinding, result.reportFinding)],
+    text: "report finding",
+  };
   const identifier = createIdentifier(`${specimenBarcode}$overall-interpretation`, {
     id: "{specimenBarcode}$overall-interpretation",
   });
