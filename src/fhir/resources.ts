@@ -396,6 +396,10 @@ export const planDefinitionAndId = (
       description: report.testMethodology,
       title: "Test Method",
     },
+    {
+      textEquivalent: report.genesTested,
+      title: "gene list",
+    },
   ];
   if (report.citation !== undefined) {
     plan.relatedArtifact = [

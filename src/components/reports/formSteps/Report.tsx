@@ -14,6 +14,7 @@ const Report: FC = () => {
       <FieldSet name="result.followUp" label="Follow up" selectOptions={loincSelect.followUp} />
       <FieldSet as="textarea" name="result.furtherTesting" label="Further testing" />
       <FieldSet as="textarea" name="result.testMethodology" label="Test Methodology" />
+      <FieldSet as="textarea" name="result.genesTested" label="Genes tested" />
       <FieldSet type="date" name="result.authorisingDate" label="Authorised date" />
       <FieldSet name="result.authorisingScientist" label="Authorising scientist" />
       <FieldSet name="result.authorisingScientistTitle" label="Authorising scientist title" />

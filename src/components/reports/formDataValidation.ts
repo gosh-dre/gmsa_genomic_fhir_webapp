@@ -91,6 +91,7 @@ export const reportDetailSchema = Yup.object({
   followUp: optionalString,
   furtherTesting: requiredString,
   testMethodology: requiredString,
+  genesTested: requiredString,
   clinicalConclusion: requiredString,
   citation: optionalString,
   reportFinding: requiredString,
