@@ -77,6 +77,7 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
     patient.identifier,
     plan.identifier,
     reporter.identifier,
+    authoriser.identifier,
     specimen.identifier,
   );
   const report = reportAndId(

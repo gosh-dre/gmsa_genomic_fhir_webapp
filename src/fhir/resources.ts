@@ -434,14 +434,16 @@ export const furtherTestingAndId = (report: ReportDetailSchema, patientIdentifie
  * @param sample form data for sample
  * @param patientIdentifier to link the resource
  * @param planIdentifier identifier search string for PlanDefinition
- * @param practitionerIdentifier to link the resource for the reporting scientist
+ * @param reporterIdentifier to link the resource for the reporting scientist
+ * @param authoriserIdentifier to link the resource for the reporting scientist
  * @param specimenIdentifier to link the resource
  */
 export const serviceRequestAndId = (
   sample: SampleSchema,
   patientIdentifier: string,
   planIdentifier: string,
-  practitionerIdentifier: string,
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
   specimenIdentifier: string,
 ): ResourceAndId => {
   const request = new ServiceRequest();
@@ -464,6 +466,8 @@ export const serviceRequestAndId = (
     },
   ];
   request.subject = reference("Patient", patientIdentifier);
+  request.specimen = [reference("Specimen", specimenIdentifier)];
+  request.performer = [reference("Practitioner", reporterIdentifier), reference("Practitioner", authoriserIdentifier)];
   request.performerType = {
     coding: [
       {
@@ -473,15 +477,12 @@ export const serviceRequestAndId = (
       },
     ],
   };
-  request.performer = [reference("Practitioner", practitionerIdentifier)];
   request.reasonCode = [
     {
       coding: [codedValue(diseases, sample.reasonForTest)],
       text: sample.reasonForTestText,
     },
   ];
-
-  request.specimen = [reference("Specimen", specimenIdentifier)];
 
   return { id: request.id, resource: request };
 };
