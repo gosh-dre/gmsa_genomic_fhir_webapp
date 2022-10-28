@@ -200,7 +200,7 @@ export const specimenAndIdentifier = (sample: SampleSchema, patientIdentifier: s
   if (sample.authorisedDateTime !== undefined) {
     specimen.processing = [{ timeDateTime: parseDateTime(sample.authorisedDateTime).toISO() }];
   }
-  const identifier = createIdentifier(sample.specimenCode, { id: "specimen id" });
+  const identifier = createIdentifier(sample.specimenCode);
   specimen.identifier = [identifier];
   specimen.type = {
     coding: [codedValue(sampleTypes, sample.specimenType)],
