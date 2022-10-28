@@ -54,6 +54,7 @@ export const sampleSchema = Yup.object({
   specimenCode: requiredString,
   collectionDateTime: optionalDateTime,
   receivedDateTime: requiredDateTime,
+  authorisedDateTime: optionalDateTime,
   specimenType: requiredString,
   reasonForTest: requiredString,
   reasonForTestText: optionalString,
