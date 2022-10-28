@@ -28,15 +28,16 @@ export const optionalDateTime = dateTime.optional();
 const boolField = Yup.boolean().default(false).nullable(false);
 
 export const patientSchema = Yup.object({
-  mrn: requiredString,
   firstName: requiredString,
   lastName: requiredString,
   dateOfBirth: requiredDate,
+  mrn: optionalString,
+  nhsNumber: optionalString,
+  familyNumber: optionalString,
   gender: Yup.mixed<Patient.GenderEnum>()
     .oneOf(Object.values(Patient.GenderEnum))
     .test("required", "Please select an option", (value) => value !== undefined),
-  familyNumber: requiredString,
-});
+}).test("at-least-one-identifier", "an NHS number or a MRN is required", (form) => !!(form.mrn || form.nhsNumber));
 
 export type PatientSchema = Yup.InferType<typeof patientSchema>;
 

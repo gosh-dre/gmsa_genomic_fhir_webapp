@@ -46,11 +46,12 @@ const Patient: FC<Props> = (props) => {
 
       <h2>Patient information</h2>
       <FieldSet label="MRN" name="patient.mrn" />
+      <FieldSet label="NHS number" name="patient.nhsNumber" />
+      <FieldSet label="Family Number" name="patient.familyNumber" />
       <FieldSet label="First Name" name="patient.lastName" />
       <FieldSet label="Last Name" name="patient.firstName" />
       <FieldSet label="Date of Birth" name="patient.dateOfBirth" type="date" />
       <FieldSet label="Gender" name="patient.gender" selectOptions={genderOptions} />
-      <FieldSet label="Family Number" name="patient.familyNumber" />
     </>
   );
 };

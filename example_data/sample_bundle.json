@@ -74,7 +74,7 @@
           },
           {
             "system": "http://fhir.nhs.uk/Id/nhs-number",
-            "value": "8105688202.0"
+            "value": "8105688202"
           },
           {
             "system": "http://fhir.nhs.uk/Id/nhs-family-number",
@@ -88,7 +88,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "Patient?identifier=http://fhir.nhs.uk/Id/mrn|40388914"
+        "url": "Patient?identifier=http://fhir.nhs.uk/Id/mrn|40388914,http://fhir.nhs.uk/Id/nhs-number|8105688202"
       }
     },
     {

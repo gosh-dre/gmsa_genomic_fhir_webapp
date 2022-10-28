@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   DiagnosticReport,
   HumanName,
+  Identifier,
   Organization,
   Patient,
   PlanDefinition,
@@ -53,37 +54,43 @@ type ResourceAndId = {
  * @param organisationIdentifier used to link resource
  */
 export const patientAndIdentifier = (form: PatientSchema, organisationIdentifier: string): ResourceAndIdentifier => {
+  if (!(form.mrn || form.nhsNumber)) {
+    throw new Error("an NHS number or MRN must be specified");
+  }
+
   const patient = new Patient();
   patient.active = true;
   patient.gender = form.gender;
   patient.name = [{ family: form.lastName, given: [form.firstName] }];
-  const identifier = createIdentifier(form.mrn, makeGoshAssigner("MRN"));
+  const identifiers: Identifier[] = [];
 
-  patient.identifier = [
-    identifier,
-    // implementing GOSH's structure, they chose this to represent a family as it doesn't exist in the specification
-    {
-      extension: [
-        {
-          url: "https://fhir.nhs.uk/R4/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus",
-          valueCodeableConcept: {
-            coding: [
-              {
-                system: "https://fhir.nhs.uk/R4/CodeSystem/UKCore-NHSNumberVerificationStatus",
-                code: form.familyNumber,
-                display: "Family Number",
-              },
-            ],
-          },
-        },
-      ],
-    },
-  ];
+  if (form.mrn) {
+    identifiers.push(
+      createIdentifier(form.mrn, {
+        system: "http://fhir.nhs.uk/Id/mrn",
+        ...makeGoshAssigner("MRN"),
+      }),
+    );
+  }
+  if (form.nhsNumber) {
+    identifiers.push(createIdentifier(form.nhsNumber, { system: "http://fhir.nhs.uk/Id/nhs-number" }));
+  }
+  const identifierQuery = identifiers.map((id) => `${id.system}|${id.value}`).join(",");
+
+  if (form.familyNumber) {
+    identifiers.push(
+      createIdentifier(form.familyNumber, {
+        system: "http://fhir.nhs.uk/Id/nhs-family-number",
+        ...makeGoshAssigner("Family Number"),
+      }),
+    );
+  }
+  patient.identifier = identifiers;
   patient.birthDate = form.dateOfBirth;
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
   patient.managingOrganization = reference("Organization", organisationIdentifier);
-  return { identifier: identifier.value, resource: patient };
+  return { identifier: identifierQuery, resource: patient };
 };
 
 export const organisationAndIdentifier = (form: AddressSchema): ResourceAndIdentifier => {

@@ -11,12 +11,13 @@ export const initialValues: FormValues = {
     postCode: "WC1N 3BH",
   },
   patient: {
-    mrn: "969977",
+    mrn: "40388914",
+    nhsNumber: "8105688202",
+    familyNumber: "Z968769",
     firstName: "Donald",
     lastName: "Duck",
     dateOfBirth: "2012-03-04",
     gender: Patient.GenderEnum.Male,
-    familyNumber: "Z409929",
   },
   sample: {
     specimenCode: "19RG-183G0127",
@@ -93,11 +94,12 @@ export const noValues: FormValues = {
   },
   patient: {
     mrn: "",
+    nhsNumber: "",
+    familyNumber: "",
     firstName: "",
     lastName: "",
     dateOfBirth: "",
     gender: undefined,
-    familyNumber: "",
   },
   sample: {
     specimenCode: "",
