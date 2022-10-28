@@ -38,7 +38,7 @@ export const initialValues: FormValues = {
         "Clinical features range from severe motor and cognitive impairment with marked choreoathetosis, " +
         "self-injurious behaviour and epileptic encephalopathy, to a milder course with moderate developmental delay, " +
         "complex stereotypies (facial dyskinesia) and mild epilepsy.",
-      genomicHGVS: "c.119G>T",
+      cDnaHgvs: "c.119G>T",
       inheritanceMethod: "LA24640-7", // Autosomal dominant
       classification: "LA26332-9", // Likely Pathogenic
       proteinHGVS: "p.(Gly40Val)",

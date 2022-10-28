@@ -271,7 +271,23 @@ export const variantAndIdentifier = (
   );
   obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"] };
   const geneComponent = codedValue(reportedGenes, variant.gene);
+  // ensure that cDNA representation follows ${transcript}:${cDNA change}
+  let cDnaHgvs = variant.cDnaHgvs.trim();
+  if (!cDnaHgvs.startsWith(variant.transcript)) {
+    cDnaHgvs = `${variant.transcript}:${cDnaHgvs}`;
+  }
   obs.component = [
+    observationComponent(
+      {
+        system: "http://loinc.org",
+        code: "48004-6",
+        display: "DNA change (c.HGVS)",
+      },
+      {
+        system: "http://varnomen.hgvs.org/",
+        display: cDnaHgvs,
+      },
+    ),
     observationComponent(
       {
         system: "http://loinc.org",
@@ -320,17 +336,6 @@ export const variantAndIdentifier = (
     ),
     observationComponent(
       {
-        system: "http://loinc.org",
-        code: "48004-6",
-        display: "DNA change (c.HGVS)",
-      },
-      {
-        system: "http://varnomen.hgvs.org/",
-        display: variant.genomicHGVS,
-      },
-    ),
-    observationComponent(
-      {
         // custom code
         system: "http://hl7.org/evidence",
         code: "evidence",
@@ -374,7 +379,7 @@ export const variantAndIdentifier = (
     });
   }
 
-  const identifier = createIdentifier(`${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`);
+  const identifier = createIdentifier(`${specimenBarcode}$${cDnaHgvs}`);
   obs.identifier = [identifier];
 
   return { identifier: identifier.value, resource: obs };

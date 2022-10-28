@@ -104,8 +104,8 @@ const Variant: FC<Props> = (props) => {
                   />
                   <FieldSet as="textarea" name={`variant[${index}].geneInformation`} label="Gene Information" />
                   <FieldSet name={`variant[${index}].transcript`} label="Transcript" />
-                  <FieldSet name={`variant[${index}].genomicHGVS`} label="Genomic HGVS" />
-                  <FieldSet name={`variant[${index}].proteinHGVS`} label="Protein HGVS" />
+                  <FieldSet name={`variant[${index}].cDnaHgvs`} label="cDNA HGVS change" />
+                  <FieldSet name={`variant[${index}].proteinHGVS`} label="Protein HGVS change" />
                   <FieldSet name={`variant[${index}].zygosity`} label="Zygosity" selectOptions={loincSelect.zygosity} />
                   <FieldSet
                     name={`variant[${index}].inheritanceMethod`}

@@ -66,7 +66,7 @@ const variantSchema = Yup.object({
   gene: requiredString,
   geneInformation: optionalString,
   transcript: requiredString,
-  genomicHGVS: requiredString,
+  cDnaHgvs: requiredString,
   proteinHGVS: requiredString,
   zygosity: requiredString,
   classification: requiredString,
