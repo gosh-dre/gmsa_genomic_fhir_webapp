@@ -113,13 +113,13 @@
             {
               "system": "http://snomed.info/sct",
               "code": "122555007",
-              "display": "Venus blood specimen"
+              "display": "Venous blood specimen"
             }
           ]
         },
         "subject": {
           "type": "Patient",
-          "reference": "Patient?identifier=http://fhir.nhs.uk/Id/mrn|40388914"
+          "reference": "Patient?identifier=http://fhir.nhs.uk/Id/mrn|40388914,http://fhir.nhs.uk/Id/nhs-number|8105688202"
         }
       },
       "request": {
@@ -132,7 +132,7 @@
         "resourceType": "Practitioner",
         "identifier": [
           {
-            "value": "freya_fredrick_auth"
+            "value": "freya_fredrick_auth_gosh"
           }
         ],
         "active": true,
@@ -154,14 +154,14 @@
           },
           {
             "issuer": {
-              "reference": "Organization/gosh"
+              "reference": "Organization?identifier=gosh"
             }
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "Practitioner?identifier=freya_fredrick_auth"
+        "url": "Practitioner?identifier=freya_fredrick_auth_gosh"
       }
     },
     {
@@ -169,7 +169,7 @@
         "resourceType": "Practitioner",
         "identifier": [
           {
-            "value": "ana_anooli_seo_report"
+            "value": "ana_anooli_seo_report_gosh"
           }
         ],
         "active": true,
@@ -191,14 +191,14 @@
           },
           {
             "issuer": {
-              "reference": "Organization/gosh"
+              "reference": "Organization?identifier=gosh"
             }
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "Practitioner?identifier=ana_anooli_seo_report"
+        "url": "Practitioner?identifier=ana_anooli_seo_report_gosh"
       }
     },
     {
