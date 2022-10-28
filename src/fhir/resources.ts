@@ -126,10 +126,20 @@ export const organisationAndIdentifier = (form: AddressSchema): ResourceAndIdent
   return { identifier: identifier.value, resource: org };
 };
 
-export const practitionersAndQueries = (result: ReportDetailSchema) => {
+export const practitionersAndQueries = (result: ReportDetailSchema, organisationIdentifier: string) => {
   return {
-    authoriser: practitionerAndIdentifier(result.authorisingScientist, result.authorisingScientistTitle, "auth"),
-    reporter: practitionerAndIdentifier(result.reportingScientist, result.reportingScientistTitle, "report"),
+    authoriser: practitionerAndIdentifier(
+      result.authorisingScientist,
+      result.authorisingScientistTitle,
+      "auth",
+      organisationIdentifier,
+    ),
+    reporter: practitionerAndIdentifier(
+      result.reportingScientist,
+      result.reportingScientistTitle,
+      "report",
+      organisationIdentifier,
+    ),
   };
 };
 
@@ -142,8 +152,14 @@ type ScientistRole = "auth" | "report";
  * @param fullName the first word will be the firstName, remaining words will be lastName
  * @param title job title within the laboratory
  * @param role role in the reporting process
+ * @param organisationIdentifier to link the organisation
  */
-const practitionerAndIdentifier = (fullName: string, title: string, role: ScientistRole): ResourceAndIdentifier => {
+const practitionerAndIdentifier = (
+  fullName: string,
+  title: string,
+  role: ScientistRole,
+  organisationIdentifier: string,
+): ResourceAndIdentifier => {
   const nameSplit = fullName.split(/\s/g);
   const firstName = nameSplit[0];
   const lastName = nameSplit.slice(1).join(" ");
@@ -156,12 +172,16 @@ const practitionerAndIdentifier = (fullName: string, title: string, role: Scient
   const practitioner = new Practitioner();
   practitioner.resourceType = "Practitioner";
   practitioner.active = true;
-  const normalisedIdentifier = `${fullName}_${role}`.replaceAll(/\s/g, "").toLowerCase();
+  const normalisedIdentifier = `${fullName}_${role}_${organisationIdentifier}`.replaceAll(/\s/g, "").toLowerCase();
   const identifier = createIdentifier(normalisedIdentifier);
   practitioner.identifier = [identifier];
   practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official, text: roleText }];
-  practitioner.qualification = [{ code: { text: title } }];
-  // TODO: add issuer
+  practitioner.qualification = [
+    {
+      code: { text: title },
+      issuer: reference("Organization", organisationIdentifier),
+    },
+  ];
   return { identifier: identifier.value, resource: practitioner };
 };
 

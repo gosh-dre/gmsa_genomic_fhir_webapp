@@ -38,7 +38,7 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
   const specimen = specimenAndIdentifier(form.sample, patient.identifier);
   const furtherTesting = furtherTestingAndId(form.result, patient.identifier);
   const plan = planDefinitionAndId(form.sample, form.result, patient.identifier);
-  const { authoriser, reporter } = practitionersAndQueries(form.result);
+  const { authoriser, reporter } = practitionersAndQueries(form.result, org.identifier);
   let variants: ResourceAndIdentifier[];
   if (form.variant.length) {
     variants = form.variant.map((variant: VariantSchema) =>
