@@ -14,7 +14,7 @@ import {
   specimenAndIdentifier,
   variantAndIdentifier,
 } from "./resources";
-import { VariantSchema } from "../components/reports/formDataValidation";
+import { SampleSchema, VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
 import { RequiredCoding } from "../code_systems/types";
 
@@ -32,12 +32,19 @@ export const bundleRequest = (form: FormValues, reportedGenes: RequiredCoding[])
   };
 };
 
+/**
+ * Generates a unique report identifier that is unique for a sample and a reason for testing.
+ * @param sample data from the sample form
+ */
+const getUniqueReportIdentifier = (sample: SampleSchema) => `${sample.specimenCode}_${sample.reasonForTest}`;
+
 export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]): Bundle => {
+  const reportIdentifier = getUniqueReportIdentifier(form.sample);
   const org = organisationAndIdentifier(form.address);
   const patient = patientAndIdentifier(form.patient, org.identifier);
-  const specimen = specimenAndIdentifier(form.sample, patient.identifier);
-  const furtherTesting = furtherTestingAndId(form.result, patient.identifier);
-  const plan = planDefinitionAndId(form.sample, form.result, patient.identifier);
+  const specimen = specimenAndIdentifier(form.sample, patient.identifier, reportIdentifier);
+  const furtherTesting = furtherTestingAndId(form.result, patient.identifier, reportIdentifier);
+  const plan = planDefinitionAndId(form.sample, form.result, patient.identifier, reportIdentifier);
   const { authoriser, reporter } = practitionersAndQueries(form.result, org.identifier);
   let variants: ResourceAndIdentifier[];
   if (form.variant.length) {
@@ -46,31 +53,23 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
         variant,
         reportedGenes,
         patient.identifier,
-        specimen.identifier,
-        specimen.identifier,
         reporter.identifier,
         authoriser.identifier,
+        reportIdentifier,
       ),
     );
   } else {
     variants = [
-      createNullVariantAndIdentifier(
-        patient.identifier,
-        specimen.identifier,
-        specimen.identifier,
-        reporter.identifier,
-        authoriser.identifier,
-      ),
+      createNullVariantAndIdentifier(patient.identifier, reporter.identifier, authoriser.identifier, reportIdentifier),
     ];
   }
 
   const overallInterpretation = interpretationAndIdentifier(
     form.result,
     patient.identifier,
-    specimen.identifier,
-    specimen.identifier,
     reporter.identifier,
     authoriser.identifier,
+    reportIdentifier,
   );
   const serviceRequest = serviceRequestAndId(
     form.sample,
@@ -78,7 +77,7 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
     plan.identifier,
     reporter.identifier,
     authoriser.identifier,
-    specimen.identifier,
+    reportIdentifier,
   );
   const report = reportAndId(
     form.result,
@@ -87,8 +86,8 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
     reporter.identifier,
     authoriser.identifier,
     org.identifier,
-    specimen.identifier,
     variants.map((variant) => variant.identifier),
+    reportIdentifier,
   );
   return {
     resourceType: "Bundle",
