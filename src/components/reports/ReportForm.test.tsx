@@ -1,10 +1,11 @@
-import { render, screen, within } from "@testing-library/react";
+import { getByText, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { act } from "react-dom/test-utils";
 import { createPractitioner, deleteFhirData, getResources, TestReportForm } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
+import { notDeepEqual } from "assert";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -142,6 +143,32 @@ describe("Report form", () => {
     return deleteFhirData();
   });
 
+  test("Redirect after submission", async () => {
+    const practitioner = new Practitioner();
+    practitioner.resourceType = "Practitioner";
+    const identifier = createIdentifier("always_the_same_report");
+    practitioner.identifier = [identifier];
+
+    await createPractitioner(practitioner);
+
+    // Act
+    render(<TestReportForm />);
+    await setLabAndPatient();
+    await setSample();
+    await setVariantFields();
+    await setReportFields();
+
+    await act(async () => {
+      userEvent.click(screen.getByText(/submit/i));
+    });
+    if (!("error" in screen)) {
+      window.location.href = "/public/index.html";
+    }
+    await waitFor(() => {
+      expect(screen.getByText(/form step 1 of 5/i, { selector: "h2" })).toBeInTheDocument();
+    });
+  });
+
   test("Error modal exists", async () => {
     // Arrange
     const practitioner = new Practitioner();
@@ -149,7 +176,13 @@ describe("Report form", () => {
     const identifier = createIdentifier("always_the_same_report");
     practitioner.identifier = [identifier];
 
-    console.log("practitioners before:", await (await getResources("Practitioner")).total);
+    console.log(
+      "practitioners before:",
+      await (
+        await getResources("Practitioner")
+      ).total,
+      await getResources("Patient"),
+    );
     await createPractitioner(practitioner);
     await createPractitioner(practitioner);
     console.log("practitioners after:", await (await getResources("Practitioner")).total);
@@ -166,8 +199,10 @@ describe("Report form", () => {
     });
 
     // Assert
-    const errorModal = await screen.findByText(/error/i, { selector: "h2" });
-    expect(errorModal).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
+    });
   });
   /**
    * Given the report form
