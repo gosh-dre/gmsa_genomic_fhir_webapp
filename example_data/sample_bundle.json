@@ -235,11 +235,11 @@
         "performer": [
           {
             "type": "Practitioner",
-            "reference": "Practitioner?identifier=freya_fredrick_auth"
+            "reference": "Practitioner?identifier=freya_fredrick_auth_gosh"
           },
           {
             "type": "Practitioner",
-            "reference": "Practitioner?identifier=ana_anooli_seo_report"
+            "reference": "Practitioner?identifier=ana_anooli_seo_report_gosh"
           }
         ],
         "note": [
@@ -478,7 +478,7 @@
         },
         "subject": {
           "type": "Patient",
-          "reference": "Patient?identifier=http://fhir.nhs.uk/Id/mrn|40388914"
+          "reference": "Patient?identifier=http://fhir.nhs.uk/Id/mrn|40388914,http://fhir.nhs.uk/Id/nhs-number|8105688202"
         },
         "specimen": {
           "type": "Specimen",
@@ -487,11 +487,11 @@
         "performer": [
           {
             "type": "Practitioner",
-            "reference": "Practitioner?identifier=freya_fredrick_auth"
+            "reference": "Practitioner?identifier=freya_fredrick_auth_gosh"
           },
           {
             "type": "Practitioner",
-            "reference": "Practitioner?identifier=ana_anooli_seo_report"
+            "reference": "Practitioner?identifier=ana_anooli_seo_report_gosh"
           }
         ],
         "category": [
@@ -508,15 +508,15 @@
         "note": [
           {
             "authorString": "genomic interpretation",
-            "text": "Next generation sequence analysis indicates that Maria321 BrighGosh321 is heterozygous for the SMC1A c.1263del p.(Lys422Serfs*28) pathogenic variant that has been confirmed by Sanger sequence analysis (see technical information below)."
+            "text": "Next generation sequence analysis indicates that Duck Donald is heterozygous for the GNAO1 c.119G>T p.(Gly40Val) likely pathogenic variant that has been confirmed by Sanger sequence analysis (see technical information below)."
           }
         ],
         "valueCodeableConcept": {
           "coding": [
             {
-              "system": "http://loinc.org",
-              "code": "LA6577-6",
-              "display": "Negative"
+              "code": "LA6576-8",
+              "display": "Positive",
+              "system": "http://loinc.org"
             }
           ],
           "text": "report finding"
@@ -524,7 +524,7 @@
       },
       "request": {
         "method": "PUT",
-        "url": "Observation?identifier=20RG-205G0047_R59$overall-interpretation"
+        "url": "Observation?identifier=19RG-183G0127$overall-interpretation"
       }
     },
     {
@@ -597,11 +597,11 @@
         "performer": [
           {
             "type": "Practitioner",
-            "reference": "Practitioner?identifier=freya_fredrick_auth"
+            "reference": "Practitioner?identifier=freya_fredrick_auth_gosh"
           },
           {
             "type": "Practitioner",
-            "reference": "Practitioner?identifier=ana_anooli_seo_report"
+            "reference": "Practitioner?identifier=ana_anooli_seo_report_gosh"
           }
         ],
         "category": [
@@ -671,11 +671,11 @@
         "resultsInterpreter": [
           {
             "type": "Practitioner",
-            "reference": "Practitioner?identifier=freya_fredrick_auth"
+            "reference": "Practitioner?identifier=freya_fredrick_auth_gosh"
           },
           {
             "type": "Practitioner",
-            "reference": "Practitioner?identifier=ana_anooli_seo_report"
+            "reference": "Practitioner?identifier=ana_anooli_seo_report_gosh"
           }
         ],
         "specimen": [
