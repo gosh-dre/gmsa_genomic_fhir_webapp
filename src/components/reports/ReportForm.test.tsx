@@ -1,8 +1,8 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { act } from "react-dom/test-utils";
-import { createPractitioner, deleteFhirData, TestReportForm } from "../../fhir/testUtilities";
+import { createPractitioner, deleteFhirData, getResources, TestReportForm } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
 
@@ -149,8 +149,10 @@ describe("Report form", () => {
     const identifier = createIdentifier("always_the_same_report");
     practitioner.identifier = [identifier];
 
+    console.log("practitioners before:", await (await getResources("Practitioner")).total);
     await createPractitioner(practitioner);
     await createPractitioner(practitioner);
+    console.log("practitioners after:", await (await getResources("Practitioner")).total);
 
     // Act
     render(<TestReportForm />);
@@ -164,11 +166,8 @@ describe("Report form", () => {
     });
 
     // Assert
-    await waitFor(async () => {
-      const errorModal = await screen.findByText(/error/i, { selector: "h2" });
-
-      expect(errorModal).toBeInTheDocument();
-    });
+    const errorModal = await screen.findByText(/error/i, { selector: "h2" });
+    expect(errorModal).toBeInTheDocument();
   });
   /**
    * Given the report form
