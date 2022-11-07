@@ -28,7 +28,7 @@
     "build": "react-scripts build",
     "predeploy": "react-scripts build && cp build/index.html build/404.html",
     "deploy": "COMMIT_MSG=$(git log -1 --pretty=%B | sed  's/ /_/g'); gh-pages -d build --message ${COMMIT_MSG}",
-    "test": "react-scripts test --runInBand",
+    "test": "react-scripts test --verbose --runInBand",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
