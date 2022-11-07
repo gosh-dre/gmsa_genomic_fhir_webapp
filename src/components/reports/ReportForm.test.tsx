@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { act } from "react-dom/test-utils";
@@ -165,7 +165,9 @@ describe("Report form", () => {
 
     // Assert
     const errorModal = await screen.findByText(/error/i, { selector: "h2" });
-    expect(errorModal).toBeInTheDocument();
+    await waitFor(() => {
+      expect(errorModal).toBeInTheDocument();
+    });
   });
   /**
    * Given the report form
