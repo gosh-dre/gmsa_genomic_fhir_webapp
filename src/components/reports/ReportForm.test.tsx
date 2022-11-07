@@ -164,8 +164,9 @@ describe("Report form", () => {
     });
 
     // Assert
-    const errorModal = await screen.findByText(/error/i, { selector: "h2" });
-    await waitFor(() => {
+    await waitFor(async () => {
+      const errorModal = await screen.findByText(/error/i, { selector: "h2" });
+
       expect(errorModal).toBeInTheDocument();
     });
   });
