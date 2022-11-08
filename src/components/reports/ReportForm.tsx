@@ -71,24 +71,17 @@ const ReportForm: FC<Props> = (props: Props) => {
         const errors = getErrors(response, resourceList);
         if (errors.length > 0) {
           const errorsTable = () => {
-            //originally had this in ReportForm.module.css but didn't work?
-            const css = ` 
-            .errors-table {
-              font: inherit;
-              font-size: 86%;
-            }`;
             return (
               <>
-                <style>{css}</style>
-                <table className="errors-table">
-                  <thead className="errors-table__header">
+                <table className={classes["errors-table"]}>
+                  <thead>
                     <tr>
                       <th>Code</th>
                       <th>Resource</th>
                       <th>Information</th>
                     </tr>
                   </thead>
-                  <tbody className="errors-table__body">
+                  <tbody>
                     {errors.map((error, i) => (
                       <tr key={i}>
                         <td>{error.errorCode}</td>
