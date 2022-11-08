@@ -5,7 +5,7 @@ import { act } from "react-dom/test-utils";
 import { createPractitioner, deleteFhirData, getResources, TestReportForm } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
-import { notDeepEqual } from "assert";
+import { enableFetchMocks } from "jest-fetch-mock";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -143,32 +143,6 @@ describe("Report form", () => {
     return deleteFhirData();
   });
 
-  test("Redirect after submission", async () => {
-    const practitioner = new Practitioner();
-    practitioner.resourceType = "Practitioner";
-    const identifier = createIdentifier("always_the_same_report");
-    practitioner.identifier = [identifier];
-
-    await createPractitioner(practitioner);
-
-    // Act
-    render(<TestReportForm />);
-    await setLabAndPatient();
-    await setSample();
-    await setVariantFields();
-    await setReportFields();
-
-    await act(async () => {
-      userEvent.click(screen.getByText(/submit/i));
-    });
-    if (!("error" in screen)) {
-      window.location.href = "/public/index.html";
-    }
-    // await waitFor(() => {
-    //   expect(screen.getByText(/form step 1 of 5/i)).toBeInTheDocument();
-    // });
-  });
-
   test("Error modal exists", async () => {
     // Arrange
     const practitioner = new Practitioner();
@@ -176,13 +150,7 @@ describe("Report form", () => {
     const identifier = createIdentifier("always_the_same_report");
     practitioner.identifier = [identifier];
 
-    console.log(
-      "practitioners before:",
-      await (
-        await getResources("Practitioner")
-      ).total,
-      await getResources("Patient"),
-    );
+    console.log("practitioners before:", await (await getResources("Practitioner")).total);
     await createPractitioner(practitioner);
     await createPractitioner(practitioner);
     console.log("practitioners after:", await (await getResources("Practitioner")).total);
