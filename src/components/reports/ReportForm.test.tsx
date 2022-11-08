@@ -1,11 +1,10 @@
-import { getByText, render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { act } from "react-dom/test-utils";
 import { createPractitioner, deleteFhirData, getResources, TestReportForm } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
-import { enableFetchMocks } from "jest-fetch-mock";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
