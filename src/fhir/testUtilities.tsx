@@ -6,6 +6,7 @@ import { noValues } from "../components/reports/FormDefaults";
 import FHIR from "fhirclient/lib/entry/browser";
 import React from "react";
 import { RetrievableResource } from "../code_systems/types";
+import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 
 /**
  * Utilities to be used only during testing, no actual tests here.
@@ -13,7 +14,7 @@ import { RetrievableResource } from "../code_systems/types";
 
 const FHIR_URL = process.env.REACT_APP_FHIR_URL || "";
 
-export const createPractitioner = async (practitioner: any) => {
+export const createPractitioner = async (practitioner: Practitioner) => {
   const sendPractitioner = await fetch(`${FHIR_URL}/Practitioner`, {
     method: "POST",
     body: JSON.stringify(practitioner),
@@ -38,23 +39,23 @@ export const sendBundle = async (bundle: Bundle) => {
 };
 
 const checkResponseOK = async (response: Response) => {
-  const r = await response.json();
+  const jsonData = await response.json();
   if (!response.ok) {
-    console.error(JSON.stringify(r));
+    console.error(JSON.stringify(jsonData));
     throw new Error(response.statusText);
   }
-  if (!(r.type === "bundle-response")) {
-    return r;
+  if (!(jsonData.type === "bundle-response")) {
+    return jsonData;
   }
-  const errors = getErrors(r);
+  const errors = getErrors(jsonData);
   if (errors.length > 1) {
     errors.forEach((error) => {
       const message = error.diagnostics;
       throw new Error(message);
     });
   }
-  console.debug(`check response: ${JSON.stringify(r, null, 2)}`);
-  return r;
+  console.debug(`check response: ${JSON.stringify(jsonData, null, 2)}`);
+  return jsonData;
 };
 
 export const getResources = async (
