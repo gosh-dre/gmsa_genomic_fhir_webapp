@@ -166,11 +166,11 @@ describe("Report form", () => {
     });
 
     // Assert
-    // await waitFor(() => {
-    //   expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
-    // });
-    const errorModal = await screen.findByText(/error/i, { selector: "h2" });
-    expect(errorModal).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
+    });
+    // const errorModal = await screen.findByText(/error/i, { selector: "h2" });
+    // expect(errorModal).toBeInTheDocument();
   });
   /**
    * Given the report form
