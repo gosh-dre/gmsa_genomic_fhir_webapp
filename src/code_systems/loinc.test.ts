@@ -21,6 +21,7 @@ describe("LOINC", () => {
       classification: getSelectOptions(valueSet.classification),
       inheritance: getSelectOptions(valueSet.inheritance),
       zygosity: getSelectOptions(valueSet.zygosity),
+      reportFinding: getSelectOptions(valueSet.reportFinding),
       followUp: getSelectOptions(valueSet.followUp),
     };
 

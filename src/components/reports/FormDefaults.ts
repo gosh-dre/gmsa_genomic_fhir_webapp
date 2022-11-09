@@ -11,19 +11,21 @@ export const initialValues: FormValues = {
     postCode: "WC1N 3BH",
   },
   patient: {
-    mrn: "969977",
+    mrn: "40388914",
+    nhsNumber: "8105688202",
+    familyNumber: "Z968769",
     firstName: "Donald",
     lastName: "Duck",
     dateOfBirth: "2012-03-04",
     gender: Patient.GenderEnum.Male,
-    familyNumber: "Z409929",
   },
   sample: {
     specimenCode: "19RG-183G0127",
     specimenType: "122555007",
     collectionDateTime: "04/06/2019 12:00",
     receivedDateTime: "04/06/2019 15:00",
-    reasonForTest: "230387008",
+    authorisedDateTime: "04/06/2019 15:30",
+    reasonForTest: "R59", // epilepsy
     reasonForTestText:
       "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +
       "An SLC2A1 variant is suspected.",
@@ -37,7 +39,7 @@ export const initialValues: FormValues = {
         "Clinical features range from severe motor and cognitive impairment with marked choreoathetosis, " +
         "self-injurious behaviour and epileptic encephalopathy, to a milder course with moderate developmental delay, " +
         "complex stereotypies (facial dyskinesia) and mild epilepsy.",
-      genomicHGVS: "c.119G>T",
+      cDnaHgvs: "c.119G>T",
       inheritanceMethod: "LA24640-7", // Autosomal dominant
       classification: "LA26332-9", // Likely Pathogenic
       proteinHGVS: "p.(Gly40Val)",
@@ -71,6 +73,8 @@ export const initialValues: FormValues = {
       "Screening of 82 genes associated with severe delay and seizures " +
       "... Variants are classified using the ACMG/AMP guidelines (Richards et al 2015 Genet Med) " +
       "/ACGS Best Practice guidelines (2019).",
+    genesTested: "ADSL, ALG13, ARHGEF9, ARX, ATP1A3, ATRX, BRAT1",
+    reportFinding: "LA6576-8", // Positive
     clinicalConclusion: "Confirms the diagnosis of Childhood-nset epileptic encephalopathy (EEOC).",
   },
 };
@@ -90,17 +94,19 @@ export const noValues: FormValues = {
   },
   patient: {
     mrn: "",
+    nhsNumber: "",
+    familyNumber: "",
     firstName: "",
     lastName: "",
     dateOfBirth: "",
     gender: undefined,
-    familyNumber: "",
   },
   sample: {
     specimenCode: "",
     specimenType: "",
     collectionDateTime: "",
     receivedDateTime: "",
+    authorisedDateTime: "",
     reasonForTest: "",
     reasonForTestText: "",
   },
@@ -112,11 +118,13 @@ export const noValues: FormValues = {
     followUp: "",
     furtherTesting: "",
     testMethodology: "",
+    genesTested: "",
     authorisingDate: "",
     authorisingScientist: "",
     authorisingScientistTitle: "",
     reportingDate: "",
     reportingScientist: "",
     reportingScientistTitle: "",
+    reportFinding: "",
   },
 };

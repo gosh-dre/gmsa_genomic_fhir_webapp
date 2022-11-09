@@ -1,6 +1,7 @@
-import { optionalDateTime, requiredDate, requiredDateTime } from "./formDataValidation";
+import { optionalDateTime, patientSchema, requiredDate, requiredDateTime } from "./formDataValidation";
 import * as Yup from "yup";
 import { ValidationError } from "yup";
+import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
 
 const requiredSchema = Yup.object({
   requiredDate: requiredDate,
@@ -51,5 +52,21 @@ describe("Custom form validation", () => {
     const model = { optionalDateTime: datetime };
     const validation = await optionalSchema.validate(model);
     expect(validation).toBeTruthy();
+  });
+
+  test("mrn and NHS number can't both be empty", async () => {
+    async function validateModel() {
+      const model = {
+        firstName: "requiredString",
+        lastName: "requiredString",
+        dateOfBirth: validDate,
+        mrn: "",
+        nhsNumber: "",
+        familyNumber: "optionalString",
+        gender: Patient.GenderEnum.Female,
+      };
+      await patientSchema.validate(model);
+    }
+    await expect(validateModel).rejects.toThrow(ValidationError);
   });
 });

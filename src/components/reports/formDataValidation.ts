@@ -28,14 +28,26 @@ export const optionalDateTime = dateTime.optional();
 const boolField = Yup.boolean().default(false).nullable(false);
 
 export const patientSchema = Yup.object({
-  mrn: requiredString,
   firstName: requiredString,
   lastName: requiredString,
   dateOfBirth: requiredDate,
+  mrn: optionalString.test("nhs_or_mrn", "an NHS number or a MRN is required", (value, { parent }) => {
+    return value || parent.nhsNumber;
+  }),
+  nhsNumber: optionalString
+    .transform((value) => value.replace(/\s+/g, ""))
+    .test(
+      "nhs_number_format",
+      "NHS number should have 10 digits",
+      (value) => value === undefined || (value.length === 10 && !isNaN(+value)),
+    )
+    .test("nhs_or_mrn", "an NHS number or a MRN is required", (value, { parent }) => {
+      return value || parent.mrn;
+    }),
+  familyNumber: optionalString,
   gender: Yup.mixed<Patient.GenderEnum>()
     .oneOf(Object.values(Patient.GenderEnum))
     .test("required", "Please select an option", (value) => value !== undefined),
-  familyNumber: requiredString,
 });
 
 export type PatientSchema = Yup.InferType<typeof patientSchema>;
@@ -54,6 +66,7 @@ export const sampleSchema = Yup.object({
   specimenCode: requiredString,
   collectionDateTime: optionalDateTime,
   receivedDateTime: requiredDateTime,
+  authorisedDateTime: optionalDateTime,
   specimenType: requiredString,
   reasonForTest: requiredString,
   reasonForTestText: optionalString,
@@ -65,7 +78,7 @@ const variantSchema = Yup.object({
   gene: requiredString,
   geneInformation: optionalString,
   transcript: requiredString,
-  genomicHGVS: requiredString,
+  cDnaHgvs: requiredString,
   proteinHGVS: requiredString,
   zygosity: requiredString,
   classification: requiredString,
@@ -90,8 +103,10 @@ export const reportDetailSchema = Yup.object({
   followUp: optionalString,
   furtherTesting: requiredString,
   testMethodology: requiredString,
+  genesTested: requiredString,
   clinicalConclusion: requiredString,
   citation: optionalString,
+  reportFinding: requiredString,
 });
 
 export type ReportDetailSchema = Yup.InferType<typeof reportDetailSchema>;
