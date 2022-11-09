@@ -16,7 +16,7 @@ import {
 } from "./resources";
 import { VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
-import { BundleResponse, ErrorDetails, ErrorResponse, RequiredCoding } from "../code_systems/types";
+import { BundleResponse, ErrorDetails, RequiredCoding } from "../code_systems/types";
 
 /**
  * Create a report bundle
@@ -129,7 +129,7 @@ const createEntry = (resource: Resource, identifier?: string) => {
   };
 };
 
-export const getErrors = (errorData: ErrorResponse, resourceTypes?: string[]) => {
+export const getErrors = (errorData: BundleResponse, resourceTypes?: string[]) => {
   const errorArray: ErrorDetails[] = [];
   let count = 0;
 

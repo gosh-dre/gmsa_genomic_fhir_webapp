@@ -18,24 +18,7 @@ export type BundleResponse = {
           ];
         };
       };
-    },
-  ];
-};
-
-export type ErrorResponse = {
-  entry: [
-    {
-      response: {
-        status: string | number;
-        outcome: {
-          issue?: [
-            {
-              diagnostics: string;
-            },
-          ];
-        };
-      };
-      count: number;
+      count?: number;
     },
   ];
 };
