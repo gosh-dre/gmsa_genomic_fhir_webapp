@@ -70,31 +70,29 @@ const ReportForm: FC<Props> = (props: Props) => {
       .then((response) => {
         const errors = getErrors(response, resourceList);
         if (errors.length > 0) {
-          const errorsTable = () => {
-            return (
-              <>
-                <table className={classes["errors-table"]}>
-                  <thead>
-                    <tr>
-                      <th>Code</th>
-                      <th>Resource</th>
-                      <th>Information</th>
+          const errorsTable = (
+            <>
+              <table className={classes["errors-table"]}>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Resource</th>
+                    <th>Information</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {errors.map((error, i) => (
+                    <tr key={i}>
+                      <td>{error.errorCode}</td>
+                      <td>{error.resourceType}</td>
+                      <td>{error.diagnostics}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {errors.map((error, i) => (
-                      <tr key={i}>
-                        <td>{error.errorCode}</td>
-                        <td>{error.resourceType}</td>
-                        <td>{error.diagnostics}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            );
-          };
-          setModal({ message: errorsTable(), isError: true });
+                  ))}
+                </tbody>
+              </table>
+            </>
+          );
+          setModal({ message: errorsTable, isError: true });
         }
       })
       .catch((error) => {
