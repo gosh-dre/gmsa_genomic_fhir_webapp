@@ -32,7 +32,14 @@ export const patientSchema = Yup.object({
   lastName: requiredString,
   dateOfBirth: requiredDate,
   mrn: optionalString,
-  nhsNumber: optionalString,
+  nhsNumber: Yup.string()
+    .optional()
+    .transform((value) => value.replace(/\s+/g, ""))
+    .test(
+      "nhs_number",
+      "NHS number should have 10 digits",
+      (value) => value === undefined || (value.length === 10 && !isNaN(+value)),
+    ),
   familyNumber: optionalString,
   gender: Yup.mixed<Patient.GenderEnum>()
     .oneOf(Object.values(Patient.GenderEnum))

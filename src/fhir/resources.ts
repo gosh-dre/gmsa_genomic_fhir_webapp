@@ -69,7 +69,9 @@ export const patientAndIdentifier = (form: PatientSchema, organisationIdentifier
     );
   }
   if (form.nhsNumber) {
-    identifiers.push(createIdentifier(form.nhsNumber, { system: "http://fhir.nhs.uk/Id/nhs-number" }));
+    identifiers.push(
+      createIdentifier(form.nhsNumber.replace(/\s+/g, ""), { system: "http://fhir.nhs.uk/Id/nhs-number" }),
+    );
   }
   const identifierQuery = identifiers.map((id) => `${id.system}|${id.value}`).join(",");
 
