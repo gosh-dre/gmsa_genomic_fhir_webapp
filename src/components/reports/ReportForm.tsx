@@ -6,7 +6,7 @@ import { FhirContext } from "../fhir/FhirContext";
 import Card from "../UI/Card";
 import classes from "./ReportForm.module.css";
 import { addressSchema, patientSchema, reportDetailSchema, sampleSchema, variantsSchema } from "./formDataValidation";
-import { bundleRequest } from "../../fhir/api";
+import { bundleRequest, getErrors } from "../../fhir/api";
 import Patient from "./formSteps/Patient";
 import Sample from "./formSteps/Sample";
 import Variant from "./formSteps/Variant";
@@ -63,10 +63,38 @@ const ReportForm: FC<Props> = (props: Props) => {
     const bundle = bundleRequest(values, reportedGenes);
 
     setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
+    const resourceList = JSON.parse(bundle.body).entry.map((entry: any) => entry.resource.resourceType);
 
     ctx.client
       ?.request(bundle)
-      .then((response) => console.debug("Bundle submitted", bundle, response))
+      .then((response) => {
+        const errors = getErrors(response, resourceList);
+        if (errors.length > 0) {
+          const errorsTable = (
+            <>
+              <table className={classes["errors-table"]}>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Resource</th>
+                    <th>Information</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {errors.map((error, i) => (
+                    <tr key={i}>
+                      <td>{error.errorCode}</td>
+                      <td>{error.resourceType}</td>
+                      <td>{error.diagnostics}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          );
+          setModal({ message: errorsTable, isError: true });
+        }
+      })
       .catch((error) => {
         console.error(error);
         setModal({

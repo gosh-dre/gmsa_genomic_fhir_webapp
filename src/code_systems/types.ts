@@ -18,9 +18,17 @@ export type BundleResponse = {
           ];
         };
       };
+      count?: number;
     },
   ];
 };
+
+export type ErrorDetails = {
+  errorCode: string;
+  resourceType: string;
+  diagnostics: string;
+};
+export type RetrievableResource = "Practitioner" | "Patient" | "Observation";
 
 /**
  * FHIR reference with reference and type required.
