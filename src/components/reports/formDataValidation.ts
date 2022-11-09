@@ -31,20 +31,30 @@ export const patientSchema = Yup.object({
   firstName: requiredString,
   lastName: requiredString,
   dateOfBirth: requiredDate,
-  mrn: optionalString,
-  nhsNumber: Yup.string()
-    .optional()
+  mrn: optionalString.test("validator-custom-name", (value, { createError, path, parent }) => {
+    if (!(value || parent.nhsNumber)) {
+      return createError({ path, message: "an NHS number or a MRN is required" });
+    }
+    return true;
+  }),
+  nhsNumber: optionalString
     .transform((value) => value.replace(/\s+/g, ""))
     .test(
       "nhs_number",
       "NHS number should have 10 digits",
       (value) => value === undefined || (value.length === 10 && !isNaN(+value)),
-    ),
+    )
+    .test("validator-custom-name", (value, { createError, path, parent }) => {
+      if (!(value || parent.mrn)) {
+        return createError({ path, message: "an NHS number or a MRN is required" });
+      }
+      return true;
+    }),
   familyNumber: optionalString,
   gender: Yup.mixed<Patient.GenderEnum>()
     .oneOf(Object.values(Patient.GenderEnum))
     .test("required", "Please select an option", (value) => value !== undefined),
-}).test("at-least-one-identifier", "an NHS number or a MRN is required", (form) => !!(form.mrn || form.nhsNumber));
+});
 
 export type PatientSchema = Yup.InferType<typeof patientSchema>;
 
