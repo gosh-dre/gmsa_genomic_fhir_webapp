@@ -18,8 +18,15 @@ type DropDown = {
 const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
   const dummyValue = "Always the same";
   const form = screen.getByRole("form");
+
+  within(form)
+    .queryAllByLabelText(/nhs number/i)
+    .forEach((input) => {
+      clearAndType(input, "1234567890");
+    });
+
   const textInputs = within(form).getAllByLabelText(
-    /^((?!resultOutput|date|address|gender|specimen type|search|gene symbol|follow up).)*$/i,
+    /^((?!nhs number|resultOutput|date|address|gender|specimen type|search|gene symbol|follow up).)*$/i,
   );
 
   if (!dropDowns) {
