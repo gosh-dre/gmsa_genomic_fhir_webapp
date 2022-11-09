@@ -31,24 +31,18 @@ export const patientSchema = Yup.object({
   firstName: requiredString,
   lastName: requiredString,
   dateOfBirth: requiredDate,
-  mrn: optionalString.test("validator-custom-name", (value, { createError, path, parent }) => {
-    if (!(value || parent.nhsNumber)) {
-      return createError({ path, message: "an NHS number or a MRN is required" });
-    }
-    return true;
+  mrn: optionalString.test("nhs_or_mrn", "an NHS number or a MRN is required", (value, { parent }) => {
+    return value || parent.nhsNumber;
   }),
   nhsNumber: optionalString
     .transform((value) => value.replace(/\s+/g, ""))
     .test(
-      "nhs_number",
+      "nhs_number_format",
       "NHS number should have 10 digits",
       (value) => value === undefined || (value.length === 10 && !isNaN(+value)),
     )
-    .test("validator-custom-name", (value, { createError, path, parent }) => {
-      if (!(value || parent.mrn)) {
-        return createError({ path, message: "an NHS number or a MRN is required" });
-      }
-      return true;
+    .test("nhs_or_mrn", "an NHS number or a MRN is required", (value, { parent }) => {
+      return value || parent.mrn;
     }),
   familyNumber: optionalString,
   gender: Yup.mixed<Patient.GenderEnum>()
