@@ -52,7 +52,6 @@ type SetFieldValue = (field: string, value: any, shouldValidate?: boolean) => vo
 
 const ReportForm: FC<Props> = (props: Props) => {
   const [modal, setModal] = useState<ModalState | null>(null);
-  const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(0);
   const [reportedGenes, setReportedGenes] = useState<RequiredCoding[]>([]);
   const isLastStep = formStep === steps.length - 1;
@@ -62,7 +61,6 @@ const ReportForm: FC<Props> = (props: Props) => {
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     const bundle = bundleRequest(values, reportedGenes);
 
-    setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
     const resourceList = JSON.parse(bundle.body).entry.map((entry: any) => entry.resource.resourceType);
 
     ctx.client
@@ -172,7 +170,6 @@ const ReportForm: FC<Props> = (props: Props) => {
             </Form>
           )}
         </Formik>
-        {result !== "" && <textarea id="resultOutput" role="alert" rows={80} cols={100} defaultValue={result} />}
       </Card>
     </>
   );
