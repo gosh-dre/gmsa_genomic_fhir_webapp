@@ -16,6 +16,7 @@ import FormStepBtn from "../UI/FormStepBtn";
 import { RequiredCoding } from "../../code_systems/types";
 import ModalWrapper from "../UI/ModalWrapper";
 import { ModalState } from "../UI/ModalWrapper";
+import { useNavigate } from "react-router-dom";
 
 const PatientAndAddressValidation = Yup.object({
   address: addressSchema.required(),
@@ -57,7 +58,12 @@ const ReportForm: FC<Props> = (props: Props) => {
   const isLastStep = formStep === steps.length - 1;
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);
+  const navigate = useNavigate();
 
+  const redirect = () => {
+    console.log("redirecting");
+    return navigate("/", { replace: true });
+  };
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     const bundle = bundleRequest(values, reportedGenes);
 
@@ -92,6 +98,7 @@ const ReportForm: FC<Props> = (props: Props) => {
           );
           setModal({ message: errorsTable, isError: true });
         }
+        redirect();
       })
       .catch((error) => {
         console.error(error);
@@ -100,7 +107,6 @@ const ReportForm: FC<Props> = (props: Props) => {
           isError: true,
         });
       });
-
     actions.setSubmitting(false);
   };
 
@@ -109,7 +115,6 @@ const ReportForm: FC<Props> = (props: Props) => {
       submitForm(values, actions);
       return;
     }
-
     // validate form fields
     actions.setTouched({});
     actions.setSubmitting(false);
