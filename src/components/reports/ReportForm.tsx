@@ -71,12 +71,14 @@ const ReportForm: FC<Props> = (props: Props) => {
       });
       return;
     }
-    if (bundle.body !== null) {
-      const result = JSON.stringify(JSON.parse(bundle.body as string), null, 2);
-      setResult(result);
+    if (bundle.body === null) {
+      return;
     }
+    const bodyJson = JSON.parse(bundle.body as string);
 
-    const resourceList = JSON.parse(bundle.body).entry.map((entry: any) => entry.resource.resourceType);
+    const result = JSON.stringify(bodyJson, null, 2);
+    setResult(result);
+    const resourceList = bodyJson.entry.map((entry: any) => entry.resource.resourceType);
 
     ctx.client
       ?.request(bundle)
@@ -118,7 +120,6 @@ const ReportForm: FC<Props> = (props: Props) => {
 
     actions.setSubmitting(false);
   };
-
   const handleSubmit = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     if (formStep === steps.length - 1) {
       submitForm(values, actions);

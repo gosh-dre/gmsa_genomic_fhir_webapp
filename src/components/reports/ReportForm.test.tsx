@@ -2,9 +2,10 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { act } from "react-dom/test-utils";
-import { createPractitioner, deleteFhirData, getResources, TestReportForm } from "../../fhir/testUtilities";
+import { createPractitioner, deleteFhirData, TestReportForm } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
+import { GOSH_GENETICS_IDENTIFIER } from "../../fhir/resources";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -156,7 +157,7 @@ describe("Report form", () => {
     // Arrange
     const practitioner = new Practitioner();
     practitioner.resourceType = "Practitioner";
-    const identifier = createIdentifier("always_the_same_report");
+    const identifier = createIdentifier(`always_the_same_report_${GOSH_GENETICS_IDENTIFIER}`);
     practitioner.identifier = [identifier];
 
     await createPractitioner(practitioner);
@@ -177,8 +178,6 @@ describe("Report form", () => {
     await waitFor(() => {
       expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
     });
-    // const errorModal = await screen.findByText(/error/i, { selector: "h2" });
-    // expect(errorModal).toBeInTheDocument();
   });
   /**
    * Given the report form
