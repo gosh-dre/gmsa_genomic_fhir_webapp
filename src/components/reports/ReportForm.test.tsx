@@ -89,7 +89,7 @@ async function setDummyAndNext(withDates: boolean, dropDowns?: DropDown[]) {
 const setSample = () => {
   return setDummyAndNext(true, [
     { field: /specimen type/i, value: "122555007" },
-    { field: /test reason/i, value: "230387008" },
+    { field: /test reason/i, value: "R59" },
   ]);
 };
 

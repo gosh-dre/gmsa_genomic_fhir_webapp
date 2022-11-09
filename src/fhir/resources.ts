@@ -30,8 +30,9 @@ import {
 } from "./resource_helpers";
 import { parseDateTime } from "../utils/dateTime";
 import { codedValue, loincSelect } from "../code_systems/loincCodes";
-import { diseases, sampleTypes } from "../code_systems/snomedCodes";
+import { sampleTypes } from "../code_systems/snomedCodes";
 import { RequiredCoding } from "../code_systems/types";
+import { diseases } from "../code_systems/panelappCodes";
 
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 

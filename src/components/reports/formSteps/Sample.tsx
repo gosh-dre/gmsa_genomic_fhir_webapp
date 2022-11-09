@@ -1,7 +1,8 @@
 import { FC } from "react";
 
 import FieldSet from "../FieldSet";
-import { diseases, sampleTypes } from "../../../code_systems/snomedCodes";
+import { sampleTypes } from "../../../code_systems/snomedCodes";
+import { diseases } from "../../../code_systems/panelappCodes";
 
 const Sample: FC = () => {
   return (

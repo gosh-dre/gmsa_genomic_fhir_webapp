@@ -25,7 +25,7 @@ export const initialValues: FormValues = {
     collectionDateTime: "04/06/2019 12:00",
     receivedDateTime: "04/06/2019 15:00",
     authorisedDateTime: "04/06/2019 15:30",
-    reasonForTest: "230387008",
+    reasonForTest: "R59", // epilepsy
     reasonForTestText:
       "Sequence variant screening in Donald Duck because of epilepsy and atypical absences. " +
       "An SLC2A1 variant is suspected.",
