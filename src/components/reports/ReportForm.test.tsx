@@ -149,10 +149,8 @@ describe("Report form", () => {
     const identifier = createIdentifier("always_the_same_report");
     practitioner.identifier = [identifier];
 
-    console.log("practitioners before:", await (await getResources("Practitioner")).total);
     await createPractitioner(practitioner);
     await createPractitioner(practitioner);
-    console.log("practitioners after:", await (await getResources("Practitioner")).total);
 
     // Act
     render(<TestReportForm />);
