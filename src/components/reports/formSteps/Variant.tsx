@@ -8,6 +8,7 @@ import classes from "./Variant.module.css";
 import { codedValue, loincSelect } from "../../../code_systems/loincCodes";
 import { geneCoding, queryHgnc } from "../../../code_systems/hgnc";
 import { RequiredCoding } from "../../../code_systems/types";
+import { VariantSchema } from "../formDataValidation";
 
 interface Props {
   values: FormValues;
@@ -15,10 +16,9 @@ interface Props {
   setReportFormGenes: React.Dispatch<React.SetStateAction<RequiredCoding[]>>;
 }
 
-const emptyVariant = {
+const emptyVariant: VariantSchema = {
   gene: "",
   geneInformation: "",
-  genomicHGVS: "",
   inheritanceMethod: "",
   classification: "",
   proteinHGVS: "",
@@ -27,6 +27,7 @@ const emptyVariant = {
   classificationEvidence: "",
   confirmedVariant: false,
   comment: "",
+  cDnaHgvs: "",
 };
 
 const mergeByHgncId = (hgncGenes: RequiredCoding[], selectedGenes: RequiredCoding[]) => {
