@@ -146,13 +146,13 @@ describe("Report form", () => {
     // Arrange
     const practitioner = new Practitioner();
     practitioner.resourceType = "Practitioner";
-    const identifier = createIdentifier("always_the_same_report");
-    practitioner.identifier = [identifier];
+    // Adding in duplicate identifier for tests, but also for running in front end with form defaults
+    practitioner.identifier = [createIdentifier("always_the_same_report"), createIdentifier("anapietra_report")];
 
     await createPractitioner(practitioner);
     await createPractitioner(practitioner);
 
-    // Act
+    // Act - breakpoint here to submit in browser and see the modal
     render(<TestReportForm />);
     await setLabAndPatient();
     await setSample();
