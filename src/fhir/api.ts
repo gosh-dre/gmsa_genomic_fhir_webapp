@@ -16,7 +16,7 @@ import {
 } from "./resources";
 import { VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
-import { ErrorDetails, RequiredCoding } from "../code_systems/types";
+import { BundleResponse, ErrorDetails, ErrorResponse, RequiredCoding } from "../code_systems/types";
 
 /**
  * Create a report bundle
@@ -129,26 +129,22 @@ const createEntry = (resource: Resource, identifier?: string) => {
   };
 };
 
-export const getErrors = (r: any, resourceTypes?: string[]) => {
-  //should be result of response.json()
+export const getErrors = (errorData: ErrorResponse, resourceTypes?: string[]) => {
   const errorArray: ErrorDetails[] = [];
-  const errorResponses = [];
   let count = 0;
-  for (const entry of r.entry) {
-    if (!entry.response.status.toString().startsWith("2")) {
-      entry.count = count;
-      errorResponses.push(entry);
+
+  for (const error of errorData.entry) {
+    if (!error.response.status.toString().startsWith("2")) {
+      error.count = count;
+      const errorDetails: ErrorDetails = {
+        errorCode: error.response.status.toString(),
+        resourceType: resourceTypes?.[error.count] as string,
+        diagnostics: error.response.outcome.issue?.[0].diagnostics as string,
+      };
+      errorArray.push(errorDetails);
     }
     count++;
   }
-  errorResponses.forEach((error) => {
-    const errorDetails: ErrorDetails = {
-      errorCode: error.response.status,
-      resourceType: resourceTypes?.[error.count] as string,
-      diagnostics: error.response.outcome.issue?.[0].diagnostics as string,
-    };
-    errorArray.push(errorDetails);
-  });
 
   return errorArray;
 };
