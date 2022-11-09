@@ -1,10 +1,9 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import ReportForm from "./ReportForm";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
+import { noValues } from "./FormDefaults";
 import { act } from "react-dom/test-utils";
-import { createPractitioner, deleteFhirData, getResources, TestReportForm } from "../../fhir/testUtilities";
-import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
-import { createIdentifier } from "../../fhir/resource_helpers";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -17,7 +16,7 @@ type DropDown = {
 };
 
 const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
-  const dummyValue = "Always_the_same";
+  const dummyValue = "Always the same";
   const form = screen.getByRole("form");
   const textInputs = within(form).getAllByLabelText(
     /^((?!resultOutput|date|address|gender|specimen type|search|gene symbol|follow up).)*$/i,
@@ -138,38 +137,6 @@ const setReportFields = async () => {
 jest.setTimeout(20000);
 
 describe("Report form", () => {
-  beforeEach(() => {
-    return deleteFhirData();
-  });
-
-  test("Error modal exists", async () => {
-    // Arrange
-    const practitioner = new Practitioner();
-    practitioner.resourceType = "Practitioner";
-    const identifier = createIdentifier("always_the_same_report");
-    practitioner.identifier = [identifier];
-
-    await createPractitioner(practitioner);
-    await createPractitioner(practitioner);
-
-    // Act
-    render(<TestReportForm />);
-    await setLabAndPatient();
-    await setSample();
-    await setVariantFields();
-    await setReportFields();
-
-    await act(async () => {
-      userEvent.click(screen.getByText(/submit/i));
-    });
-
-    // Assert
-    await waitFor(() => {
-      expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
-    });
-    // const errorModal = await screen.findByText(/error/i, { selector: "h2" });
-    // expect(errorModal).toBeInTheDocument();
-  });
   /**
    * Given the report form
    * When all data filled in
@@ -177,7 +144,7 @@ describe("Report form", () => {
    */
   test("Report with variant", async () => {
     // Arrange
-    render(<TestReportForm />);
+    render(<ReportForm initialValues={noValues} />);
 
     // Act
     await setLabAndPatient();
@@ -200,7 +167,7 @@ describe("Report form", () => {
    */
   test("Report without variant", async () => {
     // Arrange
-    render(<TestReportForm />);
+    render(<ReportForm initialValues={noValues} />);
 
     // Act
     await setLabAndPatient();
