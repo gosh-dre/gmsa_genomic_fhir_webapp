@@ -17,13 +17,14 @@ import {
 import { SampleSchema, VariantSchema } from "../components/reports/formDataValidation";
 import { loincResources } from "../code_systems/loincCodes";
 import { RequiredCoding } from "../code_systems/types";
+import { FhirRequest } from "./types";
 
 /**
  * Create a report bundle
  * @param form values from the front end form
  * @param reportedGenes genes used in the report
  */
-export const bundleRequest = (form: FormValues, reportedGenes: RequiredCoding[]) => {
+export const bundleRequest = (form: FormValues, reportedGenes: RequiredCoding[]): FhirRequest => {
   return {
     url: "/",
     method: "POST",

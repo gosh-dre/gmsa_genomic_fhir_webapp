@@ -15,6 +15,7 @@ import Confirmation from "./formSteps/Confirmation";
 import FormStepBtn from "../UI/FormStepBtn";
 import { RequiredCoding } from "../../code_systems/types";
 import ModalWrapper, { ModalState } from "../UI/ModalWrapper";
+import { FhirRequest } from "../../fhir/types";
 
 const PatientAndAddressValidation = Yup.object({
   address: addressSchema.required(),
@@ -59,9 +60,21 @@ const ReportForm: FC<Props> = (props: Props) => {
   const formRef = useRef<FormikProps<FormValues>>(null);
 
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
-    const bundle = bundleRequest(values, reportedGenes);
-
-    setResult(JSON.stringify(JSON.parse(bundle.body), null, 2));
+    let bundle: FhirRequest = { body: "No data set", headers: {}, method: "POST", url: "/" };
+    try {
+      bundle = bundleRequest(values, reportedGenes);
+    } catch (e) {
+      console.error(e);
+      setModal({
+        message: "Something went wrong with converting the form data into a FHIR bundle",
+        isError: true,
+      });
+      return;
+    }
+    if (bundle.body !== null) {
+      const result = JSON.stringify(JSON.parse(bundle.body as string), null, 2);
+      setResult(result);
+    }
 
     ctx.client
       ?.request(bundle)
