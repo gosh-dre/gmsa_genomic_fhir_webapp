@@ -1,10 +1,11 @@
-import { render, renderHook, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { act } from "react-dom/test-utils";
-import { createPractitioner, deleteFhirData, TestReportForm } from "../../fhir/testUtilities";
+import { createPractitioner, deleteFhirData, TestRedirectText, TestReportForm } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
+import * as router from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
 
 const clearAndType = (element: Element, value: string) => {
@@ -135,7 +136,6 @@ const setReportFields = async () => {
   const dropDowns = [{ field: /Follow up/i, value: "Genetic counseling recommended (LA14020-4)" }];
   await setDummyAndNext(true, dropDowns);
 };
-import * as router from "react-router-dom";
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...(jest.requireActual("react-router-dom") as any),
@@ -174,6 +174,7 @@ describe("Report form", () => {
     // Assert
     await waitFor(() => {
       expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
+      expect(screen.getByText(TestRedirectText)).toBeInTheDocument();
     });
   });
   /**
@@ -192,10 +193,8 @@ describe("Report form", () => {
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });
-    // expect(mockedNavigate).toBeCalled();
-    // Assert
     await waitFor(() => {
-      expect(screen.getByText(/patient information/i)).toBeInTheDocument();
+      expect(screen.getByText(TestRedirectText)).toBeInTheDocument();
     });
   });
 
@@ -218,9 +217,7 @@ describe("Report form", () => {
 
     // Assert
     await waitFor(() => {
-      expect(screen.getByText(/patient information/i)).toBeInTheDocument();
+      expect(screen.getByText(TestRedirectText)).toBeInTheDocument();
     });
-    // const result = await screen.getByText(/patient information/i);
-    // expect(result).toBeInTheDocument();
   });
 });

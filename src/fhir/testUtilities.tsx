@@ -7,6 +7,7 @@ import FHIR from "fhirclient/lib/entry/browser";
 import React from "react";
 import { RetrievableResource } from "../code_systems/types";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
+import { Route, Routes } from "react-router-dom";
 
 /**
  * Utilities to be used only during testing, no actual tests here.
@@ -106,7 +107,12 @@ const deleteAndCascadeDelete = async (identifiers: string[], resource: Retrievab
 };
 
 /**
- * Report Form setup for testing of the modal output.
+ * expected text for
+ */
+export const TestRedirectText = "redirect after successful submission";
+
+/**
+ * Report Form setup for testing of the modal output and redirect paths used in testing.
  *
  * Contains hooks for displaying the modal and the fhir client context being set.
  * @constructor
@@ -116,6 +122,10 @@ export const TestReportForm: React.FC = () => {
 
   return (
     <>
+      <Routes>
+        <Route path="/" element={<p>{TestRedirectText}</p>} />
+      </Routes>
+
       <div id="backdrop-hook"></div>
       <div id="modal-hook"></div>
       <div id="root"></div>
