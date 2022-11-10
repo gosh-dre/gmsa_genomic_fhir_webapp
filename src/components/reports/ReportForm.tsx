@@ -60,10 +60,6 @@ const ReportForm: FC<Props> = (props: Props) => {
   const formRef = useRef<FormikProps<FormValues>>(null);
   const navigate = useNavigate();
 
-  const redirect = () => {
-    console.log("redirecting");
-    return navigate("/", { replace: true });
-  };
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     const bundle = bundleRequest(values, reportedGenes);
 
@@ -98,7 +94,7 @@ const ReportForm: FC<Props> = (props: Props) => {
           );
           setModal({ message: errorsTable, isError: true });
         }
-        redirect();
+        navigate("/", { replace: true });
       })
       .catch((error) => {
         console.error(error);
