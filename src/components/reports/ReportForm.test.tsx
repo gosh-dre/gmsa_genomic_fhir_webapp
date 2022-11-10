@@ -1,10 +1,11 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, renderHook, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { act } from "react-dom/test-utils";
-import { createPractitioner, deleteFhirData, getResources, TestReportForm } from "../../fhir/testUtilities";
+import { createPractitioner, deleteFhirData, TestReportForm } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
+import { BrowserRouter } from "react-router-dom";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -134,11 +135,18 @@ const setReportFields = async () => {
   const dropDowns = [{ field: /Follow up/i, value: "Genetic counseling recommended (LA14020-4)" }];
   await setDummyAndNext(true, dropDowns);
 };
+import * as router from "react-router-dom";
+const mockedNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...(jest.requireActual("react-router-dom") as any),
+  useNavigate: () => mockedNavigate,
+}));
 
 jest.setTimeout(20000);
 
 describe("Report form", () => {
   beforeEach(() => {
+    expect(router);
     return deleteFhirData();
   });
 
@@ -153,7 +161,7 @@ describe("Report form", () => {
     await createPractitioner(practitioner);
 
     // Act - breakpoint here to submit in browser and see the modal
-    render(<TestReportForm />);
+    render(<TestReportForm />, { wrapper: BrowserRouter });
     await setLabAndPatient();
     await setSample();
     await setVariantFields();
@@ -167,8 +175,6 @@ describe("Report form", () => {
     await waitFor(() => {
       expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
     });
-    // const errorModal = await screen.findByText(/error/i, { selector: "h2" });
-    // expect(errorModal).toBeInTheDocument();
   });
   /**
    * Given the report form
@@ -177,8 +183,7 @@ describe("Report form", () => {
    */
   test("Report with variant", async () => {
     // Arrange
-    render(<TestReportForm />);
-
+    render(<TestReportForm />, { wrapper: BrowserRouter });
     // Act
     await setLabAndPatient();
     await setSample();
@@ -187,10 +192,11 @@ describe("Report form", () => {
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });
-
+    // expect(mockedNavigate).toBeCalled();
     // Assert
-    const result = await screen.findByRole("alert");
-    expect(result).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/patient information/i)).toBeInTheDocument();
+    });
   });
 
   /**
@@ -200,8 +206,7 @@ describe("Report form", () => {
    */
   test("Report without variant", async () => {
     // Arrange
-    render(<TestReportForm />);
-
+    render(<TestReportForm />, { wrapper: BrowserRouter });
     // Act
     await setLabAndPatient();
     await setSample();
@@ -212,7 +217,10 @@ describe("Report form", () => {
     });
 
     // Assert
-    const result = await screen.findByRole("alert");
-    expect(result).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/patient information/i)).toBeInTheDocument();
+    });
+    // const result = await screen.getByText(/patient information/i);
+    // expect(result).toBeInTheDocument();
   });
 });
