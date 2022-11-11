@@ -1,5 +1,4 @@
 import { FieldProps } from "formik";
-import React from "react";
 import Select from "react-select";
 //import { OptionsType, ValueType } from "react-select/lib/types";
 
@@ -16,7 +15,7 @@ interface CustomSelectProps extends FieldProps {
   placeholder?: string;
 }
 
-const CustomSelect = ({ className, placeholder, field, form, options, isMulti = false }: CustomSelectProps) => {
+const CustomSelectField = ({ className, placeholder, field, form, options, isMulti = false }: CustomSelectProps) => {
   const onChange = (option: any) => {
     form.setFieldValue(
       field.name,
@@ -53,4 +52,4 @@ const CustomSelect = ({ className, placeholder, field, form, options, isMulti = 
   );
 };
 
-export default CustomSelect;
+export default CustomSelectField;

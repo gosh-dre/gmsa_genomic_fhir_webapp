@@ -1,23 +1,11 @@
 import { FC } from "react";
-import { Field, Form, Formik, FormikProps } from "formik";
-import CustomSelect from "../CustomSelectField";
 
 import FieldSet from "../FieldSet";
 import { sampleTypes } from "../../../code_systems/snomedCodes";
 import { diseases } from "../../../code_systems/panelappCodes";
 
-export interface FormValues {
-  singleLanguage: string;
-  multiLanguages: string[];
-}
-
-const defaultValues: FormValues = {
-  singleLanguage: "",
-  multiLanguages: [],
-};
-
 // Some dummy language data
-const languageOptions = [
+const dummyData = [
   {
     label: "Chinese",
     value: "zh-CN",
@@ -51,14 +39,8 @@ const Sample: FC = () => {
       <FieldSet name="sample.authorisedDateTime" label="Sample authorised datetime" />
       <FieldSet name="sample.reasonForTestText" label="Reason for test" />
       <FieldSet name="sample.reasonForTest" label="Test reason" selectOptions={diseases} />
-      <Field
-        className="custom-select"
-        name="multiLanguages"
-        options={languageOptions}
-        component={CustomSelect}
-        placeholder="Select multi languages..."
-        isMulti={true}
-      />
+
+      <FieldSet name="sample.multiSelect" label="Test reason multi" isMulti={true} multiSelectOptions={dummyData} />
     </>
   );
 };
