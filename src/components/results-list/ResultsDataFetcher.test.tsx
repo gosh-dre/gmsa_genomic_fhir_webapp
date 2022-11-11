@@ -1,16 +1,8 @@
-import { Fhir } from "fhir/fhir";
-import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
-import { BundleEntry } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundleEntry";
-import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
-import { render } from "@testing-library/react";
-import ResultsList from "./ResultsList";
+import { render, screen, waitFor } from "@testing-library/react";
 import { initialValues } from "../reports/FormDefaults";
 import { createBundle } from "../../fhir/api";
-import { deleteFhirData, sendBundle } from "../../fhir/testUtilities";
-import ResultsDataFetcher from "./ResultsDataFetcher";
+import { deleteFhirData, sendBundle, TestResultsDataFetcher } from "../../fhir/testUtilities";
 import { geneCoding } from "../../code_systems/hgnc";
-
-const fhir = new Fhir();
 
 const reportedGenes = [geneCoding("HGNC:4389", "GNA01")];
 
@@ -164,8 +156,12 @@ describe("Results table", () => {
 
   test("patients are in table", async () => {
     create5Patients();
-    render(<ResultsDataFetcher />);
-    // expect("entry" in patientData).toBeTruthy();
-    // expect(getPatientIdentifier(patientData)).toEqual(initialValues.patient.mrn);
+    render(<TestResultsDataFetcher />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/results/i, { selector: "h2" })).toBeInTheDocument();
+      const resultsTable = screen.findByRole("table");
+      expect(resultsTable).toHaveValue("FirstFive");
+    });
   });
 });
