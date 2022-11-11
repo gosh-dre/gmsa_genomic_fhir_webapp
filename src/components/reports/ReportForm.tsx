@@ -67,8 +67,12 @@ const ReportForm: FC<Props> = (props: Props) => {
     ctx.client
       ?.request(bundle)
       .then((response) => {
+        console.debug(bundle, response);
         const errors = getErrors(response, resourceList);
-        if (errors.length > 0) {
+        if (errors.length === 0) {
+          navigate("/", { replace: true });
+          console.debug("Redirected to new form");
+        } else {
           const errorsTable = (
             <>
               <table className={classes["errors-table"]}>
@@ -93,7 +97,6 @@ const ReportForm: FC<Props> = (props: Props) => {
           );
           setModal({ message: errorsTable, isError: true });
         }
-        navigate("/", { replace: true });
       })
       .catch((error) => {
         console.error(error);

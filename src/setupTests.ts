@@ -9,6 +9,13 @@ import { enableFetchMocks } from "jest-fetch-mock";
 import { createIdentifier } from "./fhir/resource_helpers";
 import { createPractitioner } from "./fhir/testUtilities";
 
+jest.resetAllMocks();
+export const mockedNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...(jest.requireActual("react-router-dom") as any),
+  useNavigate: () => mockedNavigate,
+}));
+
 beforeAll(async () => {
   /*
    * For some reason on first load of FHIR server, creating a batch of requests doesn't seem to validate

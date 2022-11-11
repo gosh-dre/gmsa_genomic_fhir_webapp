@@ -2,11 +2,12 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { act } from "react-dom/test-utils";
-import { createPractitioner, deleteFhirData, TestRedirectText, TestReportForm } from "../../fhir/testUtilities";
+import { createPractitioner, deleteFhirData, TestReportForm } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
 import * as router from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
+import { mockedNavigate } from "../../setupTests";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -136,11 +137,6 @@ const setReportFields = async () => {
   const dropDowns = [{ field: /Follow up/i, value: "Genetic counseling recommended (LA14020-4)" }];
   await setDummyAndNext(true, dropDowns);
 };
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...(jest.requireActual("react-router-dom") as any),
-  useNavigate: () => mockedNavigate,
-}));
 
 jest.setTimeout(20000);
 
@@ -174,7 +170,7 @@ describe("Report form", () => {
     // Assert
     await waitFor(() => {
       expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
-      expect(screen.getByText(TestRedirectText)).toBeInTheDocument();
+      expect(mockedNavigate).not.toBeCalled();
     });
   });
   /**
@@ -193,8 +189,9 @@ describe("Report form", () => {
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });
+    // Assert
     await waitFor(() => {
-      expect(screen.getByText(TestRedirectText)).toBeInTheDocument();
+      expect(mockedNavigate).toBeCalled();
     });
   });
 
@@ -217,7 +214,7 @@ describe("Report form", () => {
 
     // Assert
     await waitFor(() => {
-      expect(screen.getByText(TestRedirectText)).toBeInTheDocument();
+      expect(mockedNavigate).toBeCalled();
     });
   });
 });
