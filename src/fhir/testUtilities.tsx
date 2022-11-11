@@ -7,6 +7,7 @@ import FHIR from "fhirclient/lib/entry/browser";
 import React from "react";
 import { RetrievableResource } from "../code_systems/types";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
+import ResultsDataFetcher from "../components/results-list/ResultsDataFetcher";
 
 /**
  * Utilities to be used only during testing, no actual tests here.
@@ -121,6 +122,21 @@ export const TestReportForm: React.FC = () => {
       <div id="root"></div>
       <FhirContext.Provider value={{ client: client, setClient: () => "" }}>
         <ReportForm initialValues={noValues} />
+      </FhirContext.Provider>
+    </>
+  );
+};
+
+export const TestResultsDataFetcher: React.FC = () => {
+  const client = FHIR.client(FHIR_URL);
+
+  return (
+    <>
+      <div id="backdrop-hook"></div>
+      <div id="modal-hook"></div>
+      <div id="root"></div>
+      <FhirContext.Provider value={{ client: client, setClient: () => "" }}>
+        <ResultsDataFetcher />
       </FhirContext.Provider>
     </>
   );
