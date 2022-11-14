@@ -210,7 +210,7 @@ describe("Report form", () => {
         expect(screen.queryByText(/error/i, { selector: "h2" })).not.toBeInTheDocument();
         expect(mockedNavigate).toBeCalled();
       },
-      { timeout: 10000 },
+      { timeout: 15000 },
     );
   });
 
