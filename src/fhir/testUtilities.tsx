@@ -59,10 +59,7 @@ const checkResponseOK = async (response: Response) => {
   return jsonData;
 };
 
-export const getResources = async (
-  resource: "Practitioner" | "Patient" | "Observation",
-  id?: string,
-): Promise<Bundle> => {
+export const getResources = async (resource: RetrievableResource, id?: string): Promise<Bundle> => {
   let url = `${FHIR_URL}/${resource}`;
   if (id) {
     if (resource === "Practitioner") {
@@ -78,7 +75,7 @@ export const deleteFhirData = async (resource?: RetrievableResource, id?: string
   let resources = [resource];
 
   if (!resource) {
-    resources = ["Patient", "Practitioner"];
+    resources = ["Patient", "Practitioner", "PlanDefinition"];
   }
   for (const resourceToDelete of resources) {
     const fhirData = await getResources(resourceToDelete as RetrievableResource);
