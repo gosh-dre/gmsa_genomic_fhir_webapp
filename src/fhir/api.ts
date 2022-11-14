@@ -15,7 +15,6 @@ import {
   variantAndIdentifier,
 } from "./resources";
 import { SampleSchema, VariantSchema } from "../components/reports/formDataValidation";
-import { loincResources } from "../code_systems/loincCodes";
 import { FhirRequest } from "./types";
 import { BundleResponse, ErrorDetails, RequiredCoding } from "../code_systems/types";
 
@@ -105,8 +104,6 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
       createEntry(plan.resource, plan.identifier),
       createEntry(serviceRequest.resource, serviceRequest.identifier),
       createEntry(report.resource, report.identifier),
-      // add value sets to bundle for API validation
-      ...loincResources.map((vs) => createEntry(vs.resource, vs.identifier)),
     ],
   };
 };
