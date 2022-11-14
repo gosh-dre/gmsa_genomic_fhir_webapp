@@ -10,6 +10,9 @@ import { createIdentifier } from "./fhir/resource_helpers";
 import { createPractitioner } from "./fhir/testUtilities";
 
 jest.resetAllMocks();
+/**
+ * Mocking the return value of useNavigate so that we can determine if a component will redirect the user.
+ */
 export const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...(jest.requireActual("react-router-dom") as any),

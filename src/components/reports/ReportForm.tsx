@@ -85,7 +85,6 @@ const ReportForm: FC<Props> = (props: Props) => {
         const errors = getErrors(response, resourceList);
         if (errors.length === 0) {
           navigate("/", { replace: true });
-          console.debug("Redirected to new form");
         } else {
           const errorsTable = (
             <>
