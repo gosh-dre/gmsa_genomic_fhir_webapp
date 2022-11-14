@@ -118,6 +118,7 @@ describe("Results table", () => {
   test("patients are in table", async () => {
     render(<ContextAndModal children={<ResultsDataFetcher />} />);
 
+    // Can put a breakpoint here to allow for development with 5 patients added to the result list
     await waitFor(() => {
       const resultsTable = screen.getAllByText(/NM_/);
       expect(resultsTable.length).toEqual(5);
