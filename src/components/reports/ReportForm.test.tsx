@@ -6,6 +6,8 @@ import { createPractitioner, deleteFhirData, TestReportForm } from "../../fhir/t
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
 import { GOSH_GENETICS_IDENTIFIER } from "../../fhir/resources";
+import { BrowserRouter } from "react-router-dom";
+import { mockedNavigate } from "../../setupTests";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -157,14 +159,17 @@ describe("Report form", () => {
     // Arrange
     const practitioner = new Practitioner();
     practitioner.resourceType = "Practitioner";
-    const identifier = createIdentifier(`always_the_same_report_${GOSH_GENETICS_IDENTIFIER}`);
-    practitioner.identifier = [identifier];
+    // Adding in duplicate identifier for tests, but also for running in front end with form defaults
+    practitioner.identifier = [
+      createIdentifier(`always_the_same_report_${GOSH_GENETICS_IDENTIFIER}`),
+      createIdentifier(`anapietra_report_${GOSH_GENETICS_IDENTIFIER}`),
+    ];
 
     await createPractitioner(practitioner);
     await createPractitioner(practitioner);
 
-    // Act
-    render(<TestReportForm />);
+    // Act - breakpoint here to submit in browser and see the modal
+    render(<TestReportForm />, { wrapper: BrowserRouter });
     await setLabAndPatient();
     await setSample();
     await setVariantFields();
@@ -175,19 +180,22 @@ describe("Report form", () => {
     });
 
     // Assert
-    await waitFor(() => {
-      expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
+        expect(mockedNavigate).not.toBeCalled();
+      },
+      { timeout: 2000 },
+    );
   });
   /**
    * Given the report form
    * When all data filled in
-   * Then the rendered result should be rendered in an alert box
+   * Then the user should be redirected and no errors should be found
    */
   test("Report with variant", async () => {
     // Arrange
-    render(<TestReportForm />);
-
+    render(<TestReportForm />, { wrapper: BrowserRouter });
     // Act
     await setLabAndPatient();
     await setSample();
@@ -196,21 +204,24 @@ describe("Report form", () => {
     await act(async () => {
       userEvent.click(screen.getByText(/submit/i));
     });
-
     // Assert
-    const result = await screen.findByRole("alert");
-    expect(result).toBeInTheDocument();
+    await waitFor(
+      () => {
+        expect(screen.queryByText(/error/i, { selector: "h2" })).not.toBeInTheDocument();
+        expect(mockedNavigate).toBeCalled();
+      },
+      { timeout: 15000 },
+    );
   });
 
   /**
    * Given the report form
    * When all data filled in except for having no variant
-   * Then the rendered result should be rendered in an alert box
+   * Then the user should be redirected and no errors should be found
    */
   test("Report without variant", async () => {
     // Arrange
-    render(<TestReportForm />);
-
+    render(<TestReportForm />, { wrapper: BrowserRouter });
     // Act
     await setLabAndPatient();
     await setSample();
@@ -221,7 +232,12 @@ describe("Report form", () => {
     });
 
     // Assert
-    const result = await screen.findByRole("alert");
-    expect(result).toBeInTheDocument();
+    await waitFor(
+      () => {
+        expect(screen.queryByText(/error/i, { selector: "h2" })).not.toBeInTheDocument();
+        expect(mockedNavigate).toBeCalled();
+      },
+      { timeout: 10000 },
+    );
   });
 });

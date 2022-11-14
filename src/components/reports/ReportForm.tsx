@@ -14,6 +14,7 @@ import Report from "./formSteps/Report";
 import Confirmation from "./formSteps/Confirmation";
 import FormStepBtn from "../UI/FormStepBtn";
 import { RequiredCoding } from "../../code_systems/types";
+import { useNavigate } from "react-router-dom";
 import ModalWrapper, { ModalState } from "../UI/ModalWrapper";
 import { FhirRequest } from "../../fhir/types";
 
@@ -52,12 +53,12 @@ type SetFieldValue = (field: string, value: any, shouldValidate?: boolean) => vo
 
 const ReportForm: FC<Props> = (props: Props) => {
   const [modal, setModal] = useState<ModalState | null>(null);
-  const [result, setResult] = useState("");
   const [formStep, setFormStep] = useState(0);
   const [reportedGenes, setReportedGenes] = useState<RequiredCoding[]>([]);
   const isLastStep = formStep === steps.length - 1;
   const ctx = useContext(FhirContext);
   const formRef = useRef<FormikProps<FormValues>>(null);
+  const navigate = useNavigate();
 
   const submitForm = (values: FormValues, actions: FormikHelpers<FormValues>) => {
     let bundle: FhirRequest = { body: "No data set", headers: {}, method: "POST", url: "/" };
@@ -75,16 +76,16 @@ const ReportForm: FC<Props> = (props: Props) => {
       return;
     }
     const bodyJson = JSON.parse(bundle.body as string);
-
-    const result = JSON.stringify(bodyJson, null, 2);
-    setResult(result);
     const resourceList = bodyJson.entry.map((entry: any) => entry.resource.resourceType);
 
     ctx.client
       ?.request(bundle)
       .then((response) => {
+        console.debug(bundle, response);
         const errors = getErrors(response, resourceList);
-        if (errors.length > 0) {
+        if (errors.length === 0) {
+          navigate("/", { replace: true });
+        } else {
           const errorsTable = (
             <>
               <table className={classes["errors-table"]}>
@@ -117,7 +118,6 @@ const ReportForm: FC<Props> = (props: Props) => {
           isError: true,
         });
       });
-
     actions.setSubmitting(false);
   };
   const handleSubmit = (values: FormValues, actions: FormikHelpers<FormValues>) => {
@@ -125,7 +125,6 @@ const ReportForm: FC<Props> = (props: Props) => {
       submitForm(values, actions);
       return;
     }
-
     // validate form fields
     actions.setTouched({});
     actions.setSubmitting(false);
@@ -186,7 +185,6 @@ const ReportForm: FC<Props> = (props: Props) => {
             </Form>
           )}
         </Formik>
-        {result !== "" && <textarea id="resultOutput" role="alert" rows={80} cols={100} defaultValue={result} />}
       </Card>
     </>
   );
