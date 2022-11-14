@@ -207,9 +207,10 @@ describe("Report form", () => {
     // Assert
     await waitFor(
       () => {
+        expect(screen.queryByText(/error/i, { selector: "h2" })).not.toBeInTheDocument();
         expect(mockedNavigate).toBeCalled();
       },
-      { timeout: 5000 },
+      { timeout: 10000 },
     );
   });
 
@@ -233,9 +234,10 @@ describe("Report form", () => {
     // Assert
     await waitFor(
       () => {
+        expect(screen.queryByText(/error/i, { selector: "h2" })).not.toBeInTheDocument();
         expect(mockedNavigate).toBeCalled();
       },
-      { timeout: 5000 },
+      { timeout: 10000 },
     );
   });
 });
