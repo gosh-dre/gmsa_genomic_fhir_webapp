@@ -26,22 +26,23 @@ type OverridingFields = {
   };
 };
 
-const createPatients = async () => {
-  const bundles = [
+const clearFhirAndSendReports = async () => {
+  await deleteFhirData();
+
+  const overridingValues = [
     // not FH
     createPatientOverrides("Daffy", "Duck", ["R59"], "HGNC:4389", "c.115A>T"),
     // Has a family member who has been tests
-    createPatientOverrides("Bugs", "Bunny", ["R134"], "HGNC:6547", "c.115A>T", "F12345"),
-    createPatientOverrides("Betty", "Bunny", ["R134"], "HGNC:6547", "c.115A>T", "F12345"),
+    createPatientOverrides("Bugs", "Bunny", ["R134"], "HGNC:6547", "c.113A>T", "F12345"),
+    createPatientOverrides("Betty", "Bunny", ["R134"], "HGNC:6547", "c.113A>T", "F12345"),
     // No family member who has been tested
-    createPatientOverrides("Road", "Runner", ["R134"], "HGNC:6547", "c.115A>T", "F10000"),
-    createPatientOverrides("Wile", "Coyote", ["R134"], "HGNC:6547", "c.115A>T"),
-  ]
-    .map((override) => changePatientInfo(override))
-    .map((formData) => createBundle(formData, reportedGenes));
+    createPatientOverrides("Road", "Runner", ["R134"], "HGNC:6547", "c.110A>T", "F10000"),
+    createPatientOverrides("Wile", "Coyote", ["R134"], "HGNC:6547", "c.112A>T"),
+  ];
 
-  for (const bundle of bundles) {
-    console.trace("Sending form to FHIR api");
+  for (const override of overridingValues) {
+    const formData = changePatientInfo(override);
+    const bundle = createBundle(formData, reportedGenes);
     await sendBundle(bundle);
   }
 };
@@ -104,17 +105,21 @@ const changePatientInfo = (valuesToUpdate: OverridingFields) => {
 };
 
 describe("Results table", () => {
-  beforeEach(() => {
-    return deleteFhirData();
+  beforeAll(() => {
+    return clearFhirAndSendReports;
   });
 
+  /**
+   * Given the FHIR API is cleared and has 5 separate reports added with one variant
+   * When the Results list page is rendered
+   * Then there should be 5 variants listed
+   */
   test("patients are in table", async () => {
-    await createPatients();
     render(<TestResultsDataFetcher />);
 
     await waitFor(() => {
-      const resultsTable = screen.findByRole("table");
-      expect(resultsTable).toHaveValue("FirstFive");
+      const resultsTable = screen.getAllByText(/NM_/);
+      expect(resultsTable.length).toEqual(5);
     });
   });
 });
