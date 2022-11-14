@@ -1,13 +1,10 @@
 import { Bundle } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/bundle";
 import { getErrors } from "./api";
 import { FhirContext } from "../components/fhir/FhirContext";
-import ReportForm from "../components/reports/ReportForm";
-import { noValues } from "../components/reports/FormDefaults";
 import FHIR from "fhirclient/lib/entry/browser";
-import React from "react";
+import React, { ReactNode } from "react";
 import { RetrievableResource } from "../code_systems/types";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
-import ResultsDataFetcher from "../components/results-list/ResultsDataFetcher";
 
 /**
  * Utilities to be used only during testing, no actual tests here.
@@ -98,7 +95,6 @@ const deleteAndCascadeDelete = async (identifiers: string[], resource: Retrievab
       method: "DELETE",
     });
     await checkResponseOK(response);
-    // await new Promise((r) => setTimeout(r, 500));
   }
 };
 
@@ -108,7 +104,7 @@ const deleteAndCascadeDelete = async (identifiers: string[], resource: Retrievab
  * Contains hooks for displaying the modal and the fhir client context being set.
  * @constructor
  */
-export const TestReportForm: React.FC = () => {
+export const ContextAndModal: React.FC<{ children: ReactNode }> = (props) => {
   const client = FHIR.client(FHIR_URL);
 
   return (
@@ -116,24 +112,7 @@ export const TestReportForm: React.FC = () => {
       <div id="backdrop-hook"></div>
       <div id="modal-hook"></div>
       <div id="root"></div>
-      <FhirContext.Provider value={{ client: client, setClient: () => "" }}>
-        <ReportForm initialValues={noValues} />
-      </FhirContext.Provider>
-    </>
-  );
-};
-
-export const TestResultsDataFetcher: React.FC = () => {
-  const client = FHIR.client(FHIR_URL);
-
-  return (
-    <>
-      <div id="backdrop-hook"></div>
-      <div id="modal-hook"></div>
-      <div id="root"></div>
-      <FhirContext.Provider value={{ client: client, setClient: () => "" }}>
-        <ResultsDataFetcher />
-      </FhirContext.Provider>
+      <FhirContext.Provider value={{ client: client, setClient: () => "" }}>{props.children}</FhirContext.Provider>
     </>
   );
 };

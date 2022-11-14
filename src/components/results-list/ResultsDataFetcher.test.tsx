@@ -1,8 +1,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { initialValues } from "../reports/FormDefaults";
 import { createBundle } from "../../fhir/api";
-import { deleteFhirData, sendBundle, TestResultsDataFetcher } from "../../fhir/testUtilities";
+import { ContextAndModal, deleteFhirData, sendBundle } from "../../fhir/testUtilities";
 import { geneCoding } from "../../code_systems/hgnc";
+import ResultsDataFetcher from "./ResultsDataFetcher";
 
 const reportedGenes = [geneCoding("HGNC:4389", "GNA01"), geneCoding("HGNC:6547", "LDLR")];
 
@@ -115,7 +116,7 @@ describe("Results table", () => {
    * Then there should be 5 variants listed
    */
   test("patients are in table", async () => {
-    render(<TestResultsDataFetcher />);
+    render(<ContextAndModal children={<ResultsDataFetcher />} />);
 
     await waitFor(() => {
       const resultsTable = screen.getAllByText(/NM_/);

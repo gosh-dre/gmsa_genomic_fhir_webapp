@@ -2,12 +2,14 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/patient";
 import { act } from "react-dom/test-utils";
-import { createPractitioner, deleteFhirData, TestReportForm } from "../../fhir/testUtilities";
+import { ContextAndModal, createPractitioner, deleteFhirData } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
 import { GOSH_GENETICS_IDENTIFIER } from "../../fhir/resources";
 import { BrowserRouter } from "react-router-dom";
 import { mockedNavigate } from "../../setupTests";
+import ReportForm from "./ReportForm";
+import { noValues } from "./FormDefaults";
 
 const clearAndType = (element: Element, value: string) => {
   userEvent.clear(element);
@@ -159,6 +161,10 @@ const setReportFields = async () => {
 
 jest.setTimeout(20000);
 
+const renderTestReportForm = () => {
+  render(<ContextAndModal children={<ReportForm initialValues={noValues} />} />, { wrapper: BrowserRouter });
+};
+
 describe("Report form", () => {
   beforeEach(() => {
     return deleteFhirData();
@@ -177,8 +183,8 @@ describe("Report form", () => {
     await createPractitioner(practitioner);
     await createPractitioner(practitioner);
 
+    renderTestReportForm();
     // Act - breakpoint here to submit in browser and see the modal
-    render(<TestReportForm />, { wrapper: BrowserRouter });
     await setLabAndPatient();
     await setSample();
     await setVariantFields();
@@ -204,7 +210,7 @@ describe("Report form", () => {
    */
   test("Report with variant", async () => {
     // Arrange
-    render(<TestReportForm />, { wrapper: BrowserRouter });
+    renderTestReportForm();
     // Act
     await setLabAndPatient();
     await setSample();
@@ -230,7 +236,7 @@ describe("Report form", () => {
    */
   test("Report without variant", async () => {
     // Arrange
-    render(<TestReportForm />, { wrapper: BrowserRouter });
+    renderTestReportForm();
     // Act
     await setLabAndPatient();
     await setSample();
