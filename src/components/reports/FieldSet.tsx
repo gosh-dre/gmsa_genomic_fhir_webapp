@@ -43,8 +43,8 @@ const FieldSet: FC<Props> = ({ name, label, selectOptions, isMulti, multiSelectO
   if (isMulti) {
     field = (
       <Field
-        className="custom-select"
-        name="multiLanguages"
+        className="custom-select" // can apply custom styles if needed
+        name={name}
         options={multiSelectOptions}
         component={CustomSelectField}
         placeholder="Select multi options..."
