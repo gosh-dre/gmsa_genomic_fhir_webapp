@@ -4,30 +4,11 @@ import { createBundle } from "../../fhir/api";
 import { deleteFhirData, sendBundle, TestResultsDataFetcher } from "../../fhir/testUtilities";
 import { geneCoding } from "../../code_systems/hgnc";
 
-const reportedGenes = [geneCoding("HGNC:4389", "GNA01")];
+const reportedGenes = [geneCoding("HGNC:4389", "GNA01"), geneCoding("HGNC:6547", "LDLR")];
 
 jest.setTimeout(20000);
 
-const generateNumber = (type?: string) => {
-  let num;
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const randomCharacter = characters[Math.floor(Math.random() * characters.length)];
-
-  if (type === "nhs") {
-    num = Math.floor(Math.random() * Math.pow(10, 10));
-  }
-  if (type === "family") {
-    num = randomCharacter + Math.floor(Math.random() * Math.pow(10, 6));
-  }
-  if (type === "reason") {
-    num = randomCharacter + Math.floor(Math.random() * Math.pow(10, 2));
-  }
-  // for mrn
-  num = Math.floor(Math.random() * Math.pow(10, 8));
-  return num.toString();
-};
-
-type changeableValues = {
+type OverridingFields = {
   patient: {
     mrn: string;
     nhsNumber: string;
@@ -37,93 +18,78 @@ type changeableValues = {
   };
   sample: {
     specimenCode: string;
-    reasonForTest: string;
+    reasonForTest: string[];
   };
   variant: {
     cDnaHgvs: string;
+    gene: string;
   };
 };
 
-const p1Values = {
-  patient: {
-    mrn: generateNumber(),
-    nhsNumber: generateNumber("nhs"),
-    firstName: "FirstOne",
-    lastName: "LastOne",
-    familyNumber: generateNumber("family"),
-  },
-  sample: { specimenCode: "84KS-638L3748", reasonForTest: generateNumber("reason") },
-  variant: {
-    cDnaHgvs: "c.474K>T",
-  },
+const createPatients = async () => {
+  const bundles = [
+    // not FH
+    createPatientOverrides("Daffy", "Duck", ["R59"], "HGNC:4389", "c.115A>T"),
+    // Has a family member who has been tests
+    createPatientOverrides("Bugs", "Bunny", ["R134"], "HGNC:6547", "c.115A>T", "F12345"),
+    createPatientOverrides("Betty", "Bunny", ["R134"], "HGNC:6547", "c.115A>T", "F12345"),
+    // No family member who has been tested
+    createPatientOverrides("Road", "Runner", ["R134"], "HGNC:6547", "c.115A>T", "F10000"),
+    createPatientOverrides("Wile", "Coyote", ["R134"], "HGNC:6547", "c.115A>T"),
+  ]
+    .map((override) => changePatientInfo(override))
+    .map((formData) => createBundle(formData, reportedGenes));
+
+  for (const bundle of bundles) {
+    console.trace("Sending form to FHIR api");
+    await sendBundle(bundle);
+  }
 };
 
-const p2Values = {
-  patient: {
-    mrn: generateNumber(),
-    nhsNumber: generateNumber("nhs"),
-    firstName: "FirstTwo",
-    lastName: "LastTwo",
-    familyNumber: generateNumber("family"),
-  },
-  sample: {
-    specimenCode: "18HS-268L8837",
-    reasonForTest: generateNumber("reason"),
-  },
-  variant: {
-    cDnaHgvs: "c.019D>T",
-  },
-};
-const p3Values = {
-  patient: {
-    mrn: generateNumber(),
-    nhsNumber: generateNumber("nhs"),
-    firstName: "FirstThree",
-    lastName: "LastThree",
-    familyNumber: generateNumber("family"),
-  },
-  sample: {
-    specimenCode: "88US-638L2488",
-    reasonForTest: generateNumber("reason"),
-  },
-  variant: {
-    cDnaHgvs: "c.716G>T",
-  },
-};
-const p4Values = {
-  patient: {
-    mrn: generateNumber(),
-    nhsNumber: generateNumber("nhs"),
-    firstName: "FirstFour",
-    lastName: "LastFour",
-    familyNumber: generateNumber("family"),
-  },
-  sample: {
-    specimenCode: "81GD-617L5358",
-    reasonForTest: generateNumber("reason"),
-  },
-  variant: {
-    cDnaHgvs: "c.286G>T",
-  },
-};
-const p5Values = {
-  patient: {
-    mrn: generateNumber(),
-    nhsNumber: generateNumber("nhs"),
-    firstName: "FirstFive",
-    lastName: "LastFive",
-    familyNumber: generateNumber("family"),
-  },
-  sample: {
-    specimenCode: "68DH-610H8448",
-    reasonForTest: generateNumber("reason"),
-  },
-  variant: {
-    cDnaHgvs: "c.738J>T",
-  },
+const createPatientOverrides = (
+  firstName: string,
+  lastName: string,
+  testReason: string[],
+  gene: string,
+  cDnaHgvs: string,
+  familyNumber?: string,
+): OverridingFields => {
+  return {
+    patient: {
+      mrn: generateNumber("mrn"),
+      nhsNumber: generateNumber("nhs"),
+      firstName: firstName,
+      lastName: lastName,
+      familyNumber: familyNumber ? familyNumber : generateNumber("family"),
+    },
+    sample: { specimenCode: generateNumber("specimen"), reasonForTest: testReason },
+    variant: {
+      cDnaHgvs: cDnaHgvs,
+      gene: gene,
+    },
+  };
 };
 
-const changePatientInfo = (valuesToUpdate: changeableValues) => {
+const generateNumber = (type?: "nhs" | "family" | "specimen" | "mrn") => {
+  let num;
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const randomCharacter = characters[Math.floor(Math.random() * characters.length)];
+
+  if (type === "nhs") {
+    num = Math.floor(Math.random() * Math.pow(10, 10));
+  } else if (type === "family") {
+    num = randomCharacter + Math.floor(Math.random() * Math.pow(10, 6));
+  } else if (type === "specimen") {
+    num = randomCharacter + Math.floor(Math.random() * Math.pow(10, 10));
+  } else if (type === "mrn") {
+    num = Math.floor(Math.random() * Math.pow(10, 8));
+  } else {
+    throw new Error("Unrecognised generated type given");
+  }
+  return num.toString();
+};
+
+const changePatientInfo = (valuesToUpdate: OverridingFields) => {
   const newPatient = { ...initialValues };
   newPatient.patient.mrn = valuesToUpdate.patient.mrn;
   newPatient.patient.familyNumber = valuesToUpdate.patient.familyNumber;
@@ -133,20 +99,8 @@ const changePatientInfo = (valuesToUpdate: changeableValues) => {
   newPatient.sample.specimenCode = valuesToUpdate.sample.specimenCode;
   newPatient.sample.reasonForTest = valuesToUpdate.sample.reasonForTest;
   newPatient.variant[0].cDnaHgvs = valuesToUpdate.variant.cDnaHgvs;
+  newPatient.variant[0].gene = valuesToUpdate.variant.gene;
   return newPatient;
-};
-
-const create5Patients = async () => {
-  const p1 = createBundle(changePatientInfo(p1Values), reportedGenes);
-  const p2 = createBundle(changePatientInfo(p2Values), reportedGenes);
-  const p3 = createBundle(changePatientInfo(p3Values), reportedGenes);
-  const p4 = createBundle(changePatientInfo(p4Values), reportedGenes);
-  const p5 = createBundle(changePatientInfo(p5Values), reportedGenes);
-  await sendBundle(p1);
-  await sendBundle(p2);
-  await sendBundle(p3);
-  await sendBundle(p4);
-  await sendBundle(p5);
 };
 
 describe("Results table", () => {
@@ -155,11 +109,10 @@ describe("Results table", () => {
   });
 
   test("patients are in table", async () => {
-    create5Patients();
+    await createPatients();
     render(<TestResultsDataFetcher />);
 
     await waitFor(() => {
-      expect(screen.getByText(/results/i, { selector: "h2" })).toBeInTheDocument();
       const resultsTable = screen.findByRole("table");
       expect(resultsTable).toHaveValue("FirstFive");
     });
