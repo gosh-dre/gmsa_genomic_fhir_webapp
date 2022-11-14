@@ -1,4 +1,10 @@
-import { optionalDateTime, patientSchema, requiredDate, requiredDateTime } from "./formDataValidation";
+import {
+  optionalDateTime,
+  patientSchema,
+  requiredDate,
+  requiredDateTime,
+  requiredStringArray,
+} from "./formDataValidation";
 import * as Yup from "yup";
 import { ValidationError } from "yup";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/interfaces/IPatient";
@@ -67,6 +73,31 @@ describe("Custom form validation", () => {
       };
       await patientSchema.validate(model);
     }
+
     await expect(validateModel).rejects.toThrow(ValidationError);
   });
+
+  test.each([
+    ["undefined", undefined, false],
+    ["undefined value in array", [undefined], false],
+    ["empty value in array", [""], false],
+    ["single value", ["one"], true],
+    ["multiple values", ["one", "two", "three"], true],
+  ])(
+    "String array with '%s' pass validation",
+    async (description: string, value: string[] | undefined | undefined[], validates: boolean) => {
+      const schema = Yup.object({
+        requiredStringArray: requiredStringArray,
+      }).required();
+
+      const model = { requiredStringArray: value };
+      const validateModel = async () => await schema.validate(model);
+
+      if (validates) {
+        await expect(validateModel).resolves;
+      } else {
+        await expect(validateModel).rejects.toThrow(ValidationError);
+      }
+    },
+  );
 });

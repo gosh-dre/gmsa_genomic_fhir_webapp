@@ -1,6 +1,7 @@
 import { ErrorMessage, Field } from "formik";
 import { ChangeEventHandler, FC } from "react";
 import { RequiredCoding } from "../../code_systems/types";
+import CustomSelectField from "./CustomSelectField";
 
 type Props = {
   name: string;
@@ -10,6 +11,7 @@ type Props = {
   selectOptions?: RequiredCoding[];
   disabled?: boolean;
   onChange?: ChangeEventHandler<HTMLInputElement>;
+  isMulti?: boolean;
 };
 
 /**
@@ -17,10 +19,11 @@ type Props = {
  * @param name html id and name of the field
  * @param label label to display to the user
  * @param selectOptions if present, will display as a select drop-down with these options
+ * @param isMulti if true, then multiple-selection from a drop-down
  * @param rest any other props to pass though to Formik
  * @constructor
  */
-const FieldSet: FC<Props> = ({ name, label, selectOptions, ...rest }) => {
+const FieldSet: FC<Props> = ({ name, label, selectOptions, isMulti, ...rest }) => {
   let field: JSX.Element = <Field id={name} name={name} {...rest} />;
 
   if (selectOptions !== undefined) {
@@ -34,6 +37,20 @@ const FieldSet: FC<Props> = ({ name, label, selectOptions, ...rest }) => {
           </option>
         ))}
       </Field>
+    );
+  }
+
+  if (isMulti && selectOptions) {
+    field = (
+      <Field
+        id={name}
+        className="custom-select" // can apply custom styles if needed
+        name={name}
+        options={selectOptions.map((opt) => ({ label: `${opt.display} (${opt.code})`, value: opt.code }))}
+        component={CustomSelectField}
+        placeholder="Select multi options..."
+        isMulti={true}
+      />
     );
   }
 

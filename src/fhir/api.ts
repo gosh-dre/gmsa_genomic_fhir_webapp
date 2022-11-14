@@ -34,10 +34,10 @@ export const bundleRequest = (form: FormValues, reportedGenes: RequiredCoding[])
 };
 
 /**
- * Generates a unique report identifier that is unique for a sample and a reason for testing.
+ * Generates a unique report identifier that is unique for a sample and reasons for testing.
  * @param sample data from the sample form
  */
-const getUniqueReportIdentifier = (sample: SampleSchema) => `${sample.specimenCode}_${sample.reasonForTest}`;
+const getUniqueReportIdentifier = (sample: SampleSchema) => `${sample.specimenCode}_${sample.reasonForTest.join("-")}`;
 
 export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]): Bundle => {
   const reportIdentifier = getUniqueReportIdentifier(form.sample);
