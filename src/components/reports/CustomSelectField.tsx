@@ -13,7 +13,7 @@ interface Props extends FieldProps {
   placeholder?: string;
 }
 
-const MultiSelect = ({ className, placeholder, field, form, options, isMulti = false }: Props) => {
+const CustomSelectField = ({ className, placeholder, field, form, options, isMulti = false }: Props) => {
   const onChange = (option: Option | Option[]) => {
     form.setFieldValue(
       field.name,
@@ -45,4 +45,4 @@ const MultiSelect = ({ className, placeholder, field, form, options, isMulti = f
   );
 };
 
-export default MultiSelect;
+export default CustomSelectField;
