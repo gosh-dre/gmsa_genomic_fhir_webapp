@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   DiagnosticReport,
   HumanName,
+  Identifier,
   Organization,
   Patient,
   PlanDefinition,
@@ -29,8 +30,9 @@ import {
 } from "./resource_helpers";
 import { parseDateTime } from "../utils/dateTime";
 import { codedValue, loincSelect } from "../code_systems/loincCodes";
-import { diseases, sampleTypes } from "../code_systems/snomedCodes";
+import { sampleTypes } from "../code_systems/snomedCodes";
 import { RequiredCoding } from "../code_systems/types";
+import { diseases } from "../code_systems/panelappCodes";
 
 export const GOSH_GENETICS_IDENTIFIER = "gosh-genomics-fbf63df8-947b-4040-82bb-41fcacbe8bad";
 
@@ -42,48 +44,51 @@ export type ResourceAndIdentifier = {
   identifier: string;
 };
 
-type ResourceAndId = {
-  resource: Resource;
-  id: string;
-};
-
 /**
  * Create a FHIR patient object from form data
  * @param form patient data
  * @param organisationIdentifier used to link resource
  */
 export const patientAndIdentifier = (form: PatientSchema, organisationIdentifier: string): ResourceAndIdentifier => {
+  if (!(form.mrn || form.nhsNumber)) {
+    throw new Error("an NHS number or MRN must be specified");
+  }
+
   const patient = new Patient();
   patient.active = true;
   patient.gender = form.gender;
   patient.name = [{ family: form.lastName, given: [form.firstName] }];
-  const identifier = createIdentifier(form.mrn, makeGoshAssigner("MRN"));
+  const identifiers: Identifier[] = [];
 
-  patient.identifier = [
-    identifier,
-    // implementing GOSH's structure, they chose this to represent a family as it doesn't exist in the specification
-    {
-      extension: [
-        {
-          url: "https://fhir.nhs.uk/R4/StructureDefinition/Extension-UKCore-NHSNumberVerificationStatus",
-          valueCodeableConcept: {
-            coding: [
-              {
-                system: "https://fhir.nhs.uk/R4/CodeSystem/UKCore-NHSNumberVerificationStatus",
-                code: form.familyNumber,
-                display: "Family Number",
-              },
-            ],
-          },
-        },
-      ],
-    },
-  ];
+  if (form.mrn) {
+    identifiers.push(
+      createIdentifier(form.mrn, {
+        system: "http://fhir.nhs.uk/Id/mrn",
+        ...makeGoshAssigner("MRN"),
+      }),
+    );
+  }
+  if (form.nhsNumber) {
+    identifiers.push(
+      createIdentifier(form.nhsNumber.replace(/\s+/g, ""), { system: "http://fhir.nhs.uk/Id/nhs-number" }),
+    );
+  }
+  const identifierQuery = identifiers.map((id) => `${id.system}|${id.value}`).join(",");
+
+  if (form.familyNumber) {
+    identifiers.push(
+      createIdentifier(form.familyNumber, {
+        system: "http://fhir.nhs.uk/Id/nhs-family-number",
+        ...makeGoshAssigner("Family Number"),
+      }),
+    );
+  }
+  patient.identifier = identifiers;
   patient.birthDate = form.dateOfBirth;
   patient.text = generatedNarrative(form.firstName, form.lastName);
   patient.resourceType = "Patient";
   patient.managingOrganization = reference("Organization", organisationIdentifier);
-  return { identifier: identifier.value, resource: patient };
+  return { identifier: identifierQuery, resource: patient };
 };
 
 export const organisationAndIdentifier = (form: AddressSchema): ResourceAndIdentifier => {
@@ -119,10 +124,20 @@ export const organisationAndIdentifier = (form: AddressSchema): ResourceAndIdent
   return { identifier: identifier.value, resource: org };
 };
 
-export const practitionersAndQueries = (result: ReportDetailSchema) => {
+export const practitionersAndQueries = (result: ReportDetailSchema, organisationIdentifier: string) => {
   return {
-    authoriser: practitionerAndIdentifier(result.authorisingScientist, result.authorisingScientistTitle, "auth"),
-    reporter: practitionerAndIdentifier(result.reportingScientist, result.reportingScientistTitle, "report"),
+    authoriser: practitionerAndIdentifier(
+      result.authorisingScientist,
+      result.authorisingScientistTitle,
+      "auth",
+      organisationIdentifier,
+    ),
+    reporter: practitionerAndIdentifier(
+      result.reportingScientist,
+      result.reportingScientistTitle,
+      "report",
+      organisationIdentifier,
+    ),
   };
 };
 
@@ -135,8 +150,14 @@ type ScientistRole = "auth" | "report";
  * @param fullName the first word will be the firstName, remaining words will be lastName
  * @param title job title within the laboratory
  * @param role role in the reporting process
+ * @param organisationIdentifier to link the organisation
  */
-const practitionerAndIdentifier = (fullName: string, title: string, role: ScientistRole): ResourceAndIdentifier => {
+const practitionerAndIdentifier = (
+  fullName: string,
+  title: string,
+  role: ScientistRole,
+  organisationIdentifier: string,
+): ResourceAndIdentifier => {
   const nameSplit = fullName.split(/\s/g);
   const firstName = nameSplit[0];
   const lastName = nameSplit.slice(1).join(" ");
@@ -149,12 +170,16 @@ const practitionerAndIdentifier = (fullName: string, title: string, role: Scient
   const practitioner = new Practitioner();
   practitioner.resourceType = "Practitioner";
   practitioner.active = true;
-  const normalisedIdentifier = `${fullName}_${role}`.replaceAll(/\s/g, "").toLowerCase();
+  const normalisedIdentifier = `${fullName}_${role}_${organisationIdentifier}`.replaceAll(/\s/g, "").toLowerCase();
   const identifier = createIdentifier(normalisedIdentifier);
   practitioner.identifier = [identifier];
   practitioner.name = [{ given: [firstName], family: lastName, use: HumanName.UseEnum.Official, text: roleText }];
-  practitioner.qualification = [{ code: { text: title } }];
-  // TODO: add issuer
+  practitioner.qualification = [
+    {
+      code: { text: title },
+      issuer: reference("Organization", organisationIdentifier),
+    },
+  ];
   return { identifier: identifier.value, resource: practitioner };
 };
 
@@ -162,15 +187,23 @@ const practitionerAndIdentifier = (fullName: string, title: string, role: Scient
  * Create specimen resource from form data and link it to the patient.
  * @param sample form data
  * @param patientIdentifier used to link resource
+ * @param reportIdentifier to link the specimen resource and for unique reference to the created resource
  */
-export const specimenAndIdentifier = (sample: SampleSchema, patientIdentifier: string): ResourceAndIdentifier => {
+export const specimenAndIdentifier = (
+  sample: SampleSchema,
+  patientIdentifier: string,
+  reportIdentifier: string,
+): ResourceAndIdentifier => {
   const specimen = new Specimen();
   specimen.resourceType = "Specimen";
   specimen.receivedTime = parseDateTime(sample.receivedDateTime).toJSDate();
   if (sample.collectionDateTime !== undefined) {
     specimen.collection = { collectedDateTime: parseDateTime(sample.collectionDateTime).toISO() };
   }
-  const identifier = createIdentifier(sample.specimenCode, { id: "specimen id" });
+  if (sample.authorisedDateTime !== undefined) {
+    specimen.processing = [{ timeDateTime: parseDateTime(sample.authorisedDateTime).toISO() }];
+  }
+  const identifier = createIdentifier(reportIdentifier);
   specimen.identifier = [identifier];
   specimen.type = {
     coding: [codedValue(sampleTypes, sample.specimenType)],
@@ -182,14 +215,13 @@ export const specimenAndIdentifier = (sample: SampleSchema, patientIdentifier: s
 
 export const createNullVariantAndIdentifier = (
   patientIdentifier: string,
-  specimenIdentifier: string,
-  specimenBarcode: string,
   reporterIdentifier: string,
   authoriserIdentifier: string,
+  reportIdentifier: string,
 ): ResourceAndIdentifier => {
   const obs = createPatientObservation(
     patientIdentifier,
-    specimenIdentifier,
+    reportIdentifier,
     reporterIdentifier,
     authoriserIdentifier,
     "69548-6",
@@ -201,7 +233,9 @@ export const createNullVariantAndIdentifier = (
       text: "No variants reported",
     },
   ];
-  const identifier = createIdentifier(`${specimenBarcode}$null:null`, { id: "specimenBarcode$transcript:genomicHGVS" });
+  const identifier = createIdentifier(`${reportIdentifier}$null:null`, {
+    id: "specimenBarcode$transcript:genomicHGVS",
+  });
   obs.identifier = [identifier];
 
   return { identifier: identifier.value, resource: obs };
@@ -210,14 +244,13 @@ export const createNullVariantAndIdentifier = (
 export const interpretationAndIdentifier = (
   result: ReportDetailSchema,
   patientIdentifier: string,
-  specimenIdentifier: string,
-  specimenBarcode: string,
   reporterIdentifier: string,
   authoriserIdentifier: string,
+  reportIdentifier: string,
 ): ResourceAndIdentifier => {
   const obs = createPatientObservation(
     patientIdentifier,
-    specimenIdentifier,
+    reportIdentifier,
     reporterIdentifier,
     authoriserIdentifier,
     "51968-6",
@@ -236,8 +269,12 @@ export const interpretationAndIdentifier = (
       ],
     },
   ];
-  obs.valueString = result.resultSummary;
-  const identifier = createIdentifier(`${specimenBarcode}$overall-interpretation`, {
+  obs.note = [{ authorString: "genomic interpretation", text: result.resultSummary }];
+  obs.valueCodeableConcept = {
+    coding: [codedValue(loincSelect.reportFinding, result.reportFinding)],
+    text: "report finding",
+  };
+  const identifier = createIdentifier(`${reportIdentifier}$overall-interpretation`, {
     id: "{specimenBarcode}$overall-interpretation",
   });
   obs.identifier = [identifier];
@@ -249,14 +286,13 @@ export const variantAndIdentifier = (
   variant: VariantSchema,
   reportedGenes: RequiredCoding[],
   patientIdentifier: string,
-  specimenIdentifier: string,
-  specimenBarcode: string,
   reporterIdentifier: string,
   authoriserIdentifier: string,
+  reportIdentifier: string,
 ): ResourceAndIdentifier => {
   const obs = createPatientObservation(
     patientIdentifier,
-    specimenIdentifier,
+    reportIdentifier,
     reporterIdentifier,
     authoriserIdentifier,
     "69548-6",
@@ -264,7 +300,23 @@ export const variantAndIdentifier = (
   );
   obs.meta = { profile: ["http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant"] };
   const geneComponent = codedValue(reportedGenes, variant.gene);
+  // ensure that cDNA representation follows ${transcript}:${cDNA change}
+  let cDnaHgvs = variant.cDnaHgvs.trim();
+  if (!cDnaHgvs.startsWith(variant.transcript)) {
+    cDnaHgvs = `${variant.transcript}:${cDnaHgvs}`;
+  }
   obs.component = [
+    observationComponent(
+      {
+        system: "http://loinc.org",
+        code: "48004-6",
+        display: "DNA change (c.HGVS)",
+      },
+      {
+        system: "http://varnomen.hgvs.org/",
+        display: cDnaHgvs,
+      },
+    ),
     observationComponent(
       {
         system: "http://loinc.org",
@@ -313,17 +365,6 @@ export const variantAndIdentifier = (
     ),
     observationComponent(
       {
-        system: "http://loinc.org",
-        code: "48004-6",
-        display: "DNA change (c.HGVS)",
-      },
-      {
-        system: "http://varnomen.hgvs.org/",
-        display: variant.genomicHGVS,
-      },
-    ),
-    observationComponent(
-      {
         // custom code
         system: "http://hl7.org/evidence",
         code: "evidence",
@@ -367,7 +408,7 @@ export const variantAndIdentifier = (
     });
   }
 
-  const identifier = createIdentifier(`${specimenBarcode}$${variant.transcript}:${variant.genomicHGVS}`);
+  const identifier = createIdentifier(`${reportIdentifier}$${cDnaHgvs}`);
   obs.identifier = [identifier];
 
   return { identifier: identifier.value, resource: obs };
@@ -377,6 +418,7 @@ export const planDefinitionAndId = (
   sample: SampleSchema,
   report: ReportDetailSchema,
   patientIdentifier: string,
+  reportIdentifier: string,
 ): ResourceAndIdentifier => {
   const plan = new PlanDefinition();
   plan.resourceType = "PlanDefinition";
@@ -386,9 +428,12 @@ export const planDefinitionAndId = (
   }
   plan.action = [
     {
-      prefix: "1",
       description: report.testMethodology,
       title: "Test Method",
+    },
+    {
+      textEquivalent: report.genesTested,
+      title: "gene list",
     },
   ];
   if (report.citation !== undefined) {
@@ -400,13 +445,17 @@ export const planDefinitionAndId = (
     ];
   }
   plan.subjectReference = reference("Patient", patientIdentifier);
-  const identifier = createIdentifier(`${patientIdentifier}`);
+  const identifier = createIdentifier(reportIdentifier);
   plan.identifier = [identifier];
 
   return { identifier: identifier.value, resource: plan };
 };
 
-export const furtherTestingAndId = (report: ReportDetailSchema, patientIdentifier: string): ResourceAndId => {
+export const furtherTestingAndId = (
+  report: ReportDetailSchema,
+  patientIdentifier: string,
+  reportIdentifier: string,
+): ResourceAndIdentifier => {
   const task = new Task();
   task.id = uuidv4();
   task.resourceType = "Task";
@@ -419,7 +468,9 @@ export const furtherTestingAndId = (report: ReportDetailSchema, patientIdentifie
   }
   task.description = report.furtherTesting;
   task.for = reference("Patient", patientIdentifier);
-  return { id: task.id, resource: task };
+  const identifier = createIdentifier(reportIdentifier);
+  task.identifier = [identifier];
+  return { identifier: identifier.value, resource: task };
 };
 
 /**
@@ -427,16 +478,18 @@ export const furtherTestingAndId = (report: ReportDetailSchema, patientIdentifie
  * @param sample form data for sample
  * @param patientIdentifier to link the resource
  * @param planIdentifier identifier search string for PlanDefinition
- * @param practitionerIdentifier to link the resource for the reporting scientist
- * @param specimenIdentifier to link the resource
+ * @param reporterIdentifier to link the resource for the reporting scientist
+ * @param authoriserIdentifier to link the resource for the reporting scientist
+ * @param reportIdentifier to link the specimen resource and for unique reference to the created resource
  */
 export const serviceRequestAndId = (
   sample: SampleSchema,
   patientIdentifier: string,
   planIdentifier: string,
-  practitionerIdentifier: string,
-  specimenIdentifier: string,
-): ResourceAndId => {
+  reporterIdentifier: string,
+  authoriserIdentifier: string,
+  reportIdentifier: string,
+): ResourceAndIdentifier => {
   const request = new ServiceRequest();
   request.resourceType = "ServiceRequest";
   request.id = uuidv4();
@@ -457,6 +510,8 @@ export const serviceRequestAndId = (
     },
   ];
   request.subject = reference("Patient", patientIdentifier);
+  request.specimen = [reference("Specimen", reportIdentifier)];
+  request.performer = [reference("Practitioner", reporterIdentifier), reference("Practitioner", authoriserIdentifier)];
   request.performerType = {
     coding: [
       {
@@ -466,7 +521,6 @@ export const serviceRequestAndId = (
       },
     ],
   };
-  request.performer = [reference("Practitioner", practitionerIdentifier)];
   request.reasonCode = [
     {
       coding: [codedValue(diseases, sample.reasonForTest)],
@@ -474,9 +528,10 @@ export const serviceRequestAndId = (
     },
   ];
 
-  request.specimen = [reference("Specimen", specimenIdentifier)];
+  const identifier = createIdentifier(reportIdentifier);
+  request.identifier = [identifier];
 
-  return { id: request.id, resource: request };
+  return { identifier: identifier.value, resource: request };
 };
 
 export const reportAndId = (
@@ -486,9 +541,9 @@ export const reportAndId = (
   reporterIdentifier: string,
   authoriserIdentifier: string,
   organisationIdentifier: string,
-  specimenIdentifier: string,
   resultIds: string[],
-): ResourceAndId => {
+  reportIdentifier: string,
+): ResourceAndIdentifier => {
   const report = new DiagnosticReport();
   report.id = uuidv4();
   report.issued = result.reportingDate;
@@ -496,7 +551,7 @@ export const reportAndId = (
   report.resourceType = "DiagnosticReport";
   report.status = DiagnosticReport.StatusEnum.Final;
   report.subject = reference("Patient", patientIdentifier);
-  report.specimen = [reference("Specimen", specimenIdentifier)];
+  report.specimen = [reference("Specimen", reportIdentifier)];
   report.performer = [reference("Organization", organisationIdentifier)];
   report.result = resultIds.map((resultId) => reference("Observation", resultId));
   report.resultsInterpreter = [
@@ -507,6 +562,8 @@ export const reportAndId = (
     coding: [codedValue(diseases, sample.reasonForTest)],
   };
   report.conclusion = result.clinicalConclusion;
+  const identifier = createIdentifier(reportIdentifier);
+  report.identifier = [identifier];
 
-  return { id: report.id, resource: report };
+  return { identifier: identifier.value, resource: report };
 };

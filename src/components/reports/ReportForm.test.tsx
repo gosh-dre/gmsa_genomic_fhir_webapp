@@ -5,6 +5,7 @@ import { act } from "react-dom/test-utils";
 import { createPractitioner, deleteFhirData, TestReportForm } from "../../fhir/testUtilities";
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
+import { GOSH_GENETICS_IDENTIFIER } from "../../fhir/resources";
 import * as router from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
 import { mockedNavigate } from "../../setupTests";
@@ -22,8 +23,15 @@ type DropDown = {
 const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
   const dummyValue = "Always_the_same";
   const form = screen.getByRole("form");
+
+  within(form)
+    .queryAllByLabelText(/nhs number/i)
+    .forEach((input) => {
+      clearAndType(input, "1234567890");
+    });
+
   const textInputs = within(form).getAllByLabelText(
-    /^((?!resultOutput|date|address|gender|specimen type|search|gene symbol|follow up).)*$/i,
+    /^((?!nhs number|resultOutput|date|address|gender|specimen type|search|gene symbol|follow up).)*$/i,
   );
 
   if (!dropDowns) {
@@ -93,7 +101,7 @@ async function setDummyAndNext(withDates: boolean, dropDowns?: DropDown[]) {
 const setSample = () => {
   return setDummyAndNext(true, [
     { field: /specimen type/i, value: "122555007" },
-    { field: /test reason/i, value: "230387008" },
+    { field: /test reason/i, value: "R59" },
   ]);
 };
 
@@ -134,7 +142,10 @@ async function setNoVariant() {
 }
 
 const setReportFields = async () => {
-  const dropDowns = [{ field: /Follow up/i, value: "Genetic counseling recommended (LA14020-4)" }];
+  const dropDowns = [
+    { field: /Follow up/i, value: "Genetic counseling recommended (LA14020-4)" },
+    { field: /Report finding/i, value: "Positive (LA6576-8)" },
+  ];
   await setDummyAndNext(true, dropDowns);
 };
 
@@ -142,7 +153,6 @@ jest.setTimeout(20000);
 
 describe("Report form", () => {
   beforeEach(() => {
-    expect(router);
     return deleteFhirData();
   });
 
@@ -151,7 +161,10 @@ describe("Report form", () => {
     const practitioner = new Practitioner();
     practitioner.resourceType = "Practitioner";
     // Adding in duplicate identifier for tests, but also for running in front end with form defaults
-    practitioner.identifier = [createIdentifier("always_the_same_report"), createIdentifier("anapietra_report")];
+    practitioner.identifier = [
+      createIdentifier(`always_the_same_report_${GOSH_GENETICS_IDENTIFIER}`),
+      createIdentifier(`anapietra_report_${GOSH_GENETICS_IDENTIFIER}`),
+    ];
 
     await createPractitioner(practitioner);
     await createPractitioner(practitioner);

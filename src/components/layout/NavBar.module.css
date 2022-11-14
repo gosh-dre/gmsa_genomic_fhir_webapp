@@ -27,11 +27,11 @@
 
 .nav a {
     text-decoration: none;
-    color: white;
+    color: var(--light-blue);
 }
 
 .nav a:hover,
 .nav a:active,
 .nav a.active {
-    color: var(--light-blue);
+    color: white;
 }

@@ -1,0 +1,24 @@
+table.results-table {
+  background-color: #8c88d9;
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+}
+
+table.results-table td,
+table.results-table th {
+  border: 1px solid #646464;
+  padding: 3px 2px;
+}
+
+table.results-table th {
+  border-bottom: 2px solid #646464;
+}
+
+table.results-table tr:nth-child(odd) {
+  background: #d0e4f5;
+}
+
+table.results-table tbody tr {
+  cursor: pointer;
+}
