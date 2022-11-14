@@ -6,7 +6,6 @@ import { createPractitioner, deleteFhirData, TestReportForm } from "../../fhir/t
 import { Practitioner } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/practitioner";
 import { createIdentifier } from "../../fhir/resource_helpers";
 import { GOSH_GENETICS_IDENTIFIER } from "../../fhir/resources";
-import * as router from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
 import { mockedNavigate } from "../../setupTests";
 
@@ -181,10 +180,13 @@ describe("Report form", () => {
     });
 
     // Assert
-    await waitFor(() => {
-      expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
-      expect(mockedNavigate).not.toBeCalled();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/error/i, { selector: "h2" })).toBeInTheDocument();
+        expect(mockedNavigate).not.toBeCalled();
+      },
+      { timeout: 2000 },
+    );
   });
   /**
    * Given the report form
@@ -203,9 +205,12 @@ describe("Report form", () => {
       userEvent.click(screen.getByText(/submit/i));
     });
     // Assert
-    await waitFor(() => {
-      expect(mockedNavigate).toBeCalled();
-    });
+    await waitFor(
+      () => {
+        expect(mockedNavigate).toBeCalled();
+      },
+      { timeout: 2000 },
+    );
   });
 
   /**
@@ -226,8 +231,11 @@ describe("Report form", () => {
     });
 
     // Assert
-    await waitFor(() => {
-      expect(mockedNavigate).toBeCalled();
-    });
+    await waitFor(
+      () => {
+        expect(mockedNavigate).toBeCalled();
+      },
+      { timeout: 2000 },
+    );
   });
 });
