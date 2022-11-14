@@ -57,6 +57,7 @@ const setDummyValues = (withDates: boolean, dropDowns?: DropDown[], multiSelect?
     multiSelect.map((singleSelect) => {
       const field = within(form).getByLabelText(singleSelect.field);
       clearAndType(field, singleSelect.value);
+      userEvent.tab();
     });
   }
 

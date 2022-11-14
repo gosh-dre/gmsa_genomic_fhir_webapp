@@ -24,6 +24,10 @@ export const dateTime = Yup.string()
   });
 export const requiredDateTime = dateTime.required();
 export const optionalDateTime = dateTime.optional();
+export const requiredStringArray = Yup.array()
+  .of(Yup.string().required())
+  .required()
+  .test("required", "Select at least one value", (value) => !value || value.length !== 0);
 
 const boolField = Yup.boolean().default(false).nullable(false);
 
@@ -68,7 +72,7 @@ export const sampleSchema = Yup.object({
   receivedDateTime: requiredDateTime,
   authorisedDateTime: optionalDateTime,
   specimenType: requiredString,
-  reasonForTest: Yup.array().of(Yup.string().required()).required(),
+  reasonForTest: requiredStringArray,
   reasonForTestText: optionalString,
 });
 
