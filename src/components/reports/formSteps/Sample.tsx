@@ -4,29 +4,6 @@ import FieldSet from "../FieldSet";
 import { sampleTypes } from "../../../code_systems/snomedCodes";
 import { diseases } from "../../../code_systems/panelappCodes";
 
-const dummyData = [
-  {
-    label: "Chinese",
-    value: "zh-CN",
-  },
-  {
-    label: "English (US)",
-    value: "en-US",
-  },
-  {
-    label: "English (GB)",
-    value: "en-GB",
-  },
-  {
-    label: "French",
-    value: "fr-FR",
-  },
-  {
-    label: "Spanish",
-    value: "es-ES",
-  },
-];
-
 const Sample: FC = () => {
   return (
     <>
@@ -37,9 +14,7 @@ const Sample: FC = () => {
       <FieldSet name="sample.receivedDateTime" label="Sample received datetime" />
       <FieldSet name="sample.authorisedDateTime" label="Sample authorised datetime" />
       <FieldSet name="sample.reasonForTestText" label="Reason for test" />
-      <FieldSet name="sample.reasonForTest" label="Test reason" selectOptions={diseases} />
-
-      <FieldSet name="sample.multiSelectTest" label="Test reason multi" isMulti={true} multiSelectOptions={dummyData} />
+      <FieldSet name="sample.reasonForTest" label="Test reason" isMulti={true} multiSelectOptions={diseases} />
     </>
   );
 };
