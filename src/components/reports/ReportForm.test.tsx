@@ -209,7 +209,7 @@ describe("Report form", () => {
       () => {
         expect(mockedNavigate).toBeCalled();
       },
-      { timeout: 2000 },
+      { timeout: 5000 },
     );
   });
 
@@ -235,7 +235,7 @@ describe("Report form", () => {
       () => {
         expect(mockedNavigate).toBeCalled();
       },
-      { timeout: 2000 },
+      { timeout: 5000 },
     );
   });
 });
