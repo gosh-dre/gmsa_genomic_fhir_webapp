@@ -105,8 +105,8 @@ const changePatientInfo = (valuesToUpdate: OverridingFields) => {
 };
 
 describe("Results table", () => {
-  beforeAll(() => {
-    return clearFhirAndSendReports;
+  beforeEach(() => {
+    return clearFhirAndSendReports();
   });
 
   /**
