@@ -27,7 +27,7 @@ export const optionalDateTime = dateTime.optional();
 export const requiredStringArray = Yup.array()
   .of(Yup.string().required())
   .required()
-  .test("required", "Select at least one value", (value) => !value || value.length !== 0);
+  .test("required", "Select at least one value", (value) => value !== undefined && value.length !== 0);
 
 const boolField = Yup.boolean().default(false).nullable(false);
 
