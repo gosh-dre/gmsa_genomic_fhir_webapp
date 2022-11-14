@@ -1,7 +1,7 @@
 import { ErrorMessage, Field } from "formik";
 import { ChangeEventHandler, FC } from "react";
 import { RequiredCoding } from "../../code_systems/types";
-import CustomSelectField from "./CustomSelectField";
+import MultiSelect from "./MultiSelect";
 
 type Props = {
   name: string;
@@ -43,10 +43,11 @@ const FieldSet: FC<Props> = ({ name, label, selectOptions, isMulti, ...rest }) =
   if (isMulti && selectOptions) {
     field = (
       <Field
+        id={name}
         className="custom-select" // can apply custom styles if needed
         name={name}
         options={selectOptions.map((opt) => ({ label: `${opt.display} (${opt.code})`, value: opt.code }))}
-        component={CustomSelectField}
+        component={MultiSelect}
         placeholder="Select multi options..."
         isMulti={true}
       />

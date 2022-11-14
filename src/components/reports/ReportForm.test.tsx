@@ -17,7 +17,7 @@ type DropDown = {
   value: string;
 };
 
-const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
+const setDummyValues = (withDates: boolean, dropDowns?: DropDown[], multiSelect?: DropDown[]) => {
   const dummyValue = "Always_the_same";
   const form = screen.getByRole("form");
 
@@ -53,6 +53,13 @@ const setDummyValues = (withDates: boolean, dropDowns?: DropDown[]) => {
     });
   }
 
+  if (multiSelect) {
+    multiSelect.map((singleSelect) => {
+      const field = within(form).getByLabelText(singleSelect.field);
+      clearAndType(field, singleSelect.value);
+    });
+  }
+
   if (withDates) {
     within(form)
       .queryAllByLabelText(/date/i)
@@ -85,9 +92,9 @@ async function setLabAndPatient() {
   });
 }
 
-async function setDummyAndNext(withDates: boolean, dropDowns?: DropDown[]) {
+async function setDummyAndNext(withDates: boolean, dropDowns?: DropDown[], multiSelect?: DropDown[]) {
   await act(async () => {
-    setDummyValues(withDates, dropDowns);
+    setDummyValues(withDates, dropDowns, multiSelect);
   });
 
   await act(async () => {
@@ -96,10 +103,11 @@ async function setDummyAndNext(withDates: boolean, dropDowns?: DropDown[]) {
 }
 
 const setSample = () => {
-  return setDummyAndNext(true, [
-    { field: /specimen type/i, value: "122555007" },
-    { field: /test reason/i, value: "R59" },
-  ]);
+  return setDummyAndNext(
+    true,
+    [{ field: /specimen type/i, value: "122555007" }],
+    [{ field: /test reason/i, value: "R59" }],
+  );
 };
 
 async function setVariantFields() {

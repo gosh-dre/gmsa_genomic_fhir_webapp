@@ -1,20 +1,19 @@
 import { FieldProps } from "formik";
 import Select from "react-select";
-// import { OptionsType, ValueType } from "react-select/lib/types";
 
 interface Option {
   label: string;
   value: string;
 }
 
-interface CustomSelectProps extends FieldProps {
+interface Props extends FieldProps {
   options: Option[];
   isMulti: boolean;
   className?: string;
   placeholder?: string;
 }
 
-const CustomSelectField = ({ className, placeholder, field, form, options, isMulti = false }: CustomSelectProps) => {
+const MultiSelect = ({ className, placeholder, field, form, options, isMulti = false }: Props) => {
   const onChange = (option: Option | Option[]) => {
     form.setFieldValue(
       field.name,
@@ -34,6 +33,7 @@ const CustomSelectField = ({ className, placeholder, field, form, options, isMul
 
   return (
     <Select
+      inputId={field.name}
       className={className}
       name={field.name}
       value={getValue()}
@@ -45,4 +45,4 @@ const CustomSelectField = ({ className, placeholder, field, form, options, isMul
   );
 };
 
-export default CustomSelectField;
+export default MultiSelect;
