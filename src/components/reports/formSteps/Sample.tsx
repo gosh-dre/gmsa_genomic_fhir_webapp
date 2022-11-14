@@ -14,7 +14,7 @@ const Sample: FC = () => {
       <FieldSet name="sample.receivedDateTime" label="Sample received datetime" />
       <FieldSet name="sample.authorisedDateTime" label="Sample authorised datetime" />
       <FieldSet name="sample.reasonForTestText" label="Reason for test" />
-      <FieldSet name="sample.reasonForTest" label="Test reason" isMulti={true} multiSelectOptions={diseases} />
+      <FieldSet name="sample.reasonForTest" label="Test reason (s)" isMulti={true} selectOptions={diseases} />
     </>
   );
 };

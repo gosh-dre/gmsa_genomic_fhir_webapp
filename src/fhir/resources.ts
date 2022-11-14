@@ -521,12 +521,10 @@ export const serviceRequestAndId = (
       },
     ],
   };
-  request.reasonCode = [
-    {
-      coding: [codedValue(diseases, sample.reasonForTest)],
-      text: sample.reasonForTestText,
-    },
-  ];
+  request.reasonCode = sample.reasonForTest.map((reason) => ({
+    coding: [codedValue(diseases, reason)],
+    text: sample.reasonForTestText,
+  }));
 
   const identifier = createIdentifier(reportIdentifier);
   request.identifier = [identifier];
@@ -559,7 +557,7 @@ export const reportAndId = (
     reference("Practitioner", authoriserIdentifier),
   ];
   report.code = {
-    coding: [codedValue(diseases, sample.reasonForTest)],
+    coding: sample.reasonForTest.map((reason) => codedValue(diseases, reason)),
   };
   report.conclusion = result.clinicalConclusion;
   const identifier = createIdentifier(reportIdentifier);

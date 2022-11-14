@@ -68,7 +68,7 @@ export const sampleSchema = Yup.object({
   receivedDateTime: requiredDateTime,
   authorisedDateTime: optionalDateTime,
   specimenType: requiredString,
-  reasonForTest: requiredString,
+  reasonForTest: Yup.array().of(Yup.string().required()).required(),
   reasonForTestText: optionalString,
 });
 
