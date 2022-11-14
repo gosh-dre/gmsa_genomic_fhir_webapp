@@ -191,7 +191,7 @@ describe("Report form", () => {
   /**
    * Given the report form
    * When all data filled in
-   * Then the rendered result should be rendered in an alert box
+   * Then the user should be redirected and no errors should be found
    */
   test("Report with variant", async () => {
     // Arrange
@@ -217,7 +217,7 @@ describe("Report form", () => {
   /**
    * Given the report form
    * When all data filled in except for having no variant
-   * Then the rendered result should be rendered in an alert box
+   * Then the user should be redirected and no errors should be found
    */
   test("Report without variant", async () => {
     // Arrange
