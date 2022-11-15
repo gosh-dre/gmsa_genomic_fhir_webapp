@@ -75,7 +75,7 @@ const ResultsList: FC<Props> = (props) => {
       <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
       {isLoading && <LoadingSpinner asOverlay message={"Getting observations..."} />}
 
-      <h1>Patient results table</h1>
+      <h1>Familial hypercholesterolemia patient results</h1>
 
       <table className={classes["results-table"]}>
         <thead>

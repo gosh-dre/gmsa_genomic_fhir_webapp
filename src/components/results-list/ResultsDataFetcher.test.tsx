@@ -111,9 +111,9 @@ describe("Results table", () => {
   });
 
   /**
-   * Given the FHIR API is cleared and has 5 separate reports added with one variant
+   * Given the FHIR API is cleared and has 5 separate reports added with one variant each (one not FH)
    * When the Results list page is rendered
-   * Then there should be 5 variants listed
+   * Then there should be 4 FH variants listed
    */
   test("patients are in table", async () => {
     render(<ContextAndModal children={<ResultsDataFetcher />} />);

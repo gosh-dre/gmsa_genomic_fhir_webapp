@@ -42,7 +42,7 @@ const ResultsDataFetcher: FC = () => {
   const [parsedResults, setParsedResults] = useState<ParsedResultsModel | null>(null);
 
   useEffect(() => {
-    const observationQueryUrl = `DiagnosticReport/?_include=DiagnosticReport:result&_include=DiagnosticReport:subject`;
+    const observationQueryUrl = `DiagnosticReport/?code=${FH_CODE}&_include=DiagnosticReport:result&_include=DiagnosticReport:subject`;
 
     setIsLoading(true);
 
