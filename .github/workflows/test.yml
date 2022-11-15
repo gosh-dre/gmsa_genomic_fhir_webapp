@@ -15,7 +15,7 @@ jobs:
       - name: Use Node and enable cache
         uses: actions/setup-node@v3
         with:
-          node-version: 17
+          node-version: 18
           cache: "npm"
       - name: Install sushi
         run: npm install -g fsh-sushi
@@ -32,7 +32,7 @@ jobs:
       - name: Use Node and enable cache
         uses: actions/setup-node@v3
         with:
-          node-version: 17
+          node-version: 18
           cache: "npm"
       - name: Install dependencies
         run: |
