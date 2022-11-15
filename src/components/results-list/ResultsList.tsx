@@ -1,10 +1,9 @@
-import { FC, useState, useContext } from "react";
+import { FC, useContext, useState } from "react";
 import { FhirContext } from "../fhir/FhirContext";
 import { Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 import LoadingSpinner from "../UI/LoadingSpinner";
-import ModalWrapper from "../UI/ModalWrapper";
-import { ModalState } from "../UI/ModalWrapper";
+import ModalWrapper, { ModalState } from "../UI/ModalWrapper";
 
 import { ParsedResultsModel, TrimmedObservation } from "./ResultsDataFetcher";
 
@@ -84,6 +83,7 @@ const ResultsList: FC<Props> = (props) => {
             <th>First name</th>
             <th>Last name</th>
             <th>cDNA changes</th>
+            <th>Overall interpretation</th>
           </tr>
         </thead>
         <tbody>
@@ -107,6 +107,7 @@ const ResultsList: FC<Props> = (props) => {
                     );
                   })}
                 </td>
+                <td>{patient.overallInterpretation}</td>
               </tr>
             );
           })}

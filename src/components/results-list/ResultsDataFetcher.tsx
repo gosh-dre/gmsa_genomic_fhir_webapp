@@ -1,12 +1,11 @@
-import { FC, useEffect, useState, useContext } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { FhirContext } from "../fhir/FhirContext";
 
 import LoadingSpinner from "../UI/LoadingSpinner";
-import ModalWrapper from "../UI/ModalWrapper";
-import { ModalState } from "../UI/ModalWrapper";
+import ModalWrapper, { ModalState } from "../UI/ModalWrapper";
 import ResultsList from "../results-list/ResultsList";
 
-import { Patient, Observation } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { Observation, Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 export type TrimmedObservation = { cDnaChange: string; observationId: string };
 type PatientResult = {
@@ -14,11 +13,27 @@ type PatientResult = {
   officialPatientIdentifier: string;
   firstName: string;
   lastName: string;
+  overallInterpretation: string;
   observations: TrimmedObservation[];
 };
 export type ParsedResultsModel = PatientResult[];
 
 const HGVS_CDNA_LOINC = "48004-6";
+const FH_CODE = "R134";
+const POSITIVE_FINDING = "LA6576-8";
+const VARIANT_PROFILE = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant";
+const INTERPRETATION_PROFILE = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/overall-interpretation";
+
+function filterObservations(patientId: string, VARIANT_PROFILE: string, observations: Observation[]) {
+  return observations.filter((observation) => {
+    if (!observation.subject?.reference || !observation.meta?.profile) {
+      return;
+    }
+    const subjectIdLong = observation.subject.reference;
+    const profiles = observation.meta.profile;
+    return subjectIdLong.includes(patientId) && profiles.includes(VARIANT_PROFILE);
+  });
+}
 
 const ResultsDataFetcher: FC = () => {
   const ctx = useContext(FhirContext);
@@ -27,7 +42,7 @@ const ResultsDataFetcher: FC = () => {
   const [parsedResults, setParsedResults] = useState<ParsedResultsModel | null>(null);
 
   useEffect(() => {
-    const observationQueryUrl = `Observation?_profile=http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant&_include=Observation:subject`;
+    const observationQueryUrl = `DiagnosticReport/?_include=DiagnosticReport:result&_include=DiagnosticReport:subject`;
 
     setIsLoading(true);
 
@@ -67,9 +82,7 @@ const ResultsDataFetcher: FC = () => {
       })
       .map((entry) => entry.resource as Observation);
 
-    const readableResults = createReadableResults(patients, observations);
-
-    return readableResults;
+    return createReadableResults(patients, observations);
   };
 
   /**
@@ -91,22 +104,17 @@ const ResultsDataFetcher: FC = () => {
       const firstName = patient.name[0].given[0];
       const lastName = patient.name[0].family;
 
-      // return observations belonging to a patient based on the patient ID
-      const patientObservations = observations.filter((observation) => {
-        if (!observation.subject?.reference) return;
+      // return variants belonging to a patient based on the patient ID
+      const patientVariants = filterObservations(patientId, VARIANT_PROFILE, observations);
+      const overallInterpretation = filterObservations(patientId, INTERPRETATION_PROFILE, observations);
 
-        const subjectIdLong = observation.subject.reference;
-
-        return subjectIdLong.includes(patientId);
-      });
-
-      if (!patientObservations || patientObservations.length === 0) {
+      if (!patientVariants || patientVariants.length === 0) {
         return;
       }
 
       // extract required data from each observation
       let trimmedObservations: TrimmedObservation[] = [];
-      patientObservations.forEach((observation) => {
+      patientVariants.forEach((observation) => {
         if (!observation?.id) {
           return;
         }
@@ -126,6 +134,8 @@ const ResultsDataFetcher: FC = () => {
         trimmedObservations = [...trimmedObservations, { cDnaChange: cDnaChange, observationId: observation.id }];
       });
 
+      const interpretation = overallInterpretation.at(0)?.valueCodeableConcept?.coding?.at(0)?.display || "Unknown";
+
       readableResults = [
         ...readableResults,
         {
@@ -133,6 +143,7 @@ const ResultsDataFetcher: FC = () => {
           officialPatientIdentifier: officialPatientIdentifier,
           firstName: firstName,
           lastName: lastName,
+          overallInterpretation: interpretation,
           observations: trimmedObservations,
         },
       ];
