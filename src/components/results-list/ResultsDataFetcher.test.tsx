@@ -119,9 +119,12 @@ describe("Results table", () => {
     render(<ContextAndModal children={<ResultsDataFetcher />} />);
 
     // Can put a breakpoint here to allow for development with 5 patients added to the result list
-    await waitFor(() => {
-      const resultsTable = screen.getAllByText(/NM_/);
-      expect(resultsTable.length).toEqual(5);
-    });
+    await waitFor(
+      () => {
+        const resultsTable = screen.getAllByText(/NM_/);
+        expect(resultsTable.length).toEqual(5);
+      },
+      { timeout: 15000 },
+    );
   });
 });
