@@ -21,13 +21,13 @@ These can be checked on the command line on unix systems:
 node -v
 ```
 
-| v17.4.0
+| v18.12.1
 
 ```shell
 npm -v
 ```
 
-| 8.3.1
+| 9.1.2
 
 To setup a local version clone the repository and install the npm dependencies
 
