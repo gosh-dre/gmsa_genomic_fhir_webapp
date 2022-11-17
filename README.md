@@ -59,9 +59,8 @@ Start the FHIR server and nginx in docker, running in the background
 docker compose -f docker-compose.dev.yml up -d
 ```
 
-    [+] Running 3/3
+    [+] Running 2/2
     ⠿ Network fhir-report_default      Created                                                                                                                                                                                           0.1s
-    ⠿ Container fhir-report-fhir-db-1  Started                                                                                                                                                                                           0.7s
     ⠿ Container fhir-report-fhir-1     Started                                                                                                                                                                                           0.8s
 
 The status of the services using `ps`
@@ -72,7 +71,6 @@ docker compose -f docker-compose.dev.yml ps
 
             Name                       Command               State               Ports             
     -----------------------------------------------------------------------------------------------
-    fhir-report_fhir-db_1   docker-entrypoint.sh postgres    Up      5432/tcp                      
     fhir-report_fhir_1      catalina.sh run                  Up      0.0.0.0:8090->8080/tcp        
 
 ## Building and running
