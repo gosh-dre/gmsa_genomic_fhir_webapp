@@ -15,7 +15,7 @@ type OverridingFields = {
     nhsNumber: string;
     firstName: string;
     lastName: string;
-    familyNumber: string;
+    familyNumber?: string;
   };
   sample: {
     specimenCode: string;
@@ -31,14 +31,17 @@ const clearFhirAndSendReports = async () => {
   await deleteFhirData();
 
   const overridingValues = [
-    // not FH
-    createPatientOverrides("Daffy", "Duck", ["R59"], "HGNC:4389", "c.115A>T"),
+    // not FH so shouldn't be in the list
+    createPatientOverrides("Daffy", "Duck", ["R59"], "HGNC:4389", "c.140G>A"),
     // Has a family member who has been tests
-    createPatientOverrides("Bugs", "Bunny", ["R134"], "HGNC:6547", "c.113A>T", "F12345"),
-    createPatientOverrides("Betty", "Bunny", ["R134"], "HGNC:6547", "c.113A>T", "F12345"),
+    createPatientOverrides("Bugs", "Bunny", ["R134"], "HGNC:6547", "NM_000527.5:c.259T>G", "F12345"),
+    createPatientOverrides("Betty", "Bunny", ["R134"], "HGNC:6547", "NM_000527.5:c.259T>G", "F12345"),
     // No family member who has been tested
-    createPatientOverrides("Road", "Runner", ["R134"], "HGNC:6547", "c.110A>T", "F10000"),
-    createPatientOverrides("Wile", "Coyote", ["R134"], "HGNC:6547", "c.112A>T"),
+    createPatientOverrides("Road", "Runner", ["R134"], "HGNC:6547", "NM_000527.5:c.27C>T", "F10000"),
+    // No family member
+    createPatientOverrides("Wile", "Coyote", ["R134"], "HGNC:6547", "NM_000527.5:c.58G>A"),
+    // Benign
+    createPatientOverrides("Yosemite", "Sam", ["R134"], "HGNC:6547", "NM_000527.5:c.9C>T"),
   ];
 
   for (const override of overridingValues) {
@@ -58,13 +61,13 @@ const createPatientOverrides = (
 ): OverridingFields => {
   return {
     patient: {
-      mrn: generateNumber("mrn"),
-      nhsNumber: generateNumber("nhs"),
+      mrn: generateId("mrn"),
+      nhsNumber: generateId("nhs"),
       firstName: firstName,
       lastName: lastName,
-      familyNumber: familyNumber ? familyNumber : generateNumber("family"),
+      familyNumber: familyNumber,
     },
-    sample: { specimenCode: generateNumber("specimen"), reasonForTest: testReason },
+    sample: { specimenCode: generateId("specimen"), reasonForTest: testReason },
     variant: {
       cDnaHgvs: cDnaHgvs,
       gene: gene,
@@ -72,15 +75,13 @@ const createPatientOverrides = (
   };
 };
 
-const generateNumber = (type?: "nhs" | "family" | "specimen" | "mrn") => {
+const generateId = (type?: "nhs" | "specimen" | "mrn") => {
   let num;
   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const randomCharacter = characters[Math.floor(Math.random() * characters.length)];
 
   if (type === "nhs") {
     num = Math.floor(Math.random() * Math.pow(10, 10));
-  } else if (type === "family") {
-    num = randomCharacter + Math.floor(Math.random() * Math.pow(10, 6));
   } else if (type === "specimen") {
     num = randomCharacter + Math.floor(Math.random() * Math.pow(10, 10));
   } else if (type === "mrn") {
