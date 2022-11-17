@@ -20,7 +20,6 @@ export const createPractitioner = async (practitioner: Practitioner) => {
       "Content-Type": "application/json",
     },
   });
-  // await new Promise((r) => setTimeout(r, 500));
   return checkResponseOK(sendPractitioner);
 };
 

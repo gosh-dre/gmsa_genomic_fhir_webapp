@@ -165,6 +165,17 @@ const renderTestReportForm = () => {
   render(<ContextAndModal children={<ReportForm initialValues={noValues} />} />, { wrapper: BrowserRouter });
 };
 
+beforeAll(() => {
+  /*
+   * For some reason on first load of FHIR server, creating a batch of requests doesn't seem to validate
+   * Sending a resource before any test are run fixed the issue
+   */
+  const practitioner = new Practitioner();
+  practitioner.resourceType = "Practitioner";
+  practitioner.identifier = [createIdentifier("initial")];
+  return createPractitioner(practitioner);
+});
+
 describe("Report form", () => {
   beforeEach(() => {
     return deleteFhirData();

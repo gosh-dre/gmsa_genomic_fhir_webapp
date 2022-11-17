@@ -123,11 +123,11 @@ const changePatientInfo = (valuesToUpdate: OverridingFields) => {
   return newPatient;
 };
 
-describe("Results table", () => {
-  beforeEach(() => {
-    return clearFhirAndSendReports();
-  });
+beforeAll(() => {
+  return clearFhirAndSendReports();
+});
 
+describe("Results table", () => {
   /**
    * Given the FHIR API is cleared and has 6 separate reports added with one variant each (one not FH)
    * When the Results list page is rendered
