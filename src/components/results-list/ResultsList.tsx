@@ -6,7 +6,6 @@ import LoadingSpinner from "../UI/LoadingSpinner";
 import ModalWrapper, { ModalState } from "../UI/ModalWrapper";
 
 import { ParsedResultsModel, TrimmedObservation } from "./ResultsDataFetcher";
-
 import classes from "./ResultsList.module.css";
 
 interface Props {
@@ -20,8 +19,15 @@ const ResultsList: FC<Props> = (props) => {
 
   const { results } = props;
 
-  const checkCascadeTestingHandler = async (patientIdentifier: string) => {
-    const observationQueryUrl = `/Patient?identifier=${patientIdentifier}`;
+  const checkCascadeTestingHandler = async (overallInterpretation: string, familyNumber?: string) => {
+    if (!familyNumber) {
+      setModal({
+        message: "This patient has no family number recorded.",
+        isError: false,
+      });
+      return;
+    }
+    const observationQueryUrl = `/Patient?identifier=${familyNumber}`;
 
     setIsLoading(true);
 
@@ -36,7 +42,7 @@ const ResultsList: FC<Props> = (props) => {
           return;
         }
 
-        displayCascadeAdvice(response.entry, patientIdentifier);
+        displayCascadeAdvice(response.entry, overallInterpretation);
       })
       .catch((error) => {
         setModal({
@@ -50,17 +56,24 @@ const ResultsList: FC<Props> = (props) => {
       });
   };
 
-  const displayCascadeAdvice = (patients: Patient[], patientIdentifier: string) => {
+  const displayCascadeAdvice = (patients: Patient[], overallInterpretation: string) => {
+    if (overallInterpretation === "Positive") {
+      setModal({
+        message: `Patient has no pathogenic variants reported`,
+        isError: false,
+      });
+    }
+
     if (patients.length === 1) {
       setModal({
-        message: `Patient with identifier ${patientIdentifier} has a known pathogenic variant, please offer cascade testing to family. Currently this is the only family member with a test result.`,
+        message: `Patient has a known pathogenic variant, please offer cascade testing to family. Currently this is the only family member with a test result.`,
         isError: false,
       });
     }
 
     if (patients.length > 1) {
       setModal({
-        message: `Cascade testing has been performed for the family of patient with identifier ${patientIdentifier}. No need for any further action.`,
+        message: `Cascade testing has been performed for this patient. No need for any further action.`,
         isError: false,
       });
     }
@@ -91,7 +104,7 @@ const ResultsList: FC<Props> = (props) => {
             return (
               <tr
                 key={`${patient.patientId}-${index}`}
-                onClick={() => checkCascadeTestingHandler(patient.officialPatientIdentifier)}
+                onClick={() => checkCascadeTestingHandler(patient.overallInterpretation, patient.familyIdentifier)}
               >
                 <td>{patient.firstName}</td>
                 <td>{patient.lastName}</td>

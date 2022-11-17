@@ -10,7 +10,7 @@ import { Observation, Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/mod
 export type TrimmedObservation = { cDnaChange: string; observationId: string };
 type PatientResult = {
   patientId: string;
-  officialPatientIdentifier: string;
+  familyIdentifier?: string;
   firstName: string;
   lastName: string;
   overallInterpretation: string;
@@ -20,9 +20,9 @@ export type ParsedResultsModel = PatientResult[];
 
 const HGVS_CDNA_LOINC = "48004-6";
 const FH_CODE = "R134";
-const POSITIVE_FINDING = "LA6576-8";
 const VARIANT_PROFILE = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant";
 const INTERPRETATION_PROFILE = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/overall-interpretation";
+const FAMILY_NUMBER_SYSTEM = "http://fhir.nhs.uk/Id/nhs-family-number";
 
 function filterObservations(patientId: string, VARIANT_PROFILE: string, observations: Observation[]) {
   return observations.filter((observation) => {
@@ -95,12 +95,12 @@ const ResultsDataFetcher: FC = () => {
 
     // extract the required data and store in a trimmed down data structure
     patients.forEach((patient) => {
-      if (!(patient.id && patient.identifier?.[0]?.value && patient.name?.[0]?.given && patient.name?.[0]?.family)) {
+      if (!(patient.id && patient.name?.[0]?.given && patient.name?.[0]?.family)) {
         return;
       }
 
       const patientId = patient.id;
-      const officialPatientIdentifier = patient.identifier[0].value;
+      const familyNumber = patient.identifier?.find((id) => id.system === FAMILY_NUMBER_SYSTEM)?.value;
       const firstName = patient.name[0].given[0];
       const lastName = patient.name[0].family;
 
@@ -140,7 +140,7 @@ const ResultsDataFetcher: FC = () => {
         ...readableResults,
         {
           patientId: patientId,
-          officialPatientIdentifier: officialPatientIdentifier,
+          familyIdentifier: familyNumber,
           firstName: firstName,
           lastName: lastName,
           overallInterpretation: interpretation,
@@ -152,16 +152,19 @@ const ResultsDataFetcher: FC = () => {
     return readableResults;
   };
 
-  if (!parsedResults) {
+  if (!parsedResults && !isLoading) {
     return <div>Something went wrong getting observations. Please try again later.</div>;
   }
 
+  let resultsComponent = <></>;
+  if (parsedResults) {
+    resultsComponent = <ResultsList results={parsedResults} />;
+  }
   return (
     <>
       <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
       {isLoading && <LoadingSpinner asOverlay message={"Getting observations..."} />}
-
-      <ResultsList results={parsedResults} />
+      {resultsComponent}
     </>
   );
 };
