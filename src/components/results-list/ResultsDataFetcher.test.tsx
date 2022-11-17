@@ -4,6 +4,8 @@ import { createBundle } from "../../fhir/api";
 import { ContextAndModal, deleteFhirData, sendBundle } from "../../fhir/testUtilities";
 import { geneCoding } from "../../code_systems/hgnc";
 import ResultsDataFetcher from "./ResultsDataFetcher";
+import { act } from "react-dom/test-utils";
+import userEvent from "@testing-library/user-event";
 
 const reportedGenes = [geneCoding("HGNC:4389", "GNA01"), geneCoding("HGNC:6547", "LDLR")];
 
@@ -38,7 +40,7 @@ const clearFhirAndSendReports = async () => {
     // Has a family member who has been tests
     createPatientOverrides("Bugs", "Bunny", ["R134"], "HGNC:6547", "NM_000527.5:c.259T>G", "F12345"),
     createPatientOverrides("Betty", "Bunny", ["R134"], "HGNC:6547", "NM_000527.5:c.259T>G", "F12345"),
-    // No family member who has been tested
+    // No family member who has been tested, cascading testing required
     createPatientOverrides("Road", "Runner", ["R134"], "HGNC:6547", "NM_000527.5:c.27C>T", "F10000"),
     // No family member
     createPatientOverrides("Wile", "Coyote", ["R134"], "HGNC:6547", "NM_000527.5:c.58G>A"),
@@ -137,12 +139,68 @@ describe("Results table", () => {
     render(<ContextAndModal children={<ResultsDataFetcher />} />);
 
     // Can put a breakpoint here to allow for development with 5 patients added to the result list
-    await waitFor(
-      () => {
-        const resultsTable = screen.getAllByText(/NM_/);
-        expect(resultsTable.length).toEqual(5);
-      },
-      { timeout: 15000 },
-    );
+    await waitFor(() => {
+      const resultsTable = screen.getAllByText(/NM_/);
+      expect(resultsTable.length).toEqual(5);
+    });
+  });
+});
+
+describe("Modal from results table", () => {
+  beforeEach(() => {
+    render(<ContextAndModal children={<ResultsDataFetcher />} />);
+  });
+
+  const findPatientAndClickThem = async (patientRegex: RegExp) => {
+    const patient = await screen.findByText(patientRegex);
+    await act(async () => {
+      userEvent.click(patient);
+    });
+  };
+
+  const textIsInDocument = async (regExp: RegExp) => {
+    await waitFor(() => {
+      expect(screen.queryByText(regExp)).toBeInTheDocument();
+    });
+  };
+
+  /**
+   * Given that there are two patients reports with the same family number and pathogenic variants
+   * When one of the patients is clicked
+   * Then the modal shows cascade testing complete
+   */
+  test("Cascade testing has been carried out is shown", async () => {
+    await findPatientAndClickThem(/Betty/);
+    await textIsInDocument(/Cascade testing has been performed for this patient/);
+  });
+
+  /**
+   * Given that there is one patient with a family number and a pathogenic variant
+   * When the patient is clicked
+   * Then the modal shows cascade testing required
+   */
+  test("Cascade testing required is shown", async () => {
+    await findPatientAndClickThem(/Runner/);
+    await textIsInDocument(/please offer cascade testing/);
+  });
+
+  /**
+   * Given that there is one patient with a pathogenic variant but no family number
+   * When the patient is clicked
+   * Then the modal shows no family number recorded
+   */
+  test("No family number is shown", async () => {
+    await findPatientAndClickThem(/Coyote/);
+    await textIsInDocument(/no family number recorded/);
+  });
+
+  /**
+   * Given that there is one patient with a negative overall interpretation
+   * When the patient is clicked
+   * Then the modal shows no pathogenic variants
+   */
+  test("Negative result is shown", async () => {
+    await findPatientAndClickThem(/Negative/);
+    await textIsInDocument(/Patient has no pathogenic variants reported/);
   });
 });
