@@ -158,7 +158,8 @@ const ResultsDataFetcher: FC = () => {
 
   let resultsComponent = <></>;
   if (parsedResults) {
-    resultsComponent = <ResultsList results={parsedResults} />;
+    const sortedResults = parsedResults.sort((a, b) => a.lastName.localeCompare(b.lastName));
+    resultsComponent = <ResultsList results={sortedResults} />;
   }
   return (
     <>
