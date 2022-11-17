@@ -1,9 +1,11 @@
 # GMSA Genomics FHIR web app
 
-Prototype for FHIR genomics reports.
+Prototype for FHIR genomics reports. Development and project documentation is in
+the [repository wiki](https://github.com/gosh-dre/gmsa_genomic_fhir_webapp/wiki)
 
 > **Note**
-> If you have cloned and run the docker commands in the [Development services section](#development-services) then  
+> If you have cloned the repository and run the docker commands in
+> the [Development services section](#development-services) then  
 > [the GitHub.io page](https://gosh-dre.github.io/gmsa_genomic_fhir_webapp/#/) will connect to your FHIR server
 > that is running on your machine.
 
