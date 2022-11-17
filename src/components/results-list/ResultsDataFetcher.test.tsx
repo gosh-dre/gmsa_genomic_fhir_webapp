@@ -24,6 +24,8 @@ type OverridingFields = {
   variant: {
     cDnaHgvs: string;
     gene: string;
+    isPathogenic: boolean;
+    transcript?: string;
   };
 };
 
@@ -41,7 +43,7 @@ const clearFhirAndSendReports = async () => {
     // No family member
     createPatientOverrides("Wile", "Coyote", ["R134"], "HGNC:6547", "NM_000527.5:c.58G>A"),
     // Benign
-    createPatientOverrides("Yosemite", "Sam", ["R134"], "HGNC:6547", "NM_000527.5:c.9C>T"),
+    createPatientOverrides("Yosemite", "Sam", ["R134"], "HGNC:6547", "NM_000527.5:c.9C>T", "F54321", false),
   ];
 
   for (const override of overridingValues) {
@@ -58,7 +60,12 @@ const createPatientOverrides = (
   gene: string,
   cDnaHgvs: string,
   familyNumber?: string,
+  isPathogenic = true,
 ): OverridingFields => {
+  let transcript: string | undefined = undefined;
+  if (cDnaHgvs.includes(":")) {
+    transcript = cDnaHgvs.split(":")[0];
+  }
   return {
     patient: {
       mrn: generateId("mrn"),
@@ -71,6 +78,8 @@ const createPatientOverrides = (
     variant: {
       cDnaHgvs: cDnaHgvs,
       gene: gene,
+      isPathogenic: isPathogenic,
+      transcript: transcript,
     },
   };
 };
@@ -103,6 +112,14 @@ const changePatientInfo = (valuesToUpdate: OverridingFields) => {
   newPatient.sample.reasonForTest = valuesToUpdate.sample.reasonForTest;
   newPatient.variant[0].cDnaHgvs = valuesToUpdate.variant.cDnaHgvs;
   newPatient.variant[0].gene = valuesToUpdate.variant.gene;
+  if (!valuesToUpdate.variant.isPathogenic) {
+    newPatient.result.reportFinding = "LA6577-6"; // negative
+    newPatient.variant[0].classification = "LA26334-5"; // likely benign
+  }
+  if (valuesToUpdate.variant.transcript) {
+    newPatient.variant[0].transcript = valuesToUpdate.variant.transcript;
+  }
+
   return newPatient;
 };
 
@@ -112,9 +129,9 @@ describe("Results table", () => {
   });
 
   /**
-   * Given the FHIR API is cleared and has 5 separate reports added with one variant each (one not FH)
+   * Given the FHIR API is cleared and has 6 separate reports added with one variant each (one not FH)
    * When the Results list page is rendered
-   * Then there should be 4 FH variants listed
+   * Then there should be 5 FH variants listed
    */
   test("patients are in table", async () => {
     render(<ContextAndModal children={<ResultsDataFetcher />} />);

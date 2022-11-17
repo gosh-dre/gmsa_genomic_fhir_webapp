@@ -57,11 +57,12 @@ const ResultsList: FC<Props> = (props) => {
   };
 
   const displayCascadeAdvice = (patients: Patient[], overallInterpretation: string) => {
-    if (overallInterpretation === "Positive") {
+    if (overallInterpretation !== "Positive") {
       setModal({
         message: `Patient has no pathogenic variants reported`,
         isError: false,
       });
+      return;
     }
 
     if (patients.length === 1) {
@@ -95,7 +96,7 @@ const ResultsList: FC<Props> = (props) => {
           <tr>
             <th>First name</th>
             <th>Last name</th>
-            <th>cDNA changes</th>
+            <th>cDNA change(s)</th>
             <th>Overall interpretation</th>
           </tr>
         </thead>
