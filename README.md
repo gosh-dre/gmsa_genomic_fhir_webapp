@@ -53,7 +53,7 @@ You may also want to edit other variables
 
 ## Development services
 
-Start the FHIR server and nginx in docker, running in the background
+Start the FHIR server in docker, running in the background
 
 ```shell
 docker compose -f docker-compose.dev.yml up -d
