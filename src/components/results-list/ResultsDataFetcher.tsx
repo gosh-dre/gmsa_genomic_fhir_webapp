@@ -153,7 +153,7 @@ const ResultsDataFetcher: FC = () => {
   };
 
   if (!parsedResults && !isLoading) {
-    return <div>Familial hypercholesterolemia patient results were found on the FHIR server</div>;
+    return <div>No familial hypercholesterolemia patient results were found on the FHIR server</div>;
   }
 
   let resultsComponent = <></>;
