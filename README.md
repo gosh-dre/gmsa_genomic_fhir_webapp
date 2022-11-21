@@ -1,9 +1,11 @@
 # GMSA Genomics FHIR web app
 
-Prototype for FHIR genomics reports.
+Prototype for FHIR genomics reports. Development and project documentation is in
+the [repository wiki](https://github.com/gosh-dre/gmsa_genomic_fhir_webapp/wiki)
 
 > **Note**
-> If you have cloned and run the docker commands in the [Development services section](#development-services) then  
+> If you have cloned the repository and run the docker commands in
+> the [Development services section](#development-services) then  
 > [the GitHub.io page](https://gosh-dre.github.io/gmsa_genomic_fhir_webapp/#/) will connect to your FHIR server
 > that is running on your machine.
 
@@ -21,13 +23,13 @@ These can be checked on the command line on unix systems:
 node -v
 ```
 
-| v17.4.0
+| v18.12.1
 
 ```shell
 npm -v
 ```
 
-| 8.3.1
+| 9.1.2
 
 To setup a local version clone the repository and install the npm dependencies
 
@@ -53,15 +55,14 @@ You may also want to edit other variables
 
 ## Development services
 
-Start the FHIR server and nginx in docker, running in the background
+Start the FHIR server in docker, running in the background
 
 ```shell
 docker compose -f docker-compose.dev.yml up -d
 ```
 
-    [+] Running 3/3
+    [+] Running 2/2
     ⠿ Network fhir-report_default      Created                                                                                                                                                                                           0.1s
-    ⠿ Container fhir-report-fhir-db-1  Started                                                                                                                                                                                           0.7s
     ⠿ Container fhir-report-fhir-1     Started                                                                                                                                                                                           0.8s
 
 The status of the services using `ps`
@@ -72,7 +73,6 @@ docker compose -f docker-compose.dev.yml ps
 
             Name                       Command               State               Ports             
     -----------------------------------------------------------------------------------------------
-    fhir-report_fhir-db_1   docker-entrypoint.sh postgres    Up      5432/tcp                      
     fhir-report_fhir_1      catalina.sh run                  Up      0.0.0.0:8090->8080/tcp        
 
 ## Building and running
