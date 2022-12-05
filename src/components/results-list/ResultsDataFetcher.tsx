@@ -1,24 +1,39 @@
-import { FC, useEffect, useState, useContext } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 import { FhirContext } from "../fhir/FhirContext";
 
 import LoadingSpinner from "../UI/LoadingSpinner";
-import ModalWrapper from "../UI/ModalWrapper";
-import { ModalState } from "../UI/ModalWrapper";
+import ModalWrapper, { ModalState } from "../UI/ModalWrapper";
 import ResultsList from "../results-list/ResultsList";
 
-import { Patient, Observation } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
+import { Observation, Patient } from "@smile-cdr/fhirts/dist/FHIR-R4/classes/models-r4";
 
 export type TrimmedObservation = { cDnaChange: string; observationId: string };
 type PatientResult = {
   patientId: string;
-  officialPatientIdentifier: string;
+  familyIdentifier?: string;
   firstName: string;
   lastName: string;
+  overallInterpretation: string;
   observations: TrimmedObservation[];
 };
 export type ParsedResultsModel = PatientResult[];
 
 const HGVS_CDNA_LOINC = "48004-6";
+const FH_CODE = "R134";
+const VARIANT_PROFILE = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant";
+const INTERPRETATION_PROFILE = "http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/overall-interpretation";
+const FAMILY_NUMBER_SYSTEM = "http://fhir.nhs.uk/Id/nhs-family-number";
+
+function filterObservations(patientId: string, VARIANT_PROFILE: string, observations: Observation[]) {
+  return observations.filter((observation) => {
+    if (!observation.subject?.reference || !observation.meta?.profile) {
+      return;
+    }
+    const subjectIdLong = observation.subject.reference;
+    const profiles = observation.meta.profile;
+    return subjectIdLong.includes(patientId) && profiles.includes(VARIANT_PROFILE);
+  });
+}
 
 const ResultsDataFetcher: FC = () => {
   const ctx = useContext(FhirContext);
@@ -27,7 +42,7 @@ const ResultsDataFetcher: FC = () => {
   const [parsedResults, setParsedResults] = useState<ParsedResultsModel | null>(null);
 
   useEffect(() => {
-    const observationQueryUrl = `Observation?_profile=http://hl7.org/fhir/uv/genomics-reporting/StructureDefinition/variant&_include=Observation:subject`;
+    const observationQueryUrl = `DiagnosticReport/?code=${FH_CODE}&_include=DiagnosticReport:result&_include=DiagnosticReport:subject`;
 
     setIsLoading(true);
 
@@ -67,9 +82,7 @@ const ResultsDataFetcher: FC = () => {
       })
       .map((entry) => entry.resource as Observation);
 
-    const readableResults = createReadableResults(patients, observations);
-
-    return readableResults;
+    return createReadableResults(patients, observations);
   };
 
   /**
@@ -82,31 +95,26 @@ const ResultsDataFetcher: FC = () => {
 
     // extract the required data and store in a trimmed down data structure
     patients.forEach((patient) => {
-      if (!(patient.id && patient.identifier?.[0]?.value && patient.name?.[0]?.given && patient.name?.[0]?.family)) {
+      if (!(patient.id && patient.name?.[0]?.given && patient.name?.[0]?.family)) {
         return;
       }
 
       const patientId = patient.id;
-      const officialPatientIdentifier = patient.identifier[0].value;
+      const familyNumber = patient.identifier?.find((id) => id.system === FAMILY_NUMBER_SYSTEM)?.value;
       const firstName = patient.name[0].given[0];
       const lastName = patient.name[0].family;
 
-      // return observations belonging to a patient based on the patient ID
-      const patientObservations = observations.filter((observation) => {
-        if (!observation.subject?.reference) return;
+      // return variants belonging to a patient based on the patient ID
+      const patientVariants = filterObservations(patientId, VARIANT_PROFILE, observations);
+      const overallInterpretation = filterObservations(patientId, INTERPRETATION_PROFILE, observations);
 
-        const subjectIdLong = observation.subject.reference;
-
-        return subjectIdLong.includes(patientId);
-      });
-
-      if (!patientObservations || patientObservations.length === 0) {
+      if (!patientVariants || patientVariants.length === 0) {
         return;
       }
 
       // extract required data from each observation
       let trimmedObservations: TrimmedObservation[] = [];
-      patientObservations.forEach((observation) => {
+      patientVariants.forEach((observation) => {
         if (!observation?.id) {
           return;
         }
@@ -126,13 +134,16 @@ const ResultsDataFetcher: FC = () => {
         trimmedObservations = [...trimmedObservations, { cDnaChange: cDnaChange, observationId: observation.id }];
       });
 
+      const interpretation = overallInterpretation.at(0)?.valueCodeableConcept?.coding?.at(0)?.display || "Unknown";
+
       readableResults = [
         ...readableResults,
         {
           patientId: patientId,
-          officialPatientIdentifier: officialPatientIdentifier,
+          familyIdentifier: familyNumber,
           firstName: firstName,
           lastName: lastName,
+          overallInterpretation: interpretation,
           observations: trimmedObservations,
         },
       ];
@@ -141,16 +152,20 @@ const ResultsDataFetcher: FC = () => {
     return readableResults;
   };
 
-  if (!parsedResults) {
-    return <div>Something went wrong getting observations. Please try again later.</div>;
+  if (!parsedResults && !isLoading) {
+    return <div>No familial hypercholesterolemia patient results were found on the FHIR server</div>;
   }
 
+  let resultsComponent = <></>;
+  if (parsedResults) {
+    const sortedResults = parsedResults.sort((a, b) => a.lastName.localeCompare(b.lastName));
+    resultsComponent = <ResultsList results={sortedResults} />;
+  }
   return (
     <>
       <ModalWrapper isError={modal?.isError} modalMessage={modal?.message} onClear={() => setModal(null)} />
       {isLoading && <LoadingSpinner asOverlay message={"Getting observations..."} />}
-
-      <ResultsList results={parsedResults} />
+      {resultsComponent}
     </>
   );
 };

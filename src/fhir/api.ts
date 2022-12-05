@@ -86,7 +86,7 @@ export const createBundle = (form: FormValues, reportedGenes: RequiredCoding[]):
     reporter.identifier,
     authoriser.identifier,
     org.identifier,
-    variants.map((variant) => variant.identifier),
+    [overallInterpretation.identifier, ...variants.map((variant) => variant.identifier)],
     reportIdentifier,
   );
   return {
